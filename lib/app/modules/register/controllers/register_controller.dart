@@ -1,23 +1,14 @@
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
-  //TODO: Implement RegisterController
+  var isPasswordHidden = true.obs;
+  var isChecked = false.obs;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void togglePassword() {
+    isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void toggleCheckbox(bool? value) {
+    isChecked.value = value ?? false;
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

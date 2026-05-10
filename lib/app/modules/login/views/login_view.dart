@@ -56,7 +56,7 @@ class LoginView extends GetView<LoginController> {
 
                       // Logo / image
                       Image.asset(
-                        "assets/images/family.png",
+                        "assets/images/login.png",
                         width: 130,
                       ),
 

@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
+class ProfileController extends GetxController {
 
-  RxInt selectedIndex = 0.obs;
+  RxInt selectedIndex = 3.obs;
 
   void changeIndex(int index) {
     selectedIndex.value = index;
