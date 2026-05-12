@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teraparent_mobile/app/modules/home/views/home_view.dart';
 import 'package:teraparent_mobile/app/modules/login/controllers/login_controller.dart';
-import 'package:teraparent_mobile/app/modules/register/views/register_view.dart';
+import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 
 class LoginView extends GetView<LoginController> {
@@ -200,7 +199,7 @@ class LoginView extends GetView<LoginController> {
                               height: 55,
                               child: ElevatedButton(
                                 onPressed: (){
-                                  Get.to(() => HomeView());
+                                  Get.toNamed(Routes.HOME);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,
@@ -263,7 +262,7 @@ class LoginView extends GetView<LoginController> {
                           const Text("Belum punya akun?"),
                           TextButton(
                             onPressed: () {
-                              Get.to(() => RegisterView());
+                              Get.toNamed(Routes.REGISTER);
                             },
                             child: Text(
                               "Daftar",

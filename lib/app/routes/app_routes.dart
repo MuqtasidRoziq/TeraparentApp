@@ -8,6 +8,9 @@ abstract class Routes {
   static const REGISTER = _Paths.REGISTER;
   static const PROFIL = _Paths.PROFIL;
   static const FORGOTPASS = _Paths.FORGOTPASS;
+  static const INFO_PRIBADI = _Paths.INFO_PRIBADI;
+  static const SECURITY_PASSWORD = _Paths.SECURITY_PASSWORD;
+  static const SETTINGS_NOTIFICATION = _Paths.SETTINGS_NOTIFICATION;
 }
 
 abstract class _Paths {
@@ -17,4 +20,7 @@ abstract class _Paths {
   static const REGISTER = '/register';
   static const PROFIL = '/profil';
   static const FORGOTPASS = '/forgotpass';
+  static const INFO_PRIBADI = '/info-pribadi';
+  static const SECURITY_PASSWORD = '/security-password';
+  static const SETTINGS_NOTIFICATION = '/settings-notification';
 }

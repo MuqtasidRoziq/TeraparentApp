@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../components/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -10,37 +11,12 @@ class ProfileView extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
 
-      bottomNavigationBar: Container(
-        height: 80,
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            navItem(
-              icon: Icons.home_outlined,
-              label: 'Home',
-              index: 0,
-            ),
+      bottomNavigationBar: BottomNavbar(
+        selectedIndex: controller.selectedIndex,
 
-            navItem(
-              icon: Icons.extension_outlined,
-              label: 'Activities',
-              index: 1,
-            ),
-
-            navItem(
-              icon: Icons.trending_up,
-              label: 'Development',
-              index: 2,
-            ),
-
-            navItem(
-              icon: Icons.person,
-              label: 'Profile',
-              index: 3,
-            ),
-          ],
-        ),
+        onTap: (index) {
+          controller.changeIndex(index);
+        },
       ),
 
       body: SafeArea(
@@ -62,7 +38,7 @@ class ProfileView extends GetView<ProfileController> {
                         const CircleAvatar(
                           radius: 24,
                           backgroundImage: AssetImage(
-                            'assets/images/profile.jpg',
+                            'assets/images/profile.png',
                           ),
                         ),
 
@@ -111,7 +87,7 @@ class ProfileView extends GetView<ProfileController> {
                           const CircleAvatar(
                             radius: 48,
                             backgroundImage: AssetImage(
-                              'assets/images/profile.jpg',
+                              'assets/images/profile.png',
                             ),
                           ),
 
@@ -185,7 +161,7 @@ class ProfileView extends GetView<ProfileController> {
                 Row(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children:[
 
                     Text(
                       'Profil Anak',
@@ -196,11 +172,14 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                     ),
 
-                    Text(
-                      '+ Tambah Anak',
-                      style: TextStyle(
-                        color: Color(0xFF2F6F5F),
-                        fontSize: 18,
+                     GestureDetector(
+                      onTap: () {},
+                      child: Text(
+                        '+ Tambah Anak',
+                        style: TextStyle(
+                          color: Color(0xFF2F6F5F),
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ],
@@ -227,7 +206,7 @@ class ProfileView extends GetView<ProfileController> {
                             borderRadius:
                                 BorderRadius.circular(12),
                             child: Image.asset(
-                              'assets/images/child.jpg',
+                              'assets/images/profile.png',
                               width: 70,
                               height: 70,
                               fit: BoxFit.cover,
@@ -472,6 +451,7 @@ class ProfileView extends GetView<ProfileController> {
                 settingItem(
                   icon: Icons.person_outline,
                   title: 'Informasi Pribadi',
+                  onTap: () {},
                 ),
 
                 const SizedBox(height: 14),
@@ -479,6 +459,7 @@ class ProfileView extends GetView<ProfileController> {
                 settingItem(
                   icon: Icons.security,
                   title: 'Keamanan & Password',
+                  onTap: () {},
                 ),
 
                 const SizedBox(height: 14),
@@ -486,21 +467,37 @@ class ProfileView extends GetView<ProfileController> {
                 settingItem(
                   icon: Icons.notifications_none,
                   title: 'Pengaturan Notifikasi',
+                  onTap: () {},
                 ),
 
                 const SizedBox(height: 30),
 
-                const Center(
-                  child: Text(
-                    '↪ Keluar dari Akun',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 18,
-                    ),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: (){
+                      Get.defaultDialog(
+                        title: 'Konfirmasi Keluar',
+                        middleText:
+                            'Apakah Anda yakin ingin keluar dari akun ini?',
+                        textCancel: 'Batal',
+                        textConfirm: 'Keluar',
+                        confirmTextColor: Colors.white,
+                        onConfirm: () {
+                          // Logika untuk keluar akun
+                          Get.back();
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.logout, color: Colors.red),
+                    label: const Text(
+                      'Keluar',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                      ),
+                    )
                   ),
                 ),
-
-                const SizedBox(height: 30),
               ],
             ),
           ),
@@ -681,34 +678,34 @@ class ProfileView extends GetView<ProfileController> {
   Widget settingItem({
     required IconData icon,
     required String title,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Row(
-        children: [
-
-          Icon(
-            icon,
-            color: const Color(0xFF2F6F5F),
-          ),
-
-          const SizedBox(width: 16),
-
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: const Color(0xFF2F6F5F),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                ),
               ),
             ),
-          ),
-
-          const Icon(Icons.arrow_forward_ios, size: 18),
-        ],
+            const Icon(Icons.arrow_forward_ios, size: 18),
+          ],
+        ),
       ),
     );
   }

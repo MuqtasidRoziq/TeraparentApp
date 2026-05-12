@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../components/bottom_nav.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -14,49 +14,15 @@ class HomeView extends GetView<HomeController> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF2F6F5F),
         onPressed: () {},
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
 
-      bottomNavigationBar: Obx(
-        () => Container(
-          height: 80,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceAround,
-            children: [
+      bottomNavigationBar: BottomNavbar(
+        selectedIndex: controller.selectedIndex,
 
-              navItem(
-                icon: Icons.home,
-                label: 'Home',
-                index: 0,
-              ),
-
-              navItem(
-                icon: Icons.extension_outlined,
-                label: 'Activities',
-                index: 1,
-              ),
-
-              navItem(
-                icon: Icons.trending_up,
-                label: 'Development',
-                index: 2,
-              ),
-
-              navItem(
-                icon: Icons.person_outline,
-                label: 'Profile',
-                index: 3,
-              ),
-            ],
-          ),
-        ),
+        onTap: (index) {
+          controller.changeIndex(index);
+        },
       ),
 
       body: SafeArea(
@@ -64,36 +30,28 @@ class HomeView extends GetView<HomeController> {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // HEADER
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     Row(
                       children: [
-
                         const CircleAvatar(
                           radius: 24,
                           backgroundImage: AssetImage(
                             'assets/images/profile.png',
                           ),
                         ),
-
                         const SizedBox(width: 12),
 
                         const Text(
                           'Teraparent',
                           style: TextStyle(
                             fontSize: 24,
-                            fontWeight:
-                                FontWeight.bold,
-                            color:
-                                Color(0xFF2F6F5F),
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2F6F5F),
                           ),
                         ),
                       ],
@@ -116,20 +74,14 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment
-                                .spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-
                           const Text(
                             'Hello, Mama!',
                             style: TextStyle(
@@ -139,21 +91,15 @@ class HomeView extends GetView<HomeController> {
                           ),
 
                           Container(
-                            padding:
-                                const EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 14,
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(
-                                  0xFFAEEACD),
-                              borderRadius:
-                                  BorderRadius
-                                      .circular(20),
+                              color: const Color(0xFFAEEACD),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Text(
-                              'Age 4.2',
-                            ),
+                            child: const Text('Age 4.2'),
                           ),
                         ],
                       ),
@@ -161,7 +107,7 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 10),
 
                       const Text(
-                        "Leo’s Journey",
+                        "Leo's Journey",
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
@@ -172,30 +118,22 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 18),
 
                       SingleChildScrollView(
-                        scrollDirection:
-                            Axis.horizontal,
+                        scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-
                             buildTag(
-                              text:
-                                  'Speech Therapy',
-                              color: const Color(
-                                  0xFFD5EEF6),
+                              text: 'Speech Therapy',
+                              color: const Color(0xFFD5EEF6),
                             ),
 
                             buildTag(
-                              text:
-                                  'Sensory Support',
-                              color: const Color(
-                                  0xFFF5D79B),
+                              text: 'Sensory Support',
+                              color: const Color(0xFFF5D79B),
                             ),
 
                             buildTag(
-                              text:
-                                  'Active Goals',
-                              color: const Color(
-                                  0xFFAEEACD),
+                              text: 'Active Goals',
+                              color: const Color(0xFFAEEACD),
                             ),
                           ],
                         ),
@@ -211,20 +149,16 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       const Text(
                         "Today's Focus",
                         style: TextStyle(
                           fontSize: 22,
-                          fontWeight:
-                              FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF2F6F5F),
                         ),
                       ),
@@ -232,32 +166,23 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 20),
 
                       focusItem(
-                        icon:
-                            Icons.menu_book_outlined,
-                        text:
-                            'Morning Reading',
+                        icon: Icons.menu_book_outlined,
+                        text: 'Morning Reading',
                       ),
 
                       const SizedBox(height: 16),
 
                       Row(
                         children: [
-
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.grey,
-                          ),
+                          const Icon(Icons.check_circle, color: Colors.grey),
 
                           const SizedBox(width: 12),
 
                           Text(
                             'Fine Motor Practice',
                             style: TextStyle(
-                              decoration:
-                                  TextDecoration
-                                      .lineThrough,
-                              color:
-                                  Colors.grey[600],
+                              decoration: TextDecoration.lineThrough,
+                              color: Colors.grey[600],
                             ),
                           ),
                         ],
@@ -266,10 +191,8 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 16),
 
                       focusItem(
-                        icon:
-                            Icons.yard_outlined,
-                        text:
-                            'Outdoor Sensory Walk',
+                        icon: Icons.yard_outlined,
+                        text: 'Outdoor Sensory Walk',
                       ),
                     ],
                   ),
@@ -292,70 +215,44 @@ class HomeView extends GetView<HomeController> {
       onTap: () {
         controller.changeIndex(index);
       },
-      child: Obx(
-        () {
-          bool active =
-              controller.selectedIndex.value ==
-                  index;
+      child: Obx(() {
+        bool active = controller.selectedIndex.value == index;
 
-          return Container(
-            padding:
-                const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: active
-                  ? const Color(0xFFAEEACD)
-                  : Colors.transparent,
-              borderRadius:
-                  BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
-              children: [
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: active ? const Color(0xFFAEEACD) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: active ? const Color(0xFF2F6F5F) : Colors.black54,
+              ),
 
-                Icon(
-                  icon,
-                  color: active
-                      ? const Color(
-                          0xFF2F6F5F)
-                      : Colors.black54,
+              const SizedBox(height: 4),
+
+              Text(
+                label,
+                style: TextStyle(
+                  color: active ? const Color(0xFF2F6F5F) : Colors.black54,
+                  fontWeight: FontWeight.w600,
                 ),
-
-                const SizedBox(height: 4),
-
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: active
-                        ? const Color(
-                            0xFF2F6F5F)
-                        : Colors.black54,
-                    fontWeight:
-                        FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
   // TAG
-  Widget buildTag({
-    required String text,
-    required Color color,
-  }) {
+  Widget buildTag({required String text, required Color color}) {
     return Container(
       margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
@@ -365,23 +262,14 @@ class HomeView extends GetView<HomeController> {
   }
 
   // FOCUS ITEM
-  Widget focusItem({
-    required IconData icon,
-    required String text,
-  }) {
+  Widget focusItem({required IconData icon, required String text}) {
     return Row(
       children: [
-
         Icon(icon),
 
         const SizedBox(width: 12),
 
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 18,
-          ),
-        ),
+        Text(text, style: const TextStyle(fontSize: 18)),
       ],
     );
   }
