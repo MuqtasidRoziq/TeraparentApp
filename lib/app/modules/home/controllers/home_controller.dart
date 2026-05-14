@@ -1,11 +1,9 @@
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
+  final currentIndex = 1.obs;
 
-  RxInt selectedIndex = 0.obs;
-
-  void changeIndex(int index) {
-    selectedIndex.value = index;
+  void changeBottomMenu(int index) {
+    currentIndex.value = index;
   }
-  
 }

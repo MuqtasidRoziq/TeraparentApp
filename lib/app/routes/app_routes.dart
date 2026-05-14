@@ -11,6 +11,8 @@ abstract class Routes {
   static const INFO_PRIBADI = _Paths.INFO_PRIBADI;
   static const SECURITY_PASSWORD = _Paths.SECURITY_PASSWORD;
   static const SETTINGS_NOTIFICATION = _Paths.SETTINGS_NOTIFICATION;
+  static const SCREENING = _Paths.SCREENING;
+  static const CHILD_DATE = _Paths.CHILD_DATE;
 }
 
 abstract class _Paths {
@@ -23,4 +25,6 @@ abstract class _Paths {
   static const INFO_PRIBADI = '/info-pribadi';
   static const SECURITY_PASSWORD = '/security-password';
   static const SETTINGS_NOTIFICATION = '/settings-notification';
+  static const SCREENING = '/screening';
+  static const CHILD_DATE = '/child-date';
 }

@@ -199,7 +199,7 @@ class LoginView extends GetView<LoginController> {
                               height: 55,
                               child: ElevatedButton(
                                 onPressed: (){
-                                  Get.toNamed(Routes.HOME);
+                                  Get.toNamed(Routes.CHILD_DATE);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,

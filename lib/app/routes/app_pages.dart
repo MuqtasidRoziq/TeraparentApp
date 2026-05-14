@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/child_date/bindings/child_date_binding.dart';
+import '../modules/child_date/views/child_date_view.dart';
 import '../modules/forgotpass/bindings/forgotpass_binding.dart';
 import '../modules/forgotpass/views/forgotpass_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -12,6 +14,8 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/screening/bindings/screening_binding.dart';
+import '../modules/screening/views/screening_view.dart';
 import '../modules/security_password/bindings/security_password_binding.dart';
 import '../modules/security_password/views/security_password_view.dart';
 import '../modules/settings_notification/bindings/settings_notification_binding.dart';
@@ -64,6 +68,16 @@ class AppPages {
       name: _Paths.SETTINGS_NOTIFICATION,
       page: () => const SettingsNotificationView(),
       binding: SettingsNotificationBinding(),
+    ),
+    GetPage(
+      name: _Paths.SCREENING,
+      page: () => const ScreeningView(),
+      binding: ScreeningBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHILD_DATE,
+      page: () => const ChildDataView(),
+      binding: ChildDataBinding(),
     ),
   ];
 }
