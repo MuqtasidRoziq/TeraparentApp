@@ -1,9 +1,15 @@
 import 'package:get/get.dart';
 
+import '../modules/activities/bindings/activities_binding.dart';
+import '../modules/activities/views/activities_view.dart';
+import '../modules/ahli_terapis/bindings/ahli_terapis_binding.dart';
+import '../modules/ahli_terapis/views/ahli_terapis_view.dart';
 import '../modules/child_date/bindings/child_date_binding.dart';
 import '../modules/child_date/views/child_date_view.dart';
 import '../modules/forgotpass/bindings/forgotpass_binding.dart';
 import '../modules/forgotpass/views/forgotpass_view.dart';
+import '../modules/grafik_perkembangan/bindings/grafik_perkembangan_binding.dart';
+import '../modules/grafik_perkembangan/views/grafik_perkembangan_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/info_pribadi/bindings/info_pribadi_binding.dart';
@@ -78,6 +84,21 @@ class AppPages {
       name: _Paths.CHILD_DATE,
       page: () => const ChildDataView(),
       binding: ChildDataBinding(),
+    ),
+    GetPage(
+      name: _Paths.ACTIVITIES,
+      page: () => const ActivitiesView(),
+      binding: ActivitiesBinding(),
+    ),
+    GetPage(
+      name: _Paths.AHLI_TERAPIS,
+      page: () => const AhliTerapisView(),
+      binding: AhliTerapisBinding(),
+    ),
+    GetPage(
+      name: _Paths.GRAFIK_PERKEMBANGAN,
+      page: () => const GrafikPerkembanganView(),
+      binding: GrafikPerkembanganBinding(),
     ),
   ];
 }
