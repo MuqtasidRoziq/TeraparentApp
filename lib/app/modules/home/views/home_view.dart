@@ -277,7 +277,7 @@ class HomeView extends GetView<HomeController> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.toNamed(Routes.CHILD_DATE);
+                            Get.toNamed(Routes.ACTIVITIES);
                           },
                           child: menuCard(
                             title: 'Input\nAktivitas',
@@ -298,7 +298,7 @@ class HomeView extends GetView<HomeController> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.toNamed(Routes.LOGIN);
+                            Get.toNamed(Routes.GRAFIK_PERKEMBANGAN);
                           },
                           child: menuCard(
                             title: 'Grafik\nPerkembangan',
@@ -314,10 +314,10 @@ class HomeView extends GetView<HomeController> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.toNamed(Routes.REGISTER);
+                            Get.toNamed(Routes.AHLI_TERAPIS);
                           },
                           child: menuCard(
-                            title: 'Konsultasi',
+                            title: 'Konsultasi\nAhli Psikologi',
                             icon: Icons.chat_bubble_outline,
                             color: const Color(0xffEAEAEA),
                           ),
@@ -386,7 +386,7 @@ class HomeView extends GetView<HomeController> {
 
               navItem(
                 icon: Icons.trending_up,
-                title: 'Development',
+                title: 'GRAFIK',
                 index: 2,
               ),
 
@@ -499,11 +499,11 @@ Widget navItem({
       if (index == 0) {
         Get.toNamed(Routes.HOME);
       } else if (index == 1) {
-        Get.toNamed(Routes.CHILD_DATE);
+        Get.toNamed(Routes.ACTIVITIES);
       } else if (index == 2) {
-        Get.toNamed(Routes.LOGIN);
+        Get.toNamed(Routes.GRAFIK_PERKEMBANGAN);
       } else if (index == 3) {
-        Get.toNamed(Routes.REGISTER);
+        Get.toNamed(Routes.PROFIL);
       }
     },
 

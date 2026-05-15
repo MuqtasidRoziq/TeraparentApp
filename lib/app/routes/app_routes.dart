@@ -13,6 +13,10 @@ abstract class Routes {
   static const SETTINGS_NOTIFICATION = _Paths.SETTINGS_NOTIFICATION;
   static const SCREENING = _Paths.SCREENING;
   static const CHILD_DATE = _Paths.CHILD_DATE;
+  static const ACTIVITIES = _Paths.ACTIVITIES;
+  static const AHLI_TERAPIS = _Paths.AHLI_TERAPIS;
+  static const GRAFIK_PERKEMABNAGAN = _Paths.GRAFIK_PERKEMABNAGAN;
+  static const GRAFIK_PERKEMBANGAN = _Paths.GRAFIK_PERKEMBANGAN;
 }
 
 abstract class _Paths {
@@ -27,4 +31,8 @@ abstract class _Paths {
   static const SETTINGS_NOTIFICATION = '/settings-notification';
   static const SCREENING = '/screening';
   static const CHILD_DATE = '/child-date';
+  static const ACTIVITIES = '/activities';
+  static const AHLI_TERAPIS = '/ahli-terapis';
+  static const GRAFIK_PERKEMABNAGAN = '/grafik-perkemabnagan';
+  static const GRAFIK_PERKEMBANGAN = '/grafik-perkembangan';
 }
