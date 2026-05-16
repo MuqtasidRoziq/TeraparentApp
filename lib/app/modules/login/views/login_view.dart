@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/modules/login/controllers/login_controller.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
-
 class LoginView extends GetView<LoginController> {
   LoginView({super.key});
 
@@ -56,10 +55,7 @@ class LoginView extends GetView<LoginController> {
                       const SizedBox(height: 20),
 
                       // Logo / image
-                      Image.asset(
-                        "assets/images/login.png",
-                        width: 130,
-                      ),
+                      Image.asset("assets/images/login.png", width: 130),
 
                       const SizedBox(height: 20),
 
@@ -77,176 +73,223 @@ class LoginView extends GetView<LoginController> {
                       const Text(
                         "Mendukung setiap langkah\nperkembangan buah hati Anda.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 15, color: Colors.black54),
                       ),
 
                       const SizedBox(height: 30),
-
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(22),
+                          borderRadius: BorderRadius.circular(28),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.15),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
+                      
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              "Selamat Datang Kembali",
+                              "Selamat Datang",
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
 
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
 
                             const Text(
                               "Silakan masuk untuk melanjutkan perjalanan Anda.",
-                              style: TextStyle(color: Colors.black54),
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 15,
+                              ),
                             ),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 30),
 
                             const Text(
-                              "Email Address",
+                              "Email",
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
 
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
 
                             TextField(
                               controller: controller.emailController,
+                              keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
-                                hintText: "contoh@email.com",
+                                hintText: "example@email.com",
                                 prefixIcon: const Icon(Icons.email_outlined),
                                 filled: true,
-                                fillColor: Colors.grey.shade100,
+                                fillColor: const Color(0xffF5F5F5),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(18),
                                   borderSide: BorderSide.none,
                                 ),
                               ),
                             ),
 
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 22),
 
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   "Password",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                Text(
-                                  "Lupa Kata Sandi?",
-                                  style: TextStyle(
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.w600,
+
+                                TextButton(
+                                  onPressed: () {
+                                    Get.toNamed(Routes.FORGOTPASS);
+                                  },
+                                  child: Text(
+                                    "Lupa Password?",
+                                    style: TextStyle(
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
 
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
 
                             Obx(
                               () => TextField(
-                                controller:
-                                    controller.passwordController,
+                                controller: controller.passwordController,
                                 obscureText: controller.isHidden.value,
                                 decoration: InputDecoration(
-                                  prefixIcon:
-                                      const Icon(Icons.lock_outline),
                                   hintText: "••••••••",
+                                  prefixIcon: const Icon(Icons.lock_outline),
                                   suffixIcon: IconButton(
-                                    onPressed:
-                                        controller.togglePassword,
+                                    onPressed: controller.togglePassword,
                                     icon: Icon(
                                       controller.isHidden.value
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.visibility_outlined,
                                     ),
                                   ),
                                   filled: true,
-                                  fillColor: Colors.grey.shade100,
+                                  fillColor: const Color(0xffF5F5F5),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 18,
+                                  ),
                                   border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(18),
                                     borderSide: BorderSide.none,
                                   ),
                                 ),
                               ),
                             ),
 
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 30),
 
-                            SizedBox(
-                              width: double.infinity,
-                              height: 55,
-                              child: ElevatedButton(
-                                onPressed: (){
-                                  Get.toNamed(Routes.CHILD_DATE);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                            Obx(
+                              () => SizedBox(
+                                width: double.infinity,
+                                height: 58,
+                                child: ElevatedButton(
+                                  onPressed: controller.isLoading.value
+                                      ? null
+                                      : controller.login,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryColor,
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
                                   ),
-                                ),
-                                child: const Text(
-                                  "Masuk",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
+                                  child: controller.isLoading.value
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.5,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "Masuk",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 28),
 
                             Row(
                               children: [
-                                Expanded(child: Divider()),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Text("Atau"),
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade300),
                                 ),
-                                Expanded(child: Divider()),
+
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  child: Text(
+                                    "atau",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ),
+
+                                Expanded(
+                                  child: Divider(color: Colors.grey.shade300),
+                                ),
                               ],
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 28),
 
-                            OutlinedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.g_mobiledata,
-                                  size: 30),
-                              label: const Text(
-                                "Daftar dengan Google",
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                minimumSize:
-                                    const Size(double.infinity, 55),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(14),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: OutlinedButton(
+                                onPressed: () {},
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/google_logo.png",
+                                      width: 22,
+                                    ),
+
+                                    const SizedBox(width: 12),
+
+                                    const Text(
+                                      "Masuk dengan Google",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -273,7 +316,7 @@ class LoginView extends GetView<LoginController> {
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
