@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/components/colors.dart';
+import 'package:teraparent_mobile/app/components/header_profile.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../components/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
@@ -10,7 +12,8 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      
+      backgroundColor: AppColors.background,
 
       bottomNavigationBar: BottomNavbar(),
 
@@ -22,40 +25,7 @@ class ProfileView extends GetView<ProfileController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // HEADER
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 24,
-                          backgroundImage: NetworkImage(
-                            "https://imgs.search.brave.com/QBk-dd-Zhpn11Mn8VSx0TDNUZ8P5GCCSKACvYdEdoMA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZGFpbHlzaWEuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzEyL0lyZmFuLUdo/YWZ1ci02NjB4NDAw/LmpwZw",
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        const Text(
-                          'Teraparent',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2F6F5F),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.notifications_none,
-                        color: Color(0xFF2F6F5F),
-                      ),
-                    ),
-                  ],
-                ),
+                headerProfile(),
 
                 const SizedBox(height: 20),
 

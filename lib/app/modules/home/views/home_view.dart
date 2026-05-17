@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/components/header_profile.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import 'package:teraparent_mobile/app/components/colors.dart';
 import '../../../components/bottom_nav.dart';
@@ -65,38 +66,8 @@ class HomeView extends GetView<HomeController> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // ================= HEADER =================
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 22,
-                            backgroundColor: Colors.green.shade200,
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.white,
-                            ),
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          const Text(
-                            'Teraparent',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xff2F6F57),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const Icon(Icons.notifications_none_rounded),
-                    ],
-                  ),
-
+                  headerProfile(),
+                  
                   const SizedBox(height: 30),
 
                   // ================= GREETING =================

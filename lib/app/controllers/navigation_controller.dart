@@ -1,5 +1,3 @@
-// 
-
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
