@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/Riwayat/bindings/riwayat_binding.dart';
+import '../modules/Riwayat/views/riwayat_view.dart';
 import '../modules/activities/bindings/activities_binding.dart';
 import '../modules/activities/views/activities_view.dart';
 import '../modules/ahli_terapis/bindings/ahli_terapis_binding.dart';
@@ -99,6 +101,11 @@ class AppPages {
       name: _Paths.GRAFIK_PERKEMBANGAN,
       page: () => const GrafikPerkembanganView(),
       binding: GrafikPerkembanganBinding(),
+    ),
+    GetPage(
+      name: _Paths.RIWAYAT,
+      page: () => const RiwayatView(),
+      binding: RiwayatBinding(),
     ),
   ];
 }

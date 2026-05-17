@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/components/colors.dart';
 import '../controllers/child_date_controller.dart';
 
 class ChildDataView extends GetView<ChildDataController> {
   const ChildDataView({super.key});
 
-  final Color primaryColor = const Color(0xFF2F7D69);
-  final Color secondaryColor = const Color(0xFFAED9C8);
-  final Color bgColor = const Color(0xFFF4F6F5);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(22),
           child: Column(
             children: [
-              header(),
+              _buildIllustration(),
               const SizedBox(height: 24),
-              illustrationSection(),
-              const SizedBox(height: 24),
-              formCard(),
+              _buildFormCard(),
               const SizedBox(height: 18),
-              securityCard(),
+              _buildSecurityCard(),
             ],
           ),
         ),
@@ -32,94 +27,31 @@ class ChildDataView extends GetView<ChildDataController> {
     );
   }
 
-  Widget header() {
+  Widget _buildIllustration() {
     return Column(
       children: [
-        Row(
-          children: [
-            IconButton(
-              onPressed: () => Get.back(),
-              icon: Icon(
-                Icons.arrow_back,
-                color: primaryColor,
-              ),
-            ),
-            Text(
-              "Teraparent",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: primaryColor,
-              ),
-            ),
-            const Spacer(),
-            CircleAvatar(
-              backgroundColor: secondaryColor,
-              child: Icon(
-                Icons.person_outline,
-                color: primaryColor,
-              ),
-            )
-          ],
-        ),
+        Container(
+          width: 150,
+          height: 150,
+          decoration: BoxDecoration(
+            color: AppColors.secondary.withOpacity(0.35),
+            shape: BoxShape.circle,
 
-        const SizedBox(height: 20),
-
-        Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Langkah 2 dari 3",
-              style: TextStyle(
-                color: primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Text(
-              "Data Personal",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 10),
-
-        ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: LinearProgressIndicator(
-            value: 0.66,
-            minHeight: 10,
-            backgroundColor: Colors.grey.shade300,
-            valueColor:
-                AlwaysStoppedAnimation(primaryColor),
           ),
-        )
-      ],
-    );
-  }
-
-  Widget illustrationSection() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 85,
-          backgroundColor:
-              secondaryColor.withOpacity(0.4),
-          child: Image.asset(
-            "assets/images/child.png",
-            width: 120,
+          child: Center(
+            child: Image.asset(
+              "assets/images/child.png",
+              width: 170,
+            ),
           ),
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(height: 22),
 
         const Text(
           "Mari kenal lebih dekat",
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -127,192 +59,202 @@ class ChildDataView extends GetView<ChildDataController> {
         const SizedBox(height: 12),
 
         const Text(
-          "Data ini membantu kami memberikan\nrekomendasi aktivitas dan jadwal terapi\nyang paling sesuai untuk si Kecil.",
+          "Data ini membantu kami memberikan\n"
+          "rekomendasi aktivitas dan jadwal terapi\n"
+          "yang paling sesuai untuk si Kecil.",
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.black54,
             height: 1.6,
+            color: Colors.black54,
           ),
-        )
+        ),
       ],
     );
   }
 
-  Widget formCard() {
+  Widget _buildFormCard() {
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-          )
+            blurRadius: 10,
+          ),
         ],
       ),
       child: Column(
         children: [
-          buildField(
-            "Nama Lengkap Anak",
-            "Contoh: Budi Pratama",
-            controller.namaAnakC,
-            Icons.badge_outlined,
-          ),
-          buildField(
-            "Usia (Tahun)",
-            "5",
-            controller.usiaC,
-            Icons.cake_outlined,
+
+          _buildInputField(
+            title: "Nama Lengkap Anak",
+            hint: "Contoh: Budi Pratama",
+            controllerText: controller.namaAnakC,
+            icon: Icons.badge_outlined,
           ),
 
-          genderField(),
-
-          buildField(
-            "Tinggi Badan (cm)",
-            "110",
-            controller.tinggiC,
-            Icons.straighten,
-          ),
-          buildField(
-            "Berat Badan (kg)",
-            "18",
-            controller.beratC,
-            Icons.monitor_weight_outlined,
+          _buildInputField(
+            title: "Usia (Tahun)",
+            hint: "5",
+            controllerText: controller.usiaC,
+            icon: Icons.cake_outlined,
+            keyboardType: TextInputType.number,
           ),
 
-          const SizedBox(height: 20),
+          _buildGenderField(),
 
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: controller.lanjutkan,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(18),
-                ),
-              ),
-              child: const Text(
-                "Lanjutkan >",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+          _buildInputField(
+            title: "Tinggi Badan (cm)",
+            hint: "110",
+            controllerText: controller.tinggiC,
+            icon: Icons.straighten,
+            keyboardType: TextInputType.number,
           ),
 
-          const SizedBox(height: 16),
+          _buildInputField(
+            title: "Berat Badan (kg)",
+            hint: "18",
+            controllerText: controller.beratC,
+            icon: Icons.monitor_weight_outlined,
+            keyboardType: TextInputType.number,
+          ),
+
+          const SizedBox(height: 24),
+
+          _buildContinueButton(),
+
+          const SizedBox(height: 14),
 
           TextButton(
-            onPressed: () {},
-            child: Text(
+            onPressed: () {
+
+            },
+            child: const Text(
               "Simpan Draft & Selesaikan Nanti",
               style: TextStyle(
-                color: primaryColor,
+                color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget buildField(
-    String title,
-    String hint,
-    TextEditingController textController,
-    IconData icon,
-  ) {
+  Widget _buildInputField({
+    required String title,
+    required String hint,
+    required TextEditingController controllerText,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         Text(
           title,
           style: const TextStyle(
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8),
+
+        const SizedBox(height: 10),
+
         TextField(
-          controller: textController,
+          controller: controllerText,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: Icon(icon),
             filled: true,
             fillColor: Colors.grey.shade100,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 18,
+            ),
             border: OutlineInputBorder(
-              borderRadius:
-                  BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
           ),
         ),
-        const SizedBox(height: 18),
+
+        const SizedBox(height: 20),
       ],
     );
   }
 
-  Widget genderField() {
+  Widget _buildGenderField() {
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
         const Text(
           "Jenis Kelamin",
           style: TextStyle(
             fontWeight: FontWeight.w600,
           ),
         ),
+
         const SizedBox(height: 10),
+
         Obx(
           () => Row(
             children: [
+
               Expanded(
-                child: genderButton("Laki"),
+                child: _genderButton(
+                  value: "Laki",
+                ),
               ),
+
               const SizedBox(width: 12),
+
               Expanded(
-                child: genderButton("Perem"),
+                child: _genderButton(
+                  value: "Perem",
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 18),
+
+        const SizedBox(height: 20),
       ],
     );
   }
 
-  Widget genderButton(String value) {
-    bool selected =
+  Widget _genderButton({
+    required String value,
+  }) {
+
+    final bool isSelected =
         controller.gender.value == value;
 
     return GestureDetector(
       onTap: () => controller.selectGender(value),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(
           vertical: 18,
         ),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: selected
-              ? secondaryColor
+          color: isSelected
+              ? AppColors.secondary
               : Colors.grey.shade100,
-          borderRadius:
-              BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
           value,
           style: TextStyle(
-            fontWeight: FontWeight.w500,
-            color: selected
-                ? primaryColor
+            fontWeight: FontWeight.w600,
+            color: isSelected
+                ? AppColors.primary
                 : Colors.black54,
           ),
         ),
@@ -320,7 +262,41 @@ class ChildDataView extends GetView<ChildDataController> {
     );
   }
 
-  Widget securityCard() {
+  Widget _buildContinueButton() {
+    return Obx(
+      () => ElevatedButton(
+        onPressed: controller.isLoading.value
+            ? null
+            : controller.childData,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          minimumSize: const Size.fromHeight(50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+        ),
+        child: controller.isLoading.value
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                "Lanjutkan",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+      )
+    );
+  }
+
+  Widget _buildSecurityCard() {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -329,20 +305,26 @@ class ChildDataView extends GetView<ChildDataController> {
       ),
       child: Row(
         children: [
-          Icon(
+
+          const Icon(
             Icons.security,
-            color: primaryColor,
+            color: AppColors.primary,
           ),
+
           const SizedBox(width: 12),
+
           Expanded(
             child: Text(
-              "Keamanan data adalah prioritas kami. Informasi anak Anda dienkripsi secara medis dan tidak akan dibagikan tanpa izin.",
+              "Keamanan data adalah prioritas kami. "
+              "Informasi anak Anda dienkripsi secara medis "
+              "dan tidak akan dibagikan tanpa izin.",
               style: TextStyle(
-                color: primaryColor,
+                color: AppColors.primary,
                 fontWeight: FontWeight.w500,
+                height: 1.5,
               ),
             ),
-          )
+          ),
         ],
       ),
     );

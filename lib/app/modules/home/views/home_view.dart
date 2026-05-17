@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
-
+import 'package:teraparent_mobile/app/components/colors.dart';
+import '../../../components/bottom_nav.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -10,14 +11,11 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF5F5F5),
+      backgroundColor: AppColors.background,
 
-      // ================= BODY =================
       body: SafeArea(
         child: Stack(
           children: [
-
-            // ================= BLUR TOP =================
             Positioned(
               top: -70,
               right: -70,
@@ -65,17 +63,14 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   const SizedBox(height: 20),
 
                   // ================= HEADER =================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
                       Row(
                         children: [
-
                           CircleAvatar(
                             radius: 22,
                             backgroundColor: Colors.green.shade200,
@@ -119,13 +114,9 @@ class HomeView extends GetView<HomeController> {
                   RichText(
                     text: const TextSpan(
                       children: [
-
                         TextSpan(
                           text: 'Ananda: ',
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 18,
-                          ),
+                          style: TextStyle(color: Colors.black54, fontSize: 18),
                         ),
 
                         TextSpan(
@@ -148,25 +139,18 @@ class HomeView extends GetView<HomeController> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                      ),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-
                             Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: const [
-
                                 Text(
                                   'Progres Mingguan',
                                   style: TextStyle(
@@ -197,54 +181,22 @@ class HomeView extends GetView<HomeController> {
                         const SizedBox(height: 30),
 
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceAround,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
+                            buildBar(40, const Color(0xffB9E7F3), 'SEN'),
 
-                            buildBar(
-                              40,
-                              const Color(0xffB9E7F3),
-                              'SEN',
-                            ),
+                            buildBar(60, const Color(0xff9FD3E2), 'SEL'),
 
-                            buildBar(
-                              60,
-                              const Color(0xff9FD3E2),
-                              'SEL',
-                            ),
+                            buildBar(100, const Color(0xff9FE0C7), 'RAB'),
 
-                            buildBar(
-                              100,
-                              const Color(0xff9FE0C7),
-                              'RAB',
-                            ),
+                            buildBar(50, const Color(0xff87B1A7), 'KAM', true),
 
-                            buildBar(
-                              50,
-                              const Color(0xff87B1A7),
-                              'KAM',
-                              true,
-                            ),
+                            buildBar(30, Colors.grey.shade200, 'JUM'),
 
-                            buildBar(
-                              30,
-                              Colors.grey.shade200,
-                              'JUM',
-                            ),
+                            buildBar(30, Colors.grey.shade200, 'SAB'),
 
-                            buildBar(
-                              30,
-                              Colors.grey.shade200,
-                              'SAB',
-                            ),
-
-                            buildBar(
-                              30,
-                              Colors.grey.shade200,
-                              'MIN',
-                            ),
+                            buildBar(30, Colors.grey.shade200, 'MIN'),
                           ],
                         ),
                       ],
@@ -256,7 +208,6 @@ class HomeView extends GetView<HomeController> {
                   // ================= MENU =================
                   Row(
                     children: [
-
                       // SCREENING
                       Expanded(
                         child: GestureDetector(
@@ -293,7 +244,6 @@ class HomeView extends GetView<HomeController> {
 
                   Row(
                     children: [
-
                       // GRAFIK
                       Expanded(
                         child: GestureDetector(
@@ -328,13 +278,9 @@ class HomeView extends GetView<HomeController> {
 
                   const SizedBox(height: 40),
 
-                  // ================= TITLE =================
                   const Text(
                     'Rekomendasi Hari Ini',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
                   ),
 
                   const SizedBox(height: 20),
@@ -347,208 +293,71 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
 
-      // ================= BOTTOM NAVIGATION =================
-      bottomNavigationBar: Obx(
-        () => Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 8,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceAround,
-            children: [
-
-              navItem(
-                icon: Icons.home_outlined,
-                title: 'Home',
-                index: 0,
-              ),
-
-              navItem(
-                icon: Icons.extension,
-                title: 'Activities',
-                index: 1,
-              ),
-
-              navItem(
-                icon: Icons.trending_up,
-                title: 'GRAFIK',
-                index: 2,
-              ),
-
-              navItem(
-                icon: Icons.person_outline,
-                title: 'Profile',
-                index: 3,
-              ),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: BottomNavbar(),
     );
   }
-}
 
-// ================= MENU CARD =================
-Widget menuCard({
-  required String title,
-  required IconData icon,
-  required Color color,
-}) {
-  return Container(
-    height: 140,
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(28),
-    ),
-
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        Icon(
-          icon,
-          size: 30,
-          color: const Color(0xff2F6F57),
-        ),
-
-        const Spacer(),
-
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xff2F6F57),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// ================= BAR =================
-Widget buildBar(
-  double height,
-  Color color,
-  String day, [
-  bool active = false,
-]) {
-  return Column(
-    children: [
-
-      Container(
-        width: 28,
-        height: height,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(30),
-        ),
-      ),
-
-      const SizedBox(height: 10),
-
-      Text(
-        day,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight:
-              active
-                  ? FontWeight.bold
-                  : FontWeight.w500,
-          color:
-              active
-                  ? const Color(0xff2F6F57)
-                  : Colors.grey,
-        ),
-      ),
-    ],
-  );
-}
-
-// ================= NAV ITEM =================
-Widget navItem({
-  required IconData icon,
-  required String title,
-  required int index,
-}) {
-  final HomeController controller = Get.find();
-
-  final isActive =
-      controller.currentIndex.value == index;
-
-  return GestureDetector(
-    onTap: () {
-      controller.changeBottomMenu(index);
-
-      if (index == 0) {
-        Get.toNamed(Routes.HOME);
-      } else if (index == 1) {
-        Get.toNamed(Routes.ACTIVITIES);
-      } else if (index == 2) {
-        Get.toNamed(Routes.GRAFIK_PERKEMBANGAN);
-      } else if (index == 3) {
-        Get.toNamed(Routes.PROFIL);
-      }
-    },
-
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 10,
-      ),
+  Widget menuCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      height: 140,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color:
-            isActive
-                ? const Color(0xffB8EBCF)
-                : Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        color: color,
+        borderRadius: BorderRadius.circular(28),
       ),
 
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(icon, size: 30, color: const Color(0xff2F6F57)),
 
-          Icon(
-            icon,
-            size: 22,
-            color:
-                isActive
-                    ? const Color(0xff2F6F57)
-                    : Colors.black54,
-          ),
-
-          const SizedBox(height: 4),
+          const Spacer(),
 
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
+            style: const TextStyle(
+              fontSize: 18,
               fontWeight: FontWeight.w600,
-              color:
-                  isActive
-                      ? const Color(0xff2F6F57)
-                      : Colors.black54,
+              color: Color(0xff2F6F57),
             ),
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+
+  Widget buildBar(
+    double height,
+    Color color,
+    String day, [
+    bool active = false,
+  ]) {
+    return Column(
+      children: [
+        Container(
+          width: 28,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        Text(
+          day,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: active ? FontWeight.bold : FontWeight.w500,
+            color: active ? const Color(0xff2F6F57) : Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -20,6 +20,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         "Error",
         "Email wajib diisi",
+        
       );
       return;
     }

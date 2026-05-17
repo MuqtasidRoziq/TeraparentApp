@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/modules/login/controllers/login_controller.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
+import 'package:teraparent_mobile/app/components/colors.dart';
 
 class LoginView extends GetView<LoginController> {
   LoginView({super.key});
-
-  final Color primaryColor = const Color(0xff2F7D69);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +63,7 @@ class LoginView extends GetView<LoginController> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                          color: AppColors.primary,
                         ),
                       ),
 
@@ -156,7 +155,7 @@ class LoginView extends GetView<LoginController> {
                                   child: Text(
                                     "Lupa Password?",
                                     style: TextStyle(
-                                      color: primaryColor,
+                                      color: AppColors.primary,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -205,7 +204,7 @@ class LoginView extends GetView<LoginController> {
                                       ? null
                                       : controller.login,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: primaryColor,
+                                    backgroundColor: AppColors.primary,
                                     elevation: 2,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18),
@@ -310,7 +309,7 @@ class LoginView extends GetView<LoginController> {
                             child: Text(
                               "Daftar",
                               style: TextStyle(
-                                color: primaryColor,
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

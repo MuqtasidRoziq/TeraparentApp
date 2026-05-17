@@ -17,6 +17,7 @@ abstract class Routes {
   static const AHLI_TERAPIS = _Paths.AHLI_TERAPIS;
   static const GRAFIK_PERKEMABNAGAN = _Paths.GRAFIK_PERKEMABNAGAN;
   static const GRAFIK_PERKEMBANGAN = _Paths.GRAFIK_PERKEMBANGAN;
+  static const RIWAYAT = _Paths.RIWAYAT;
 }
 
 abstract class _Paths {
@@ -35,4 +36,5 @@ abstract class _Paths {
   static const AHLI_TERAPIS = '/ahli-terapis';
   static const GRAFIK_PERKEMABNAGAN = '/grafik-perkemabnagan';
   static const GRAFIK_PERKEMBANGAN = '/grafik-perkembangan';
+  static const RIWAYAT = '/riwayat';
 }

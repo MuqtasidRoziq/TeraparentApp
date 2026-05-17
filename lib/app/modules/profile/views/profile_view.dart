@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../components/bottom_nav.dart';
+import 'package:teraparent_mobile/app/routes/app_pages.dart';
+import '../../../components/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -11,13 +12,7 @@ class ProfileView extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
 
-      bottomNavigationBar: BottomNavbar(
-        selectedIndex: controller.selectedIndex,
-
-        onTap: (index) {
-          controller.changeIndex(index);
-        },
-      ),
+      bottomNavigationBar: BottomNavbar(),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -26,19 +21,16 @@ class ProfileView extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 // HEADER
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-
                         const CircleAvatar(
                           radius: 24,
-                          backgroundImage: AssetImage(
-                            'assets/images/profile.png',
+                          backgroundImage: NetworkImage(
+                            "https://imgs.search.brave.com/QBk-dd-Zhpn11Mn8VSx0TDNUZ8P5GCCSKACvYdEdoMA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZGFpbHlzaWEuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzEyL0lyZmFuLUdo/YWZ1ci02NjB4NDAw/LmpwZw",
                           ),
                         ),
 
@@ -74,38 +66,16 @@ class ProfileView extends GetView<ProfileController> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.grey.shade200,
-                    ),
+                    border: Border.all(color: Colors.grey.shade200),
                   ),
                   child: Column(
                     children: [
-
                       Stack(
                         children: [
-
                           const CircleAvatar(
                             radius: 48,
-                            backgroundImage: AssetImage(
-                              'assets/images/profile.png',
-                            ),
-                          ),
-
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              width: 34,
-                              height: 34,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF2F6F5F),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                size: 18,
-                                color: Colors.white,
-                              ),
+                            backgroundImage: NetworkImage(
+                              "https://imgs.search.brave.com/QBk-dd-Zhpn11Mn8VSx0TDNUZ8P5GCCSKACvYdEdoMA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZGFpbHlzaWEuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzEyL0lyZmFuLUdo/YWZ1ci02NjB4NDAw/LmpwZw",
                             ),
                           ),
                         ],
@@ -114,7 +84,7 @@ class ProfileView extends GetView<ProfileController> {
                       const SizedBox(height: 20),
 
                       const Text(
-                        'Budi Santoso',
+                        'Asep Subagja',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -125,32 +95,10 @@ class ProfileView extends GetView<ProfileController> {
 
                       const Text(
                         'Orang Tua • Jakarta, Indonesia',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 18, color: Colors.black54),
                       ),
 
                       const SizedBox(height: 20),
-
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        children: [
-
-                          buildTag(
-                            text: 'Premium Member',
-                            color: const Color(0xFFC5EBF5),
-                          ),
-
-                          const SizedBox(width: 10),
-
-                          buildTag(
-                            text: 'Joined Mar 2023',
-                            color: const Color(0xFFE8E8E8),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -159,10 +107,8 @@ class ProfileView extends GetView<ProfileController> {
 
                 // PROFILE ANAK
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children:[
-
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
                       'Profil Anak',
                       style: TextStyle(
@@ -172,16 +118,18 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                     ),
 
-                     GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        '+ Tambah Anak',
-                        style: TextStyle(
-                          color: Color(0xFF2F6F5F),
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Get.toNamed(Routes.CHILD_DATE);
+                    //   },
+                    //   child: Text(
+                    //     '+ Tambah Anak',
+                    //     style: TextStyle(
+                    //       color: Color(0xFF2F6F5F),
+                    //       fontSize: 18,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
 
@@ -196,17 +144,13 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   child: Column(
                     children: [
-
                       Row(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
                           ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(12),
-                            child: Image.asset(
-                              'assets/images/profile.png',
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              "https://imgs.search.brave.com/_MIsjyd9RWg5F5GEt75YFmNHQUhH416mHJBZlIoocLA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pMC53/cC5jb20vd3d3LnJ1/a2l0YS5jby9zdG9y/aWVzL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDIyLzA0L2ZvdG8t/bHVjdS1idWF0LXBy/b2ZpbC0uLmpwZz93/PTYwMCZzc2w9MQ",
                               width: 70,
                               height: 70,
                               fit: BoxFit.cover,
@@ -217,16 +161,13 @@ class ProfileView extends GetView<ProfileController> {
 
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-
                                 const Text(
                                   'Arka, 5 thn',
                                   style: TextStyle(
                                     fontSize: 24,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
 
@@ -234,11 +175,9 @@ class ProfileView extends GetView<ProfileController> {
 
                                 Row(
                                   children: [
-
                                     smallTag(
                                       text: 'ASD SUPPORT',
-                                      color: const Color(
-                                          0xFFEBCB8E),
+                                      color: const Color(0xFFEBCB8E),
                                     ),
                                   ],
                                 ),
@@ -247,12 +186,9 @@ class ProfileView extends GetView<ProfileController> {
 
                                 Row(
                                   children: [
-
                                     smallTag(
-                                      text:
-                                          'SPEECH THERAPY',
-                                      color: const Color(
-                                          0xFFAEEACD),
+                                      text: 'SPEECH THERAPY',
+                                      color: const Color(0xFFAEEACD),
                                     ),
                                   ],
                                 ),
@@ -260,28 +196,28 @@ class ProfileView extends GetView<ProfileController> {
                             ),
                           ),
 
-                          const Icon(Icons.edit),
+                          const IconButton(
+                            onPressed: null, 
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              color: Colors.black54,
+                            ),
+                          )
                         ],
                       ),
 
                       const SizedBox(height: 20),
 
-                      Divider(
-                        color: Colors.grey.shade300,
-                      ),
+                      Divider(color: Colors.grey.shade300),
 
                       const SizedBox(height: 10),
 
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
-
                           Text(
                             'Kemajuan Bulan Ini:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
 
                           Text(
@@ -297,57 +233,14 @@ class ProfileView extends GetView<ProfileController> {
                       const SizedBox(height: 12),
 
                       ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10),
                         child: LinearProgressIndicator(
                           value: 0.65,
                           minHeight: 10,
-                          backgroundColor:
-                              Colors.grey.shade300,
-                          valueColor:
-                              const AlwaysStoppedAnimation(
+                          backgroundColor: Colors.grey.shade300,
+                          valueColor: const AlwaysStoppedAnimation(
                             Color(0xFF8B6B35),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // ADD CHILD
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(30),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.grey.shade400,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: Column(
-                    children: const [
-
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Color(0xFFEFEFEF),
-                        child: Icon(
-                          Icons.group_add_outlined,
-                          color: Color(0xFF2F6F5F),
-                        ),
-                      ),
-
-                      SizedBox(height: 20),
-
-                      Text(
-                        'Daftarkan profil anak lainnya untuk\nmelacak perkembangan yang personal.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black54,
-                          height: 1.5,
                         ),
                       ),
                     ],
@@ -358,10 +251,8 @@ class ProfileView extends GetView<ProfileController> {
 
                 // RIWAYAT
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
-
                     Text(
                       'Riwayat Aktivitas & Sesi',
                       style: TextStyle(
@@ -371,12 +262,7 @@ class ProfileView extends GetView<ProfileController> {
                       ),
                     ),
 
-                    Text(
-                      'Filter',
-                      style: TextStyle(
-                        color: Colors.black54,
-                      ),
-                    ),
+                    Text('Filter', style: TextStyle(color: Colors.black54)),
                   ],
                 ),
 
@@ -385,8 +271,7 @@ class ProfileView extends GetView<ProfileController> {
                 activityCard(
                   icon: Icons.medical_services_outlined,
                   title: 'Terapi Okupasi',
-                  subtitle:
-                      'Klinik Tumbuh Kembang...',
+                  subtitle: 'Klinik Tumbuh Kembang...',
                   date: 'Hari ini, 09:00',
                   color: const Color(0xFFAEEACD),
                 ),
@@ -396,8 +281,7 @@ class ProfileView extends GetView<ProfileController> {
                 activityCard(
                   icon: Icons.extension_outlined,
                   title: 'Latihan Sensorik Mandiri',
-                  subtitle:
-                      'Aktivitas di rumah • Arka',
+                  subtitle: 'Aktivitas di rumah • Arka',
                   date: 'Kemarin, 16:30',
                   color: const Color(0xFFEBCB8E),
                 ),
@@ -417,20 +301,15 @@ class ProfileView extends GetView<ProfileController> {
                 // BUTTON
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE5E5E5),
-                    borderRadius:
-                        BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Center(
                     child: Text(
                       'Lihat Seluruh Riwayat',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
+                      style: TextStyle(fontSize: 18),
                     ),
                   ),
                 ),
@@ -474,28 +353,165 @@ class ProfileView extends GetView<ProfileController> {
 
                 Center(
                   child: TextButton.icon(
-                    onPressed: (){
-                      Get.defaultDialog(
-                        title: 'Konfirmasi Keluar',
-                        middleText:
-                            'Apakah Anda yakin ingin keluar dari akun ini?',
-                        textCancel: 'Batal',
-                        textConfirm: 'Keluar',
-                        confirmTextColor: Colors.white,
-                        onConfirm: () {
-                          // Logika untuk keluar akun
-                          Get.back();
-                        },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
+                      backgroundColor: const Color(0xFFFFF1F1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+
+                    onPressed: () {
+                      Get.dialog(
+                        Dialog(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // ICON
+                                Container(
+                                  width: 80,
+                                  height: 80,
+
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFFE5E5),
+                                    shape: BoxShape.circle,
+                                  ),
+
+                                  child: const Icon(
+                                    Icons.logout_rounded,
+                                    color: Colors.red,
+                                    size: 38,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // TITLE
+                                const Text(
+                                  'Keluar dari Akun?',
+                                  textAlign: TextAlign.center,
+
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2F6F5F),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                // DESCRIPTION
+                                const Text(
+                                  'Anda akan keluar dari akun Teraparent.\nPastikan semua aktivitas telah tersimpan.',
+                                  textAlign: TextAlign.center,
+
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black54,
+                                    height: 1.5,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 28),
+
+                                // BUTTONS
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton(
+                                        onPressed: () {
+                                          Get.back();
+                                        },
+
+                                        style: OutlinedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 14,
+                                          ),
+
+                                          side: BorderSide(
+                                            color: Colors.grey.shade300,
+                                          ),
+
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                        ),
+
+                                        child: const Text(
+                                          'Batal',
+                                          style: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 14),
+
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // LOGOUT LOGIC
+                                          Get.offAllNamed(Routes.LOGIN);
+                                        },
+
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                          elevation: 0,
+
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 14,
+                                          ),
+
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                        ),
+
+                                        child: const Text(
+                                          'Keluar',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
                     },
-                    icon: const Icon(Icons.logout, color: Colors.red),
+
+                    icon: const Icon(Icons.logout_rounded, color: Colors.red),
+
                     label: const Text(
                       'Keluar',
                       style: TextStyle(
                         color: Colors.red,
                         fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
-                    )
+                    ),
                   ),
                 ),
               ],
@@ -506,106 +522,27 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget navItem({
-    required IconData icon,
-    required String label,
-    required int index,
-  }) {
-
-    return GestureDetector(
-      onTap: () {
-        controller.changeIndex(index);
-      },
-
-      child: Obx(() {
-
-        bool active =
-            controller.selectedIndex.value == index;
-
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 8,
-          ),
-
-          decoration: BoxDecoration(
-            color: active
-                ? const Color(0xFFAEEACD)
-                : Colors.transparent,
-            borderRadius:
-                BorderRadius.circular(20),
-          ),
-
-          child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
-            children: [
-
-              Icon(
-                icon,
-                color: active
-                    ? const Color(0xFF2F6F5F)
-                    : Colors.black54,
-              ),
-
-              const SizedBox(height: 4),
-
-              Text(
-                label,
-                style: TextStyle(
-                  color: active
-                      ? const Color(0xFF2F6F5F)
-                      : Colors.black54,
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget buildTag({
-    required String text,
-    required Color color,
-  }) {
+  Widget buildTag({required String text, required Color color}) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 
-  Widget smallTag({
-    required String text,
-    required Color color,
-  }) {
+  Widget smallTag({required String text, required Color color}) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-        ),
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -625,14 +562,10 @@ class ProfileView extends GetView<ProfileController> {
       ),
       child: Row(
         children: [
-
           Container(
             width: 50,
             height: 50,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             child: Icon(icon),
           ),
 
@@ -640,10 +573,8 @@ class ProfileView extends GetView<ProfileController> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   title,
                   style: const TextStyle(
@@ -654,22 +585,12 @@ class ProfileView extends GetView<ProfileController> {
 
                 const SizedBox(height: 6),
 
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                  ),
-                ),
+                Text(subtitle, style: const TextStyle(color: Colors.black54)),
               ],
             ),
           ),
 
-          Text(
-            date,
-            style: const TextStyle(
-              color: Colors.black54,
-            ),
-          ),
+          Text(date, style: const TextStyle(color: Colors.black54)),
         ],
       ),
     );
@@ -690,19 +611,9 @@ class ProfileView extends GetView<ProfileController> {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: const Color(0xFF2F6F5F),
-            ),
+            Icon(icon, color: const Color(0xFF2F6F5F)),
             const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-            ),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 18))),
             const Icon(Icons.arrow_forward_ios, size: 18),
           ],
         ),
