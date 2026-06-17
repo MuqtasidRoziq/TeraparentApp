@@ -117,7 +117,7 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
                     const SizedBox(height: 20),
 
                     _buildPasswordField(
-                      label: "Kata Sandi Saat Ini",
+                      label: "Kata Sandi Lama",
                       hint: "Masukkan kata sandi",
                       controller: controller.currentPasswordController,
                       isObscure: controller.isCurrentObscure,
@@ -126,7 +126,7 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
                     const SizedBox(height: 16),
 
                     _buildPasswordField(
-                      label: "Kata Sandi Saat Ini",
+                      label: "Kata Sandi Baru",
                       hint: "Masukkan kata sandi",
                       controller: controller.currentPasswordController,
                       isObscure: controller.isCurrentObscure,
@@ -135,7 +135,7 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
                     const SizedBox(height: 16),
 
                     _buildPasswordField(
-                      label: "Kata Sandi Saat Ini",
+                      label: "Konfirmasi Kata Sandi Baru",
                       hint: "Masukkan kata sandi",
                       controller: controller.currentPasswordController,
                       isObscure: controller.isCurrentObscure,

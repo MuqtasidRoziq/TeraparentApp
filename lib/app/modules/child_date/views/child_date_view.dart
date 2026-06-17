@@ -207,63 +207,85 @@ class ChildDataView extends GetView<ChildDataController> {
   }
 
   Widget _buildGenderField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Jenis Kelamin",
-          style: TextStyle(fontWeight: FontWeight.w600),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        "Jenis Kelamin",
+        style: TextStyle(fontWeight: FontWeight.w600),
+      ),
+
+      const SizedBox(height: 10),
+
+      Obx(() {
+        final selectedGender = controller.gender.value;
+
+        return Row(
+          children: [
+            Expanded(
+              child: _genderButton(
+                value: "Laki-Laki",
+                isSelected: selectedGender == "Laki-Laki",
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            Expanded(
+              child: _genderButton(
+                value: "Perempuan",
+                isSelected: selectedGender == "Perempuan",
+              ),
+            ),
+          ],
+        );
+      }),
+
+      const SizedBox(height: 20),
+    ],
+  );
+}
+
+  Widget _genderButton({
+  required String value,
+  required bool isSelected,
+}) {
+  const Color primaryGreen = Color(0xFF4CAF50);
+
+  return GestureDetector(
+    onTap: () {
+      controller.selectGender(value);
+      print("Gender sekarang: ${controller.gender.value}");
+    },
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color.fromARGB(255, 42, 107, 91) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isSelected ? const Color.fromARGB(255, 65, 151, 137) : Colors.grey.shade300,
+          width: 1.5,
         ),
-
-        const SizedBox(height: 10),
-
-        Obx(
-          () => Row(
-            children: [
-              Expanded(child: _genderButton(value: "Laki-Laki")),
-
-              const SizedBox(width: 12),
-
-              Expanded(child: _genderButton(value: "Perempuan")),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  Widget _genderButton({required String value}) {
-    final bool isSelected = controller.gender.value == value;
-
-    return GestureDetector(
-      onTap: () => controller.selectGender(value),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(18),
-        ),
+      ),
+      child: Center(
         child: Text(
           value,
           style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w600,
-            color: isSelected ? AppColors.primary : Colors.black54,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildContinueButton() {
     return Obx(
       () => ElevatedButton(
         onPressed: controller.isLoading.value ? null : controller.createChild,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: const Color.fromRGBO(47, 125, 105, 1),
           minimumSize: const Size.fromHeight(50),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
