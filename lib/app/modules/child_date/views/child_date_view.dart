@@ -36,13 +36,9 @@ class ChildDataView extends GetView<ChildDataController> {
           decoration: BoxDecoration(
             color: AppColors.secondary.withOpacity(0.35),
             shape: BoxShape.circle,
-
           ),
           child: Center(
-            child: Image.asset(
-              "assets/images/child.png",
-              width: 170,
-            ),
+            child: Image.asset("assets/images/child.png", width: 170),
           ),
         ),
 
@@ -50,10 +46,7 @@ class ChildDataView extends GetView<ChildDataController> {
 
         const Text(
           "Mari kenal lebih dekat",
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
 
         const SizedBox(height: 12),
@@ -63,11 +56,7 @@ class ChildDataView extends GetView<ChildDataController> {
           "rekomendasi aktivitas dan jadwal terapi\n"
           "yang paling sesuai untuk si Kecil.",
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16,
-            height: 1.6,
-            color: Colors.black54,
-          ),
+          style: TextStyle(fontSize: 16, height: 1.6, color: Colors.black54),
         ),
       ],
     );
@@ -80,21 +69,19 @@ class ChildDataView extends GetView<ChildDataController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
         ],
       ),
       child: Column(
         children: [
-
           _buildInputField(
             title: "Nama Lengkap Anak",
             hint: "Contoh: Budi Pratama",
             controllerText: controller.namaAnakC,
             icon: Icons.badge_outlined,
           ),
+
+          _buildDateField(),
 
           _buildInputField(
             title: "Usia (Tahun)",
@@ -127,19 +114,6 @@ class ChildDataView extends GetView<ChildDataController> {
           _buildContinueButton(),
 
           const SizedBox(height: 14),
-
-          TextButton(
-            onPressed: () {
-
-            },
-            child: const Text(
-              "Simpan Draft & Selesaikan Nanti",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -155,13 +129,7 @@ class ChildDataView extends GetView<ChildDataController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
 
         const SizedBox(height: 10),
 
@@ -173,12 +141,62 @@ class ChildDataView extends GetView<ChildDataController> {
             prefixIcon: Icon(icon),
             filled: true,
             fillColor: Colors.grey.shade100,
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 18,
-            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 18),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildDateField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Tanggal Lahir",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+
+        const SizedBox(height: 10),
+
+        Obx(
+          () => GestureDetector(
+            onTap: controller.selectDate,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_month_outlined,
+                    color: Colors.black54,
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Text(
+                    controller.selectedDate.value != null
+                        ? "${controller.selectedDate.value!.day}/${controller.selectedDate.value!.month}/${controller.selectedDate.value!.year}"
+                        : "Pilih Tanggal Lahir",
+                    style: TextStyle(
+                      color: controller.selectedDate.value != null
+                          ? Colors.black87
+                          : Colors.black54,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -192,12 +210,9 @@ class ChildDataView extends GetView<ChildDataController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         const Text(
           "Jenis Kelamin",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600),
         ),
 
         const SizedBox(height: 10),
@@ -205,20 +220,11 @@ class ChildDataView extends GetView<ChildDataController> {
         Obx(
           () => Row(
             children: [
-
-              Expanded(
-                child: _genderButton(
-                  value: "Laki",
-                ),
-              ),
+              Expanded(child: _genderButton(value: "Laki-Laki")),
 
               const SizedBox(width: 12),
 
-              Expanded(
-                child: _genderButton(
-                  value: "Perem",
-                ),
-              ),
+              Expanded(child: _genderButton(value: "Perempuan")),
             ],
           ),
         ),
@@ -228,34 +234,24 @@ class ChildDataView extends GetView<ChildDataController> {
     );
   }
 
-  Widget _genderButton({
-    required String value,
-  }) {
-
-    final bool isSelected =
-        controller.gender.value == value;
+  Widget _genderButton({required String value}) {
+    final bool isSelected = controller.gender.value == value;
 
     return GestureDetector(
       onTap: () => controller.selectGender(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(
-          vertical: 18,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.secondary
-              : Colors.grey.shade100,
+          color: isSelected ? AppColors.secondary : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
           value,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: isSelected
-                ? AppColors.primary
-                : Colors.black54,
+            color: isSelected ? AppColors.primary : Colors.black54,
           ),
         ),
       ),
@@ -265,9 +261,7 @@ class ChildDataView extends GetView<ChildDataController> {
   Widget _buildContinueButton() {
     return Obx(
       () => ElevatedButton(
-        onPressed: controller.isLoading.value
-            ? null
-            : controller.childData,
+        onPressed: controller.isLoading.value ? null : controller.createChild,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           minimumSize: const Size.fromHeight(50),
@@ -292,7 +286,7 @@ class ChildDataView extends GetView<ChildDataController> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-      )
+      ),
     );
   }
 
@@ -305,11 +299,7 @@ class ChildDataView extends GetView<ChildDataController> {
       ),
       child: Row(
         children: [
-
-          const Icon(
-            Icons.security,
-            color: AppColors.primary,
-          ),
+          const Icon(Icons.security, color: AppColors.primary),
 
           const SizedBox(width: 12),
 

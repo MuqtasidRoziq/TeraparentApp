@@ -157,6 +157,30 @@ class RegisterView extends GetView<RegisterController> {
                             const SizedBox(height: 22),
 
                             const Text(
+                              "No Handphone",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            TextField(
+                              controller: controller.phoneController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                hintText: "081234567890",
+                                prefixIcon: const Icon(Icons.phone_outlined),
+                                filled: true,
+                                fillColor: const Color(0xffF5F5F5),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 22),
+
+                            const Text(
                               "Kata Sandi",
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),

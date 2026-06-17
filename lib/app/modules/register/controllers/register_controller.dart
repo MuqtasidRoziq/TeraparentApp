@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/data/models/auth/register%20model.dart';
+import 'package:teraparent_mobile/app/data/services/auth/register_service.dart';
 
 import '../../../routes/app_pages.dart';
 
 class RegisterController extends GetxController {
-
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  var isPasswordHidden = true.obs;
-  var isConfirmPasswordHidden = true.obs;
-  var isChecked = false.obs;
-  var isLoading = false.obs;
+  final RegisterService _registerService = Get.find<RegisterService>();
+
+  final isPasswordHidden = true.obs;
+  final isConfirmPasswordHidden = true.obs;
+  final isChecked = false.obs;
+  final isLoading = false.obs;
 
   void togglePassword() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -27,69 +31,94 @@ class RegisterController extends GetxController {
     isChecked.value = value ?? false;
   }
 
-  void register() async {
+  bool _isValidPassword(String password) {
+    final hasLetter = RegExp(r'[A-Za-z]').hasMatch(password);
+    final hasNumber = RegExp(r'[0-9]').hasMatch(password);
 
-    if (nameController.text.isEmpty) {
+    return password.length >= 8 && hasLetter && hasNumber;
+  }
+
+  Future<void> register() async {
+    final fullName = nameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    if (fullName.isEmpty) {
+      Get.snackbar('Error', 'Nama lengkap wajib diisi');
+      return;
+    }
+
+    if (email.isEmpty) {
+      Get.snackbar('Error', 'Email wajib diisi');
+      return;
+    }
+
+    if (!GetUtils.isEmail(email)) {
+      Get.snackbar('Error', 'Format email tidak valid');
+      return;
+    }
+
+    if (!_isValidPassword(password)) {
       Get.snackbar(
-        "Error",
-        "Nama lengkap wajib diisi",
+        'Error',
+        'Password minimal 8 karakter dan harus memiliki kombinasi huruf serta angka',
       );
       return;
     }
 
-    if (emailController.text.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Email wajib diisi",
-      );
-      return;
-    }
-
-    if (passwordController.text.length < 6) {
-      Get.snackbar(
-        "Error",
-        "Password minimal 6 karakter",
-      );
-      return;
-    }
-
-    if (confirmPasswordController.text != passwordController.text) {
-      Get.snackbar(
-        "Error",
-        "Konfirmasi password tidak cocok",
-      );
+    if (confirmPassword != password) {
+      Get.snackbar('Error', 'Konfirmasi password tidak cocok');
       return;
     }
 
     if (!isChecked.value) {
-      Get.snackbar(
-        "Error",
-        "Anda harus menyetujui ketentuan",
-      );
+      Get.snackbar('Error', 'Anda harus menyetujui ketentuan');
       return;
     }
 
     try {
       isLoading.value = true;
 
-      await Future.delayed(
-        const Duration(seconds: 2),
+      final request = RegisterRequestModel(
+        fullName: fullName,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        phone: phoneController.text.trim().isEmpty
+            ? null
+            : phoneController.text.trim(),
       );
 
-      Get.snackbar(
-        "Berhasil",
-        "Akun berhasil dibuat",
+      final result = await _registerService.register(
+        request: request,
       );
-      
-      Get.offAllNamed(Routes.VERIFY_OTP);
 
+      if (result.success) {
+        Get.snackbar(
+          'Berhasil',
+          result.message.isNotEmpty
+              ? result.message
+              : 'Register berhasil. Silakan verifikasi OTP.',
+        );
+
+        Get.toNamed(
+          Routes.VERIFY_OTP,
+          arguments: {
+            'email': email,
+          },
+        );
+      } else {
+        Get.snackbar(
+          'Gagal',
+          result.message.isNotEmpty ? result.message : 'Register gagal',
+        );
+      }
     } catch (e) {
-
       Get.snackbar(
-        "Error",
+        'Error',
         e.toString(),
       );
-
     } finally {
       isLoading.value = false;
     }
@@ -99,6 +128,7 @@ class RegisterController extends GetxController {
   void onClose() {
     nameController.dispose();
     emailController.dispose();
+    phoneController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();

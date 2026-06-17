@@ -1,11 +1,23 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:teraparent_mobile/app/data/models/auth/resend_otp_model.dart';
+import 'package:teraparent_mobile/app/data/models/auth/verify_otp_model.dart';
+import 'package:teraparent_mobile/app/data/services/auth/resend_otp_service.dart';
+import 'package:teraparent_mobile/app/data/services/auth/verify-otp_service.dart';
 import '../../../routes/app_pages.dart';
 
 class VerifyOtpController extends GetxController {
   final otpControllers = List.generate(6, (_) => TextEditingController());
   final focusNodes = List.generate(6, (_) => FocusNode());
+
+  final VerifyOtpService _verifyOtpService = Get.find<VerifyOtpService>();
+  final ResendOtpService _resendOtpService = Get.find<ResendOtpService>();
+
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  late SharedPreferences _prefs;
 
   final isLoading = false.obs;
   final secondsLeft = 60.obs;
@@ -21,8 +33,6 @@ class VerifyOtpController extends GetxController {
 
     if (args != null && args is Map && args['email'] != null) {
       email.value = args['email'].toString();
-    } else {
-      email.value = 'emailanda@gmail.com';
     }
 
     startTimer();
@@ -42,7 +52,7 @@ class VerifyOtpController extends GetxController {
   }
 
   String getOtpCode() {
-    return otpControllers.map((controller) => controller.text).join();
+    return otpControllers.map((controller) => controller.text.trim()).join();
   }
 
   void clearOtp() {
@@ -50,43 +60,128 @@ class VerifyOtpController extends GetxController {
       controller.clear();
     }
 
-    focusNodes.first.requestFocus();
+    if (focusNodes.isNotEmpty) {
+      focusNodes.first.requestFocus();
+    }
   }
 
   Future<void> verifyOtp() async {
     final otp = getOtpCode();
 
-    if (otp.length < 6) {
+    if (email.value.isEmpty) {
       Get.snackbar(
-        'Kode belum lengkap',
-        'Masukkan 6 digit kode OTP terlebih dahulu',
+        'Error',
+        'Email tidak ditemukan. Silakan register ulang.',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
-    isLoading.value = true;
+    if (otp.length < 6) {
+      Get.snackbar(
+        'Error',
+        'Masukkan 6 digit kode OTP',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      isLoading.value = true;
 
-    isLoading.value = false;
+      final request = VerifyOtpRequestModel(
+        email: email.value,
+        otp: otp,
+      );
 
-    // Nanti bagian ini diganti setelah connect ke backend.
-    // Kalau OTP benar, masuk ke halaman animasi sukses.
-    Get.offNamed(Routes.VERIFY_SUCCESS);
+      final result = await _verifyOtpService.verifyOtp(
+        request: request,
+      );
+
+      if (result.success) {
+
+        final token = result.data!.token;
+        final user = result.data!.user;
+
+        Get.snackbar(
+          'Berhasil',
+          result.message.isNotEmpty
+              ? result.message
+              : 'Verifikasi OTP berhasil',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        Get.offAllNamed(Routes.VERIFY_SUCCESS);
+
+        await _storage.write(key: 'token', value: token);
+        await _storage.write(key: 'user_id', value: user.id);
+        await _prefs.setString('email', user.email);
+        await _prefs.setString('full_name', user.fullName);
+        await _prefs.setString('phone', user.phone ?? '');
+        await _prefs.setString("photo_url", user.profileImage ?? '');
+        await _prefs.setBool('is_logged_in', true);
+        await _prefs.setString('is_email_verified', user.isEmailVerified.toString());
+        await _prefs.setString('is_face_recognition_active', user.isFaceRecognitionActive.toString());
+        await _prefs.setString('has_child_data', user.hasChildData.toString());
+
+
+      } else {
+        Get.snackbar(
+          'Gagal',
+          result.message.isNotEmpty
+              ? result.message
+              : 'Kode OTP salah atau sudah kedaluwarsa',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  void resendOtp() {
-    if (secondsLeft.value > 0) return;
+  void resendOtp() async {
 
-    clearOtp();
-    startTimer();
+    try {
+      final resend = ResendOtpRequestModel(
+        email: email.value
+      );
 
-    Get.snackbar(
-      'OTP dikirim ulang',
-      'Kode OTP baru telah dikirim ke email Anda',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+      final result = await _resendOtpService.resendOtp(
+        request: resend
+      );
+
+      if (result.success) {
+        Get.snackbar(
+          'Berhasil',
+          'Kode OTP baru telah dikirim ke email Anda',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        startTimer();
+      } else {
+        Get.snackbar(
+          'Gagal',
+          result.message.isNotEmpty
+              ? result.message
+              : 'Gagal mengirim ulang kode OTP',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      print('Error saat resend OTP: $e');
+    }
+
   }
 
   @override

@@ -6,6 +6,7 @@ class ChildDataBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<ChildDataController>(
       () => ChildDataController(),
+      fenix: true,
     );
   }
 }
