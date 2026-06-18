@@ -22,8 +22,6 @@ class VerifySuccessView extends GetView<VerifySuccessController> {
       return (width * value).clamp(min, max).toDouble();
     }
 
-    controller.onReady();
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Stack(

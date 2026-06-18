@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
+
 import '../../../routes/app_pages.dart';
 
 class VerifySuccessController extends GetxController {
@@ -9,8 +10,12 @@ class VerifySuccessController extends GetxController {
   void onReady() {
     super.onReady();
 
+    _timer?.cancel();
+
     _timer = Timer(const Duration(seconds: 2), () {
-      Get.offAllNamed(Routes.CHILD_DATE);
+      if (!isClosed && Get.currentRoute == Routes.VERIFY_SUCCESS) {
+        Get.offAllNamed(Routes.CHILD_DATE);
+      }
     });
   }
 
