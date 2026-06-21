@@ -156,7 +156,7 @@ class RegisterView extends GetView<RegisterController> {
 
                             const SizedBox(height: 22),
 
-                            const Text(
+const Text(
                               "No Handphone",
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
@@ -165,10 +165,39 @@ class RegisterView extends GetView<RegisterController> {
 
                             TextField(
                               controller: controller.phoneController,
-                              keyboardType: TextInputType.number,
+                              // TextInputType.phone lebih disarankan daripada .number untuk nomor telepon
+                              keyboardType: TextInputType.phone, 
                               decoration: InputDecoration(
-                                hintText: "081234567890",
-                                prefixIcon: const Icon(Icons.phone_outlined),
+                                hintText: "81234567890", // Angka 0 di depan dihilangkan karena sudah ada +62
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                        "🇮🇩", // Emoji Bendera Indonesia
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        "+62", // Kode Negara
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      // Garis pembatas vertikal (Divider)
+                                      Container(
+                                        height: 24,
+                                        width: 1,
+                                        color: Colors.grey.shade400, 
+                                      ),
+                                      const SizedBox(width: 8),
+                                    ],
+                                  ),
+                                ),
                                 filled: true,
                                 fillColor: const Color(0xffF5F5F5),
                                 border: OutlineInputBorder(
@@ -311,55 +340,6 @@ class RegisterView extends GetView<RegisterController> {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 30),
-
-                            Row(
-                              children: [
-                                Expanded(child: Divider()),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text("atau"),
-                                ),
-                                Expanded(child: Divider()),
-                              ],
-                            ),
-
-                            const SizedBox(height: 30),
-
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: () {},
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.grey.shade300),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      "assets/images/google_logo.png",
-                                      width: 22,
-                                    ),
-
-                                    const SizedBox(width: 12),
-
-                                    const Text(
-                                      "Masuk dengan Google",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),

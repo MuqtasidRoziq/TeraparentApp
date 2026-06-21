@@ -20,7 +20,7 @@ class VerifyOtpController extends GetxController {
   
 
   final isLoading = false.obs;
-  final secondsLeft = 60.obs;
+  final secondsLeft = 120.obs;
   final email = ''.obs;
 
   Timer? _timer;
@@ -28,18 +28,44 @@ class VerifyOtpController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loadOtpSession();
+  }
 
+  Future<void> loadOtpSession() async {
     final args = Get.arguments;
 
     if (args != null && args is Map && args['email'] != null) {
       email.value = args['email'].toString();
+    } else {
+      final savedEmail = await _storage.read(key: 'pending_otp_email');
+
+      if (savedEmail != null && savedEmail.isNotEmpty) {
+        email.value = savedEmail;
+      }
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final pendingEmail = prefs.getString('pending_otp_email');
+
+    if (email.value.isEmpty && pendingEmail != null && pendingEmail.isNotEmpty) {
+      email.value = pendingEmail;
+    }
+
+    final expiredAt = prefs.getInt('pending_otp_expired_at');
+
+    if (expiredAt != null) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final remaining = ((expiredAt - now) / 1000).ceil();
+
+      secondsLeft.value = remaining > 0 ? remaining : 0;
+    } else {
+      secondsLeft.value = 120;
     }
 
     startTimer();
   }
 
   void startTimer() {
-    secondsLeft.value = 60;
     _timer?.cancel();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -118,9 +144,12 @@ class VerifyOtpController extends GetxController {
         await _prefs.setString('phone', user.phone ?? '');
         await _prefs.setString("photo_url", user.profileImage ?? '');
         await _prefs.setBool('is_logged_in', true);
-        await _prefs.setString('is_email_verified', user.isEmailVerified.toString());
-        await _prefs.setString('is_face_recognition_active', user.isFaceRecognitionActive.toString());
-        await _prefs.setString('has_child_data', user.hasChildData.toString());
+        await _prefs.setBool('is_email_verified', user.isEmailVerified);
+        await _prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
+        await _prefs.setBool('has_child_data', user.hasChildData);
+        await _prefs.remove('pending_otp');
+        await _prefs.remove('pending_otp_email');
+        await _prefs.remove('pending_otp_expired_at');
 
         Get.offAllNamed(Routes.VERIFY_SUCCESS);
 
@@ -159,13 +188,24 @@ class VerifyOtpController extends GetxController {
       );
 
       if (result.success) {
+        final prefs = await SharedPreferences.getInstance();
+
+        final expiredAt = DateTime.now()
+            .add(const Duration(seconds: 120))
+            .millisecondsSinceEpoch;
+
+        await prefs.setBool('pending_otp', true);
+        await prefs.setString('pending_otp_email', email.value);
+        await prefs.setInt('pending_otp_expired_at', expiredAt);
+
+        secondsLeft.value = 120;
+        startTimer();
+
         Get.snackbar(
           'Berhasil',
           'Kode OTP baru telah dikirim ke email Anda',
           snackPosition: SnackPosition.BOTTOM,
         );
-
-        startTimer();
       } else {
         Get.snackbar(
           'Gagal',

@@ -83,14 +83,6 @@ class ChildDataView extends GetView<ChildDataController> {
 
           _buildDateField(),
 
-          _buildInputField(
-            title: "Usia (Tahun)",
-            hint: "5",
-            controllerText: controller.usiaC,
-            icon: Icons.cake_outlined,
-            keyboardType: TextInputType.number,
-          ),
-
           _buildGenderField(),
 
           _buildInputField(

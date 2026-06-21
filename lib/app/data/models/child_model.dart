@@ -1,7 +1,6 @@
 class ChildRequestModel {
   final String name;
   final DateTime birthDate;
-  final int ageYear;
   final String gender;
   final double heightCm;
   final double weightKg;
@@ -10,7 +9,6 @@ class ChildRequestModel {
   ChildRequestModel({
     required this.name,
     required this.birthDate,
-    required this.ageYear,
     required this.gender,
     required this.heightCm,
     required this.weightKg,
@@ -21,7 +19,6 @@ class ChildRequestModel {
     return {
       'name': name,
       'birthDate': birthDate.toIso8601String(),
-      'ageYear': ageYear,
       'gender': gender,
       'heightCm': heightCm,
       'weightKg': weightKg,

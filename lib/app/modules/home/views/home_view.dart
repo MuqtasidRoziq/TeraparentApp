@@ -72,14 +72,14 @@ class HomeView extends GetView<HomeController> {
                   const SizedBox(height: 30),
 
                   // ================= GREETING =================
-                  const Text(
-                    'Selamat datang,\nAsep Subagja 👋',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff202020),
-                    ),
-                  ),
+                  // const Text(
+                  //   // controller.,
+                  //   style: TextStyle(
+                  //     fontSize: 34,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: Color(0xff202020),
+                  //   ),
+                  // ),
 
                   const SizedBox(height: 8),
 

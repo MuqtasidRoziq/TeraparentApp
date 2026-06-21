@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/models/child_model.dart';
 import '../../../data/services/child_service.dart';
 import '../../../routes/app_pages.dart';
@@ -41,13 +41,11 @@ class ChildDataController extends GetxController {
 
   Future<void> createChild() async {
     final namaAnak = namaAnakC.text.trim();
-    final usiaText = usiaC.text.trim();
     final tinggiText = tinggiC.text.trim();
     final beratText = beratC.text.trim();
     final note = initialDevelopmentNoteC.text.trim();
 
     if (namaAnak.isEmpty ||
-        usiaText.isEmpty ||
         tinggiText.isEmpty ||
         beratText.isEmpty) {
       Get.snackbar(
@@ -66,19 +64,16 @@ class ChildDataController extends GetxController {
       );
       return;
     }
-
-    final usiaTahun = int.tryParse(usiaText);
-    final tinggi = double.tryParse(tinggiText);
-    final berat = double.tryParse(beratText);
-
-    if (usiaTahun == null || usiaTahun < 0) {
+    else if(selectedDate.value==DateTime.now()){
       Get.snackbar(
         "Error",
-        "Usia anak tidak valid",
-        snackPosition: SnackPosition.BOTTOM,
+        "Mohon Tidak Menggunakan Tanggal Sekarang",
+        snackPosition: SnackPosition.BOTTOM
       );
-      return;
     }
+
+    final tinggi = double.tryParse(tinggiText);
+    final berat = double.tryParse(beratText);
 
     if (tinggi == null || tinggi <= 0) {
       Get.snackbar(
@@ -104,7 +99,6 @@ class ChildDataController extends GetxController {
       final request = ChildRequestModel(
         name: namaAnak,
         birthDate: selectedDate.value!,
-        ageYear: usiaTahun,
         gender: backendGender,
         heightCm: tinggi,
         weightKg: berat,
@@ -116,7 +110,17 @@ class ChildDataController extends GetxController {
       );
 
       if (result.success) {
-
+        final child = result.data!.child;
+        final SharedPreferences _prefs = await SharedPreferences.getInstance();
+        
+        await _prefs.setString("name", child.name);
+        await _prefs.setString("birthDate", child.birthDate.toString());
+        await _prefs.setString("gender", child.gender);
+        await _prefs.setDouble("heightCm", child.heightCm);
+        await _prefs.setDouble("weightCm", child.weightKg);
+        await _prefs.setBool('has_child_data', true);
+        debugPrint("has_child_data : ${_prefs.get('has_child_data')}");
+        
         Get.snackbar(
           "Berhasil",
           result.message.isNotEmpty

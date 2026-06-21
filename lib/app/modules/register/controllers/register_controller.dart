@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/data/models/auth/register%20model.dart';
 import 'package:teraparent_mobile/app/data/services/auth/register_service.dart';
-
+import 'package:teraparent_mobile/app/data/services/auth/otp_session_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_pages.dart';
 
 class RegisterController extends GetxController {
@@ -13,6 +15,9 @@ class RegisterController extends GetxController {
   final confirmPasswordController = TextEditingController();
 
   final RegisterService _registerService = Get.find<RegisterService>();
+  final OtpSessionService _otpSessionService = Get.find<OtpSessionService>();
+
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   final isPasswordHidden = true.obs;
   final isConfirmPasswordHidden = true.obs;
@@ -37,6 +42,7 @@ class RegisterController extends GetxController {
 
     return password.length >= 8 && hasLetter && hasNumber;
   }
+
 
   Future<void> register() async {
     final fullName = nameController.text.trim();
@@ -102,7 +108,13 @@ class RegisterController extends GetxController {
               : 'Register berhasil. Silakan verifikasi OTP.',
         );
 
-        Get.toNamed(
+        await clearOldLoginSession();
+        await _otpSessionService.savePendingOtp(
+          email: emailController.text.trim(),
+          validSeconds: 60,
+        );
+
+        Get.offAllNamed(
           Routes.VERIFY_OTP,
           arguments: {
             'email': email,
@@ -124,6 +136,22 @@ class RegisterController extends GetxController {
     }
   }
 
+  Future<void> clearOldLoginSession() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await _storage.delete(key: 'token');
+    await _storage.delete(key: 'user_id');
+
+    await prefs.setBool('is_logged_in', false);
+
+    await prefs.remove('email');
+    await prefs.remove('full_name');
+    await prefs.remove('phone');
+    await prefs.remove('photo_url');
+    await prefs.remove('is_email_verified');
+    await prefs.remove('is_face_recognition_active');
+    await prefs.remove('has_child_data');
+  }
   @override
   void onClose() {
     nameController.dispose();

@@ -433,8 +433,7 @@ class ProfileView extends GetView<ProfileController> {
                                     Expanded(
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          // LOGOUT LOGIC
-                                          Get.offAllNamed(Routes.LOGIN);
+                                          controller.logout();
                                         },
 
                                         style: ElevatedButton.styleFrom(
