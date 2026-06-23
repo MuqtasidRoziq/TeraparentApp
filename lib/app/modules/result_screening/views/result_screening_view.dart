@@ -3,82 +3,134 @@ import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
 import 'package:teraparent_mobile/app/modules/result_screening/controllers/result_screening_controller.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
+
 import '../../../core/widgets/header_profile.dart';
 
 class ResultScreeningView extends GetView<ResultScreeningController> {
   const ResultScreeningView({Key? key}) : super(key: key);
+
+  static const Color primaryColor = Color(0xFF2B7A8A);
+  static const Color darkColor = Color(0xFF1E3A3A);
+  static const Color softColor = Color(0xFFF0F7F7);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(20.0),
-          children: [
-            headerProfile(),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                const Icon(Icons.check_circle, color: Color(0xFF477A7A), size: 16),
-                const SizedBox(width: 6),
-                Text(
-                  "SCREENING TERAKHIR: 24 OKT 2023",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[600], letterSpacing: 0.5),
+        child: Obx(
+          () {
+            if (controller.isLoading.value) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: primaryColor,
                 ),
+              );
+            }
+
+            if (controller.result.value == null) {
+              return _buildEmptyResult();
+            }
+
+            return ListView(
+              padding: const EdgeInsets.all(20.0),
+              children: [
+                headerProfile(),
+
+                const SizedBox(height: 20),
+
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF477A7A),
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      controller.lastScreeningText,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                const Text(
+                  "Hasil Analisis",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  "Berdasarkan observasi perilaku dan data perkembangan yang diisi, berikut adalah rangkuman hasil screening Ananda.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                _buildMainIndicationCard(),
+
+                const SizedBox(height: 20),
+
+                _buildDistributionCard(),
+
+                const SizedBox(height: 28),
+
+                _buildSectionHeader(
+                  "Rekomendasi Terapis",
+                  "Data terapis akan ditampilkan setelah fitur tersedia.",
+                ),
+
+                const SizedBox(height: 16),
+
+                _buildTherapistPlaceholder(),
+
+                const SizedBox(height: 28),
+
+                _buildSectionHeader(
+                  "Metode Terapi Terpilih",
+                  "",
+                ),
+
+                const SizedBox(height: 16),
+
+                _buildTherapyMethods(),
+
+                const SizedBox(height: 28),
+
+                _buildRecommendationCard(),
+
+                const SizedBox(height: 28),
+
+                _buildProgramBanner(),
               ],
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Hasil Analisis",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Berdasarkan observasi perilaku dan data perkembangan yang diunggah, berikut adalah rangkuman potensi kondisi Ananda.",
-              style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.4),
-            ),
-            const SizedBox(height: 20),
-        
-            // ================= CARD INDIKASI UTAMA =================
-            _buildMainIndicationCard(),
-        
-            const SizedBox(height: 20),
-        
-            // ================= CARD DISTRIBUSI KEMUNGKINAN =================
-            _buildDistributionCard(),
-        
-            const SizedBox(height: 28),
-        
-            // ================= SECTION REKOMENDASI AHLI =================
-            _buildSectionHeader("Rekomendasi Ahli", "Langkah tepat untuk masa depan Ananda."),
-            const SizedBox(height: 16),
-            _buildExpertList(),
-        
-            const SizedBox(height: 28),
-        
-            // ================= SECTION METODE TERAPI =================
-            _buildSectionHeader("Metode Terapi Terpilih", ""),
-            const SizedBox(height: 16),
-            _buildTherapyMethods(),
-        
-            const SizedBox(height: 28),
-        
-            // ================= BANNER AJAKAN PROGRAM TERAPI =================
-            _buildProgramBanner(),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 
-  // --- WIDGET BUILDERS UNTUK HALAMAN HASIL ---
-
   Widget _buildMainIndicationCard() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F7F7), // Hijau soft transparan
+        color: softColor,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -88,29 +140,76 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: const Color(0xFFE2F1F4), borderRadius: BorderRadius.circular(30)),
-                child: const Text("INDIKASI UTAMA", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2B7A8A))),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2F1F4),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Text(
+                  "INDIKASI UTAMA",
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor,
+                  ),
+                ),
               ),
-              const Text("65%", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E3A3A))),
+              Text(
+                controller.scorePercent,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: darkColor,
+                ),
+              ),
             ],
           ),
+
           const SizedBox(height: 12),
-          const Text("Speech Delay", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1A4D57))),
-          const SizedBox(height: 10),
+
           Text(
-            "Ananda menunjukkan keterlambatan yang signifikan pada kemampuan bicara ekspresif dibandingkan usia sebaya. Meskipun kontak mata dan interaksi sosial dasar terlihat baik, perbendaharaan kata masih terbatas.",
-            style: TextStyle(fontSize: 14, color: Colors.grey[700], height: 1.5),
+            controller.mainIndicationText,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A4D57),
+            ),
           ),
+
+          const SizedBox(height: 6),
+
+          Text(
+            controller.riskCategory,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            controller.analysisDescription,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[700],
+              height: 1.5,
+            ),
+          ),
+
           const SizedBox(height: 16),
-          // Tag Label/Hashtag
-          Row(
-            children: [
-              _buildChip("#KomunikasiEkspresif"),
-              const SizedBox(width: 8),
-              _buildChip("#BahasaReseptifNormal"),
-            ],
-          )
+
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: controller.chips.map((chip) {
+              return _buildChip(chip);
+            }).toList(),
+          ),
         ],
       ),
     );
@@ -118,9 +217,25 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
 
   Widget _buildChip(String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30), border: Border.all(color: const Color(0xFFE2E8F0))),
-      child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.grey,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
@@ -130,49 +245,107 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("DISTRIBUSI KEMUNGKINAN", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey[400], letterSpacing: 0.5)),
+          Text(
+            "RINGKASAN SKOR SCREENING",
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[400],
+              letterSpacing: 0.5,
+            ),
+          ),
+
           const SizedBox(height: 20),
-          _buildProbabilityRow("Speech Delay", 0.65, "65%", const Color(0xFF2B7A8A)),
+
+          _buildProbabilityRow(
+            "Skor Risiko",
+            controller.scoreProgress,
+            controller.scorePercent,
+            primaryColor,
+          ),
+
           const SizedBox(height: 16),
-          _buildProbabilityRow("Autism Spectrum", 0.20, "20%", const Color(0xFF94A3B8)),
-          const SizedBox(height: 16),
-          _buildProbabilityRow("Tipikal (Wajar)", 0.15, "15%", const Color(0xFFA7E0D3)),
+
+          _buildInfoSummaryRow(
+            "Kategori Risiko",
+            controller.riskCategory,
+            Icons.health_and_safety_rounded,
+          ),
+
+          const SizedBox(height: 12),
+
+          _buildInfoSummaryRow(
+            "Domain Prioritas",
+            controller.priorityDomainText,
+            Icons.track_changes_rounded,
+          ),
+
           const SizedBox(height: 20),
-          // Info footer box mikrofon
+
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(14),
+            ),
             child: Row(
               children: [
-                const Icon(Icons.mic, color: Color(0xFF2B7A8A), size: 18),
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: primaryColor,
+                  size: 18,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    "Data dikumpulkan melalui 12 indikator perkembangan perilaku motorik dan sosial.",
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600], height: 1.3),
+                    "Hasil ini adalah screening awal, bukan diagnosis medis. Konsultasikan dengan ahli jika diperlukan.",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey[600],
+                      height: 1.3,
+                    ),
                   ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProbabilityRow(String label, double percentage, String textValue, Color barColor) {
+  Widget _buildProbabilityRow(
+    String label,
+    double percentage,
+    String textValue,
+    Color barColor,
+  ) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
-            Text(textValue, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+              ),
+            ),
+            Text(
+              textValue,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -184,7 +357,45 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
             backgroundColor: const Color(0xFFF1F5F9),
             valueColor: AlwaysStoppedAnimation<Color>(barColor),
           ),
-        )
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoSummaryRow(
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 18,
+          color: primaryColor,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF0F172A),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -194,105 +405,109 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
-            if (subtitle.isNotEmpty) ...[
-              const SizedBox(height: 2),
-              Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[500])),
-            ]
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-        if (subtitle.isNotEmpty)
-          TextButton(
-            onPressed: () {},
-            child: const Text("Lihat Semua", style: TextStyle(color: Color(0xFF2B7A8A), fontWeight: FontWeight.bold)),
-          )
       ],
     );
   }
 
-  Widget _buildExpertList() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _buildExpertCard("Dr. Arini Sp.A", "Psikolog Anak & Tumbuh Kembang", "4.9 (120+ Sesi)", "Klinik Mentari, Jakarta Selatan", 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=150'),
-          const SizedBox(width: 14),
-          _buildExpertCard("Budi Santoso M.Psi", "Therapist Wicara Senior", "4.8 (90+ Sesi)", "Pusat Terapi Alsa, Bekasi", 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=150'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpertCard(String name, String role, String rating, String location, String imgUrl) {
+  Widget _buildTherapistPlaceholder() {
     return Container(
-      width: 260,
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              CircleAvatar(radius: 26, backgroundImage: NetworkImage(imgUrl)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A))),
-                    const SizedBox(height: 2),
-                    Text(role, style: TextStyle(fontSize: 11, color: Colors.grey[500]), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              )
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.star, color: Colors.orangeAccent, size: 14),
-              const SizedBox(width: 4),
-              Text(rating, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Icon(Icons.location_on, color: Colors.grey[400], size: 14),
-              const SizedBox(width: 4),
-              Expanded(child: Text(location, style: TextStyle(fontSize: 11, color: Colors.grey[500]), maxLines: 1, overflow: TextOverflow.ellipsis)),
-            ],
-          ),
-          const SizedBox(height: 14),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF0F7F7),
-              foregroundColor: const Color(0xFF2B7A8A),
-              minimumSize: const Size(double.infinity, 40),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
+          Container(
+            width: 54,
+            height: 54,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE2F1F4),
+              shape: BoxShape.circle,
             ),
-            child: const Text("Atur Janji Temu", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          )
+            child: const Icon(
+              Icons.medical_services_outlined,
+              color: primaryColor,
+              size: 26,
+            ),
+          ),
+
+          const SizedBox(width: 14),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Rekomendasi Terapis Belum Tersedia",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  "Nanti bagian ini bisa diisi dari data terapis berdasarkan domain ${controller.priorityDomainText}.",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildTherapyMethods() {
+    final methods = controller.therapyMethods;
+
     return Row(
       children: [
-        _buildMethodItem(Icons.volume_up_outlined, "Terapi Wicara"),
+        _buildMethodItem(
+          Icons.volume_up_outlined,
+          methods.isNotEmpty ? methods[0] : "Stimulasi Harian",
+        ),
         const SizedBox(width: 14),
-        _buildMethodItem(Icons.star_outline, "Terapi Bermain"),
+        _buildMethodItem(
+          Icons.star_outline,
+          methods.length > 1 ? methods[1] : "Terapi Bermain",
+        ),
       ],
     );
   }
@@ -304,19 +519,83 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(
+            color: const Color(0xFFE2E8F0),
+          ),
         ),
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(color: const Color(0xFFE2F1F4), shape: BoxShape.circle),
-              child: Icon(icon, color: const Color(0xFF2B7A8A), size: 24),
+              decoration: const BoxDecoration(
+                color: Color(0xFFE2F1F4),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: primaryColor,
+                size: 24,
+              ),
             ),
             const SizedBox(height: 12),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendationCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline_rounded,
+                color: primaryColor,
+                size: 22,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Rekomendasi",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Text(
+            controller.recommendationText,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[700],
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -325,7 +604,7 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF2E5A5A), // Hijau gelap estetik sesuai mockup
+        color: const Color(0xFF2E5A5A),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -333,27 +612,121 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
           const Text(
             "Siap untuk membantu\nAnanda berkembang?",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.3,
+            ),
           ),
+
           const SizedBox(height: 10),
+
           Text(
-            "Dapatkan program terapi mandiri di rumah yang dipersonalisasi khusus sesuai hasil screening hari ini.",
+            "Dapatkan program terapi mandiri di rumah yang dipersonalisasi sesuai hasil screening hari ini.",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.8), height: 1.4),
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.white.withOpacity(0.8),
+              height: 1.4,
+            ),
           ),
+
           const SizedBox(height: 20),
+
           ElevatedButton(
             onPressed: () => Get.offAllNamed(Routes.ACTIVITIES),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: const Color(0xFF2E5A5A),
               minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
               elevation: 0,
             ),
-            child: const Text("Mulai Program Terapi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          )
+            child: const Text(
+              "Mulai Program Terapi",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyResult() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.assignment_late_outlined,
+                color: primaryColor,
+                size: 54,
+              ),
+
+              const SizedBox(height: 14),
+
+              const Text(
+                "Hasil Screening Tidak Ditemukan",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                "Silakan lakukan screening terlebih dahulu agar hasil analisis dapat ditampilkan.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              ElevatedButton(
+                onPressed: () => Get.offAllNamed(Routes.SCREENING),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  "Mulai Screening",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

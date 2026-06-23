@@ -29,10 +29,3 @@ class LoginService extends GetxService {
     }
   }
 }
-
-      // return ApiResponseModel<LoginResponseModel>.fromJson(
-      //   Map<String, dynamic>.from(response.data),
-      //   fromData: (data) => LoginResponseModel.fromJson(
-      //     Map<String, dynamic>.from(data),
-      //   ),
-      // );

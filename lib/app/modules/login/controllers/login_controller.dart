@@ -59,6 +59,7 @@ class LoginController extends GetxController {
         final SharedPreferences _prefs= await SharedPreferences.getInstance();
         final token = result.data!.token;
         final user = result.data!.user;
+        final child = user.children.first;
 
         Get.snackbar(
           'Success', 
@@ -78,14 +79,21 @@ class LoginController extends GetxController {
         await _prefs.setBool('is_email_verified', user.isEmailVerified);
         await _prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
         await _prefs.setBool('has_child_data', user.hasChildData);
+        await _prefs.setString('childId', child.id);
+        await _prefs.setString('childName', child.childName);
+        await _prefs.setString('gender', child.gender);
+        await _prefs.setString('birthDate', child.birthDate.toString());
+        await _prefs.setDouble('weightKg', child.weightKg);
+        await _prefs.setDouble('heightCm', child.heightCm);
 
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {
         Get.snackbar(
           'Error', 
-          'Login gagal: $e'
+          'Login gagal: $e',
         );
+        print(e);
     } finally {
       isLoading.value = false;
     }

@@ -12,7 +12,7 @@ class ChildDataController extends GetxController {
   final beratC = TextEditingController();
   final initialDevelopmentNoteC = TextEditingController();
 
-  final ChildCreateService _childService = Get.find<ChildCreateService>();
+  final ChildService _childService = Get.find<ChildService>();
 
   final RxString gender = "Laki-Laki".obs;
   final isLoading = false.obs;
@@ -97,7 +97,7 @@ class ChildDataController extends GetxController {
       isLoading.value = true;
 
       final request = ChildRequestModel(
-        name: namaAnak,
+        childName: namaAnak,
         birthDate: selectedDate.value!,
         gender: backendGender,
         heightCm: tinggi,
@@ -113,13 +113,16 @@ class ChildDataController extends GetxController {
         final child = result.data!.child;
         final SharedPreferences _prefs = await SharedPreferences.getInstance();
         
-        await _prefs.setString("name", child.name);
+        await _prefs.setString("childId", child.id);
+        await _prefs.setString("name", child.childName);
         await _prefs.setString("birthDate", child.birthDate.toString());
         await _prefs.setString("gender", child.gender);
         await _prefs.setDouble("heightCm", child.heightCm);
         await _prefs.setDouble("weightCm", child.weightKg);
         await _prefs.setBool('has_child_data', true);
         debugPrint("has_child_data : ${_prefs.get('has_child_data')}");
+        debugPrint('chiildId ${_prefs.get('childId')}');
+        debugPrint('name ${_prefs.get('name')}');
         
         Get.snackbar(
           "Berhasil",

@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 
 class ApiService extends GetxService {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final Dio dio = Dio(
     BaseOptions(
       baseUrl: 'https://teraservices.vercel.app/',
@@ -20,6 +22,20 @@ class ApiService extends GetxService {
         error: true,
       ),
     );
+
+  Future<Options> authOptions() async {
+    final token = await _storage.read(key: 'token');
+
+    if (token == null || token.isEmpty) {
+      throw 'Token tidak ditemukan. Silakan login ulang.';
+    }
+
+    return Options(
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }  
 
   String handleDioError(DioException e) {
     if (e.response != null) {

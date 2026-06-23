@@ -10,6 +10,7 @@ import 'package:teraparent_mobile/app/data/services/child_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:teraparent_mobile/app/data/services/auth/otp_session_service.dart';
+import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 
 import 'app/routes/app_pages.dart';
 
@@ -22,10 +23,11 @@ void main() async {
   Get.put(ApiService(), permanent: true);
   Get.put(RegisterService(), permanent: true);
   Get.put(VerifyOtpService(), permanent: true);
-  Get.put(ChildCreateService(), permanent: true);
+  Get.put(ChildService(), permanent: true);
   Get.put(ResendOtpService(), permanent: true);
   Get.put(LoginService(), permanent: true);
   Get.put(OtpSessionService(), permanent: true);
+  Get.put(ScreeningService(), permanent: true);
 
   runApp(
     GetMaterialApp(
@@ -61,6 +63,8 @@ Future<String> getInitialRoute() async {
   debugPrint('pending_otp_email : ${prefs.get('pending_otp_email')}');
   debugPrint('is_email_verified : ${prefs.get('is_email_verified')}');
   debugPrint('has_child_data : ${prefs.get('has_child_data')}');
+  debugPrint('childId  : ${prefs.get('childId')}');
+  debugPrint('chiild_name : ${prefs.get('name')}');
 
   if (validLogin) {
     await prefs.remove('pending_otp');

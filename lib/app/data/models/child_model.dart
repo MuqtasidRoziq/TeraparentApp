@@ -1,5 +1,5 @@
 class ChildRequestModel {
-  final String name;
+  final String childName;
   final DateTime birthDate;
   final String gender;
   final double heightCm;
@@ -7,7 +7,7 @@ class ChildRequestModel {
   final String? initialDevelopmentNote;
 
   ChildRequestModel({
-    required this.name,
+    required this.childName,
     required this.birthDate,
     required this.gender,
     required this.heightCm,
@@ -17,7 +17,7 @@ class ChildRequestModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'name': childName,
       'birthDate': birthDate.toIso8601String(),
       'gender': gender,
       'heightCm': heightCm,
@@ -28,11 +28,10 @@ class ChildRequestModel {
 }
 
 class ChildModel {
-  final int id;
+  final String id;
   final int userId;
-  final String name;
+  final String childName;
   final DateTime? birthDate;
-  final int? ageYear;
   final String gender;
   final double heightCm;
   final double weightKg;
@@ -42,9 +41,8 @@ class ChildModel {
   ChildModel({
     required this.id,
     required this.userId,
-    required this.name,
-    this.birthDate,
-    this.ageYear,
+    required this.childName,
+    required this.birthDate,
     required this.gender,
     required this.heightCm,
     required this.weightKg,
@@ -54,15 +52,12 @@ class ChildModel {
 
   factory ChildModel.fromJson(Map<String, dynamic> json) {
     return ChildModel(
-      id: int.tryParse(json['id'].toString()) ?? 0,
+      id: json['id']?.toString() ?? '',
       userId: int.tryParse(json['userId'].toString()) ?? 0,
-      name: json['name']?.toString() ?? '',
+      childName: json['name']?.toString() ?? '',
       birthDate: json['birthDate'] != null
           ? DateTime.tryParse(json['birthDate'].toString())
           : null,
-      ageYear: json['ageYear'] == null
-          ? null
-          : int.tryParse(json['ageYear'].toString()),
       gender: json['gender']?.toString() ?? '',
       heightCm: double.tryParse(json['heightCm'].toString()) ?? 0,
       weightKg: double.tryParse(json['weightKg'].toString()) ?? 0,
