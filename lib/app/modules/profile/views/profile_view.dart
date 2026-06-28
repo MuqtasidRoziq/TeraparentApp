@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
-import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  ProfileView({super.key});
+  final String profileUrl;
+
+  ProfileView({super.key, this.profileUrl = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +25,6 @@ class ProfileView extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // HEADER
-                headerProfile(),
-
-                const SizedBox(height: 20),
-
                 // PROFILE CARD
                 Container(
                   width: double.infinity,
@@ -42,20 +38,18 @@ class ProfileView extends GetView<ProfileController> {
                     children: [
                       Stack(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 48,
-                            backgroundImage: NetworkImage(
-                              "https://imgs.search.brave.com/QBk-dd-Zhpn11Mn8VSx0TDNUZ8P5GCCSKACvYdEdoMA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZGFpbHlzaWEuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzEyL0lyZmFuLUdo/YWZ1ci02NjB4NDAw/LmpwZw",
-                            ),
+                            backgroundImage: NetworkImage(profileUrl),
                           ),
                         ],
                       ),
 
                       const SizedBox(height: 20),
 
-                      const Text(
-                        'Asep Subagja',
-                        style: TextStyle(
+                      Text(
+                        controller.userNameText,
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),

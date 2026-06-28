@@ -44,16 +44,10 @@ class HomeController extends GetxController {
       userName.value = prefs.getString('full_name') ?? 'Bunda';
       userPhotoUrl.value = prefs.getString('photo_url') ?? '';
       childName.value = prefs.getString('childName') ?? 'Belum ada data anak';
-
-      mainIndication.value =
-          prefs.getString('mainIndication') ?? 'Belum ada hasil screening';
-
-      riskCategory.value =
-          prefs.getString('riskCategory') ?? 'Belum ada hasil screening';
-
-      priorityDomain.value =
-          prefs.getString('priorityDomain') ?? '-';
-
+      final indication = prefs.getString('mainIndication') ?? 'Belum ada hasil screening';
+      mainIndication.value = formatMainIndication(indication);
+      riskCategory.value = prefs.getString('riskCategory') ?? 'Belum ada hasil screening';
+      priorityDomain.value = prefs.getString('priorityDomain') ?? '-';
       final birthDateString = prefs.getString('birthDate');
 
       if (birthDateString != null && birthDateString.isNotEmpty) {
@@ -161,6 +155,25 @@ class HomeController extends GetxController {
     }
 
     return 92;
+  }
+
+  String formatMainIndication(String? value) {
+    switch (value?.toUpperCase().trim()) {
+      case 'SPEECH_DELAY':
+        return 'Speech Delay';
+
+      case 'AUTISM':
+        return 'Autisme Spectrum';
+
+      case 'ADHD':
+        return 'ADHD';
+
+      case 'DEVELOPMENT_CONCERN':
+        return 'Perhatian Tingkat Lanjut';
+
+      default:
+        return 'Belum ada indikasi utama harap melakukan screening terlebih dahulu';
+    }
   }
 
   String calculateAgeText(DateTime birthDate) {

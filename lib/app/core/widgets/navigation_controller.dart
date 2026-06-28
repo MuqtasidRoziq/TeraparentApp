@@ -6,8 +6,8 @@ class NavigationController extends GetxController {
 
   final List<String> routes = [
     Routes.HOME,
-    Routes.ACTIVITIES,
     Routes.GRAFIK_PERKEMBANGAN,
+    Routes.AHLI_TERAPIS,
     Routes.PROFIL,
   ];
 

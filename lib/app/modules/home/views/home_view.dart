@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
-import 'package:teraparent_mobile/app/core/theme/colors.dart';
 
 import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/home_controller.dart';
@@ -13,483 +12,202 @@ class HomeView extends GetView<HomeController> {
   static const Color primaryColor = Color(0xff2F6F57);
   static const Color softGreen = Color(0xffD5F0E5);
   static const Color softBlue = Color(0xffDDF2F8);
-  static const Color textDark = Color(0xff202020);
+  static const Color textDark = Color(0xff1A1A1A);
+  static const Color bgColor = Color(0xffF5F7F6); // sedikit lebih hangat dari putih
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: bgColor,
       bottomNavigationBar: BottomNavbar(),
       body: SafeArea(
         child: Stack(
           children: [
             _topBlur(),
             _bottomBlur(),
-
-            Obx(
-              () {
-                if (controller.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: primaryColor,
-                    ),
-                  );
-                }
-
-                return RefreshIndicator(
-                  color: primaryColor,
-                  onRefresh: () async {
-                    await controller.loadHomeData();
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-
-                        headerProfile(
-                          photoUrl: controller.userPhotoUrl.value,
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        _welcomeCard(),
-
-                        const SizedBox(height: 22),
-
-                        _lastScreeningCard(),
-
-                        const SizedBox(height: 18),
-
-                        _todayActivityCard(),
-
-                        const SizedBox(height: 18),
-
-                        _weeklyProgressCard(),
-
-                        const SizedBox(height: 26),
-
-                        _quickMenu(),
-
-                        const SizedBox(height: 120),
-                      ],
-                    ),
-                  ),
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: primaryColor),
                 );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+              }
 
-  // ================= WELCOME CARD =================
-
-  Widget _welcomeCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xffE7F8F1),
-            Color(0xffDDF2F8),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.8),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xff2F6F57).withOpacity(0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Halo selamat datang,',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black.withOpacity(0.55),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-
-                const SizedBox(height: 4),
-
-                Text(
-                  controller.firstName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: textDark,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 9,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.85),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.child_care,
-                        size: 18,
-                        color: primaryColor,
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      Flexible(
-                        child: Text(
-                          'Ananda: ${controller.childInfoText}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: primaryColor,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          Container(
-            height: 78,
-            width: 78,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.family_restroom,
-              color: primaryColor,
-              size: 38,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= CARD HASIL SCREENING =================
-
-  Widget _lastScreeningCard() {
-    return _baseCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _cardTitleRow(
-            icon: Icons.fact_check_outlined,
-            title: 'Hasil Screening Terakhir',
-            iconBackground: softGreen,
-          ),
-
-          const SizedBox(height: 18),
-
-          Row(
-            children: [
-              _statusChip(
-                text: controller.riskCategory.value,
-                backgroundColor: softGreen,
-                textColor: primaryColor,
-              ),
-
-              const Spacer(),
-
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(Routes.GRAFIK_PERKEMBANGAN);
-                },
-                child: const Row(
-                  children: [
-                    Text(
-                      'Lihat Detail',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 13,
-                      color: primaryColor,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xffF7FAF9),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.psychology_alt_outlined,
-                  color: primaryColor,
-                  size: 24,
-                ),
-
-                const SizedBox(width: 12),
-
-                Expanded(
+              return RefreshIndicator(
+                color: primaryColor,
+                onRefresh: () async => await controller.loadHomeData(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Indikasi utama',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black45,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      const SizedBox(height: 20),
 
-                      const SizedBox(height: 4),
+                      // 1. HEADER PROFILE — tidak diubah
+                      headerProfile(photoUrl: controller.userPhotoUrl.value),
+                      const SizedBox(height: 28),
 
-                      Text(
-                        controller.mainIndication.value,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: textDark,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
+                      // 2. SAPAAN USER
+                      _welcomeSection(),
+                      const SizedBox(height: 28),
+
+                      _sectionDivider(),
+                      _weeklyProgressSection(),
+
+                      const SizedBox(height: 28),
+
+                      _sectionDivider(),
+                      _quickMenu(),
+                      const SizedBox(height: 28),
+
+                      _sectionDivider(),
+
+                      // 5. AKTIVITAS HARI INI
+                      _todayActivityCard(),
+                      const SizedBox(height: 28),
+
+                      _sectionDivider(),
+
+                      // 6. SCREENING TERAKHIR
+                      _lastScreeningSection(),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
 
-  // ================= CARD AKTIVITAS HARI INI =================
-
-  Widget _todayActivityCard() {
+  Widget _sectionDivider() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: softBlue,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xff2F6F57).withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _cardTitleRow(
-            icon: Icons.playlist_add_check_rounded,
-            title: 'Aktivitas Hari Ini',
-            iconBackground: Colors.white.withOpacity(0.85),
-          ),
+      height: 1,
+      margin: const EdgeInsets.only(bottom: 24),
+      color: const Color(0xffE8EDEB),
+    );
+  }
 
-          const SizedBox(height: 18),
-
-          Row(
+  Widget _welcomeSection() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 58,
-                width: 58,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.record_voice_over_outlined,
-                  color: primaryColor,
-                  size: 30,
+              Text(
+                'Halo, selamat datang',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: textDark.withOpacity(0.45),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-
-              const SizedBox(width: 14),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 2),
+              Text(
+                controller.firstName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  color: textDark,
+                  letterSpacing: -0.8,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: softGreen.withOpacity(0.75),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      controller.activityTitle.value,
-                      style: const TextStyle(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w900,
-                        color: textDark,
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.schedule_rounded,
+                    const Icon(Icons.child_care_rounded,
+                        size: 16, color: primaryColor),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        'Ananda: ${controller.childInfoText}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12.5,
                           color: primaryColor,
-                          size: 17,
+                          fontWeight: FontWeight.w800,
                         ),
-
-                        const SizedBox(width: 6),
-
-                        Text(
-                          controller.activityDuration.value,
-                          style: const TextStyle(
-                            color: primaryColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 14),
-
-          Text(
-            controller.activityDescription.value,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 15,
-              height: 1.45,
-              fontWeight: FontWeight.w500,
-            ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          height: 56,
+          width: 56,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.65),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
           ),
-
-          const SizedBox(height: 18),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Get.toNamed(Routes.DETAIL_ACTIVITY);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: const Text(
-                'Mulai Aktivitas',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+          child: const Icon(Icons.family_restroom_rounded,
+              color: primaryColor, size: 28),
+        ),
+      ],
     );
   }
 
-  // ================= CARD PROGRESS MINGGUAN =================
-
-  Widget _weeklyProgressCard() {
-    return _baseCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _cardTitleRow(
-            icon: Icons.bar_chart_rounded,
-            title: 'Progress Mingguan',
-            iconBackground: softGreen,
+  Widget _weeklyProgressSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Progress Mingguan',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: textDark,
+            letterSpacing: -0.3,
           ),
-
-          const SizedBox(height: 10),
-
-          Text(
-            controller.weeklyProgressText,
-            style: const TextStyle(
-              fontSize: 15,
-              color: Colors.black54,
-              fontWeight: FontWeight.w500,
-            ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          controller.weeklyProgressText,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.black45,
+            fontWeight: FontWeight.w500,
           ),
-
-          const SizedBox(height: 26),
-
-          Container(
-            height: 142,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(
-                controller.weeklyProgress.length,
-                (index) {
-                  final item = controller.weeklyProgress[index];
-                  final todayIndex = DateTime.now().weekday - 1;
-
-                  return _buildProgressBar(
-                    day: item.day,
-                    value: item.value,
-                    height: controller.barHeight(item.value),
-                    active: index == todayIndex,
-                  );
-                },
-              ),
-            ),
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          height: 150,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: List.generate(controller.weeklyProgress.length, (i) {
+              final item = controller.weeklyProgress[i];
+              final isToday = i == DateTime.now().weekday - 1;
+              return Expanded(
+                child: _buildProgressBar(
+                  day: item.day,
+                  value: item.value,
+                  height: controller.barHeight(item.value),
+                  active: isToday,
+                ),
+              );
+            }),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -504,55 +222,54 @@ class HomeView extends GetView<HomeController> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (active)
-          Container(
-            margin: const EdgeInsets.only(bottom: 6),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 7,
-              vertical: 3,
-            ),
-            decoration: BoxDecoration(
-              color: primaryColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Text(
-              'Hari ini',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          )
-        else
-          const SizedBox(height: 22),
-
+        // label "hari ini"
+        SizedBox(
+          height: 22,
+          child: active
+              ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    'Hari ini',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w800),
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(height: 6),
+        // batang
         AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: 30,
-          height: height,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOut,
+          width: 28,
+          height: height.clamp(8.0, 96.0),
           decoration: BoxDecoration(
-            color: hasProgress ? const Color(0xff9FE0C7) : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(30),
+            color: hasProgress
+                ? (active ? primaryColor : primaryColor.withOpacity(0.6))
+                : softGreen.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
-
         const SizedBox(height: 10),
-
         Text(
           day,
           style: TextStyle(
             fontSize: 12,
-            fontWeight: active ? FontWeight.w900 : FontWeight.w700,
-            color: active ? primaryColor : Colors.grey,
+            fontWeight: active ? FontWeight.w900 : FontWeight.w500,
+            color: active ? primaryColor : Colors.black38,
           ),
         ),
       ],
     );
   }
 
-  // ================= MENU CEPAT =================
-
+  // ─── 4. MENU CEPAT ───────────────────────────────────────────
   Widget _quickMenu() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,57 +277,42 @@ class HomeView extends GetView<HomeController> {
         const Text(
           'Menu Cepat',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.w900,
             color: textDark,
+            letterSpacing: -0.3,
           ),
         ),
-
-        const SizedBox(height: 16),
-
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
-          childAspectRatio: 1.35,
+        const SizedBox(height: 3),
+        const Text(
+          'Akses fitur utama dengan mudah',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.black45,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 18),
+        Row(
           children: [
-            _menuCard(
-              title: 'Screening',
-              subtitle: 'Cek perkembangan',
-              icon: Icons.fact_check_outlined,
-              color: softGreen,
-              onTap: () {
-                Get.toNamed(Routes.SCREENING);
-              },
+            Expanded(
+              child: _menuCard(
+                title: 'Screening',
+                subtitle: 'Cek perkembangan',
+                icon: Icons.fact_check_rounded,
+                color: softGreen,
+                onTap: () => Get.toNamed(Routes.SCREENING),
+              ),
             ),
-            _menuCard(
-              title: 'Aktivitas',
-              subtitle: 'Latihan harian',
-              icon: Icons.playlist_add_check,
-              color: softBlue,
-              onTap: () {
-                Get.toNamed(Routes.ACTIVITIES);
-              },
-            ),
-            _menuCard(
-              title: 'Grafik',
-              subtitle: 'Lihat progress',
-              icon: Icons.trending_up,
-              color: const Color(0xffEDF3F1),
-              onTap: () {
-                Get.toNamed(Routes.GRAFIK_PERKEMBANGAN);
-              },
-            ),
-            _menuCard(
-              title: 'Konsultasi',
-              subtitle: 'Hubungi ahli',
-              icon: Icons.chat_bubble_outline,
-              color: const Color(0xffF1F1F1),
-              onTap: () {
-                Get.toNamed(Routes.AHLI_TERAPIS);
-              },
+            const SizedBox(width: 12),
+            Expanded(
+              child: _menuCard(
+                title: 'Aktivitas',
+                subtitle: 'Latihan harian',
+                icon: Icons.playlist_add_check_rounded,
+                color: softBlue,
+                onTap: () => Get.toNamed(Routes.ACTIVITIES),
+              ),
             ),
           ],
         ),
@@ -629,43 +331,48 @@ class HomeView extends GetView<HomeController> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(20),
         child: Ink(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Icon(
-                icon,
-                size: 28,
-                color: primaryColor,
-              ),
-
-              const Spacer(),
-
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w900,
-                  color: primaryColor,
+              Container(
+                height: 40,
+                width: 40,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(icon, size: 19, color: primaryColor),
               ),
-
-              const SizedBox(height: 3),
-
-              Text(
-                subtitle,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black.withOpacity(0.45),
-                  fontWeight: FontWeight.w600,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: primaryColor,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: primaryColor.withOpacity(0.55),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -675,111 +382,255 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // ================= REUSABLE =================
-
-  Widget _baseCard({
-    required Widget child,
-  }) {
+  // ─── 5. AKTIVITAS HARI INI ───────────────────────────────────
+  Widget _todayActivityCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: const Color(0xffE9EFEC),
-        ),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: softBlue, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.035),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
+            color: softBlue.withOpacity(0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: child,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Aktivitas Hari Ini',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: textDark,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: softBlue,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(Icons.record_voice_over_rounded,
+                    color: primaryColor, size: 30),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.activityTitle.value,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: textDark,
+                        height: 1.2,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(Icons.schedule_rounded,
+                            color: primaryColor, size: 15),
+                        const SizedBox(width: 5),
+                        Text(
+                          controller.activityDuration.value,
+                          style: const TextStyle(
+                            color: primaryColor,
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            controller.activityDescription.value,
+            style: const TextStyle(
+              color: Color(0xff555555),
+              fontSize: 13.5,
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Get.toNamed(Routes.DETAIL_ACTIVITY),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Mulai Aktivitas',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.play_circle_fill_rounded, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _cardTitleRow({
-    required IconData icon,
-    required String title,
-    required Color iconBackground,
-  }) {
-    return Row(
+  // ─── 6. SCREENING TERAKHIR ───────────────────────────────────
+  Widget _lastScreeningSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 44,
-          width: 44,
-          decoration: BoxDecoration(
-            color: iconBackground,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(
-            icon,
-            color: primaryColor,
-            size: 24,
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w900,
-              color: textDark,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Screening Terakhir',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: textDark,
+                letterSpacing: -0.3,
+              ),
             ),
+            GestureDetector(
+              onTap: () => Get.toNamed(Routes.GRAFIK_PERKEMBANGAN),
+              child: Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xffE8EDEB)),
+                ),
+                child: const Icon(Icons.arrow_forward_ios_rounded,
+                    size: 14, color: primaryColor),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: softGreen, width: 1.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // status chip
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  color: softGreen,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  controller.riskCategory.value,
+                  style: const TextStyle(
+                    color: primaryColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(11),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF5FAF8),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(Icons.psychology_alt_rounded,
+                        color: primaryColor, size: 26),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Indikasi utama',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black45,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          controller.mainIndication.value,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            color: textDark,
+                            fontWeight: FontWeight.w800,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _statusChip({
-    required String text,
-    required Color backgroundColor,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-
-  // ================= BACKGROUND =================
-
+  // ─── BACKGROUND ──────────────────────────────────────────────
   Widget _topBlur() {
     return Positioned(
       top: -80,
-      right: -75,
+      right: -60,
       child: Container(
-        height: 230,
-        width: 230,
+        height: 220,
+        width: 220,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xffB8F2DF).withOpacity(0.75),
+          color: const Color(0xffB8F2DF).withOpacity(0.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xffB8F2DF).withOpacity(0.65),
+              color: const Color(0xffB8F2DF).withOpacity(0.45),
               blurRadius: 90,
-              spreadRadius: 42,
+              spreadRadius: 40,
             ),
           ],
         ),
@@ -789,19 +640,19 @@ class HomeView extends GetView<HomeController> {
 
   Widget _bottomBlur() {
     return Positioned(
-      bottom: 120,
+      bottom: 100,
       left: -70,
       child: Container(
-        height: 190,
-        width: 190,
+        height: 200,
+        width: 200,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xffD8F7FF).withOpacity(0.75),
+          color: const Color(0xffD8F7FF).withOpacity(0.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xffD8F7FF).withOpacity(0.75),
+              color: const Color(0xffD8F7FF).withOpacity(0.5),
               blurRadius: 90,
-              spreadRadius: 42,
+              spreadRadius: 40,
             ),
           ],
         ),

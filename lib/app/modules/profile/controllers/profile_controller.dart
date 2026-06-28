@@ -7,6 +7,43 @@ import 'package:teraparent_mobile/app/routes/app_pages.dart';
 class ProfileController extends GetxController {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
+  final isLoading = false.obs;
+  final userName = ''.obs;
+  final profileUrl = ''.obs;
+  final childName = ''.obs;
+  final indication = ''.obs;
+  final riskCategory = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async{
+    try{
+      isLoading.value = true;
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      userName.value = prefs.getString('full_name') ?? 'user';
+      profileUrl.value = prefs.getString("profile_url") ?? '';
+      childName.value = prefs.getString("childName") ?? 'belum ada data anak';
+      indication.value = prefs.getString('mainIndication') ?? 'belum ada indikasi';
+      riskCategory.value = prefs.getString('riskCategory') ?? 'belum ada indikasi';
+
+    } catch(e){
+      print('');
+    }
+  } 
+
+  String get userNameText {
+    if (userName.value.trim().isEmpty) {
+      return 'User';
+    }
+    return userName.value;
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
 

@@ -36,8 +36,8 @@ class BottomNavbar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _item(Icons.home_rounded, "Home", 0),
-                _item(Icons.extension_rounded, "Activity", 1),
-                _item(Icons.trending_up_rounded, "Grafik", 2),
+                _item(Icons.trending_up_rounded, "Grafik", 1),
+                _item(Icons.extension_rounded, "konsultasi", 2),
                 _item(Icons.person_rounded, "Profile", 3),
               ],
             ),
