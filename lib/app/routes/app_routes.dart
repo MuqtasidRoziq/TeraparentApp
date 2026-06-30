@@ -26,6 +26,8 @@ abstract class Routes {
   static const SIGNIN_FACE = _Paths.SIGNIN_FACE;
   static const FACE_REGISTER = _Paths.FACE_REGISTER;
   static const FACE_LOGIN = _Paths.FACE_LOGIN;
+  static const VERIFY_OTPPASS = _Paths.VERIFY_OTPPASS;
+  static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
 }
 
 abstract class _Paths {
@@ -53,4 +55,6 @@ abstract class _Paths {
   static const SIGNIN_FACE = '/signin-face';
   static const FACE_REGISTER = '/face-register';
   static const FACE_LOGIN = '/face-login';
+  static const VERIFY_OTPPASS = '/verify-otppass';
+  static const RESET_PASSWORD = '/reset-password';
 }

@@ -1,23 +1,49 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
-class ForgotpassController extends GetxController {
-  //TODO: Implement ForgotpassController
+class ForgotPasswordController extends GetxController {
+  final emailController = TextEditingController();
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
+  final isLoading = false.obs;
 
   @override
   void onClose() {
+    emailController.dispose();
     super.onClose();
   }
 
-  void increment() => count.value++;
+  Future<void> sendOtp() async {
+    if (emailController.text.trim().isEmpty) {
+      Get.snackbar(
+        "Peringatan",
+        "Email tidak boleh kosong",
+      );
+      return;
+    }
+
+    isLoading.value = true;
+
+    try {
+      // TODO:
+      // Panggil API Forgot Password
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      Get.snackbar(
+        "Berhasil",
+        "Kode OTP berhasil dikirim",
+      );
+
+      // contoh pindah halaman
+      Get.toNamed(Routes.VERIFY_OTPPASS);
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        e.toString(),
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

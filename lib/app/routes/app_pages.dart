@@ -30,6 +30,8 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/reset_password/bindings/reset_password_binding.dart';
+import '../modules/reset_password/views/reset_password_view.dart';
 import '../modules/result_screening/bindings/result_screening_binding.dart';
 import '../modules/result_screening/views/result_screening_view.dart';
 import '../modules/screening/bindings/screening_binding.dart';
@@ -38,6 +40,8 @@ import '../modules/security_password/bindings/security_password_binding.dart';
 import '../modules/security_password/views/security_password_view.dart';
 import '../modules/verify_otp/bindings/verify_otp_binding.dart';
 import '../modules/verify_otp/views/verify_otp_view.dart';
+import '../modules/verify_otppass/bindings/verify_otppass_binding.dart';
+import '../modules/verify_otppass/views/verify_otppass_view.dart';
 import '../modules/verify_success/bindings/verify_success_binding.dart';
 import '../modules/verify_success/views/verify_success_view.dart';
 
@@ -148,6 +152,16 @@ class AppPages {
       name: _Paths.FACE_LOGIN,
       page: () => const FaceLoginView(),
       binding: FaceLoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.VERIFY_OTPPASS,
+      page: () => const VerifyOtppassView(),
+      binding: VerifyOtppassBinding(),
+    ),
+    GetPage(
+      name: _Paths.RESET_PASSWORD,
+      page: () => const ResetPasswordView(),
+      binding: ResetPasswordBinding(),
     ),
   ];
 }
