@@ -237,7 +237,9 @@ class VerifyOtppassView extends GetView<VerifyOtpPassController> {
                           borderRadius: BorderRadius.circular(18),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        controller.verifyOtp();
+                      },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

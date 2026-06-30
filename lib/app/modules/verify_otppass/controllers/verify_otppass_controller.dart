@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 class VerifyOtpPassController extends GetxController {
   /// OTP Controller
@@ -81,7 +82,7 @@ class VerifyOtpPassController extends GetxController {
     print("OTP : $otp");
 
     /// pindah ke halaman password baru
-    // Get.toNamed(Routes.NEW_PASSWORD);
+    Get.toNamed(Routes.RESET_PASSWORD);
   }
 
   /// ==============================

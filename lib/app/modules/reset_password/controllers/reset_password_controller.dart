@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 class ResetPasswordController extends GetxController {
   /// ===========================
@@ -119,7 +120,7 @@ class ResetPasswordController extends GetxController {
     /// TODO:
     /// Ganti dengan route login milikmu
     ///
-    /// Get.offAllNamed(Routes.LOGIN);
+    Get.offAllNamed(Routes.LOGIN);
   }
 
   @override
