@@ -86,7 +86,7 @@ class DailyActivityCardNone extends StatelessWidget {
   final String title;
   final String description;
   final String time;
-  final String imageUrl;
+  final String? imageUrl;
   final VoidCallback onStart;
 
   const DailyActivityCardNone({
@@ -94,7 +94,7 @@ class DailyActivityCardNone extends StatelessWidget {
     required this.title,
     required this.description,
     required this.time,
-    required this.imageUrl,
+    this.imageUrl,
     required this.onStart,
   });
 
@@ -129,18 +129,25 @@ class DailyActivityCardNone extends StatelessWidget {
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
-                child: Image.network(
-                  imageUrl,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  // Fallback jika gambar gagal dimuat
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 200,
-                    color: const Color(0xffA7E0D3),
-                    child: const Icon(Icons.image, color: Colors.white, size: 40),
-                  ),
-                ),
+                child: (imageUrl == null || imageUrl!.isEmpty)
+                    ? Container(
+                        height: 200,
+                        width: double.infinity,
+                        color: const Color(0xffA7E0D3),
+                        child: const Icon(Icons.image, color: Colors.white, size: 40),
+                      )
+                    : Image.network(
+                        imageUrl!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        // Fallback jika gambar gagal dimuat
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 200,
+                          color: const Color(0xffA7E0D3),
+                          child: const Icon(Icons.image, color: Colors.white, size: 40),
+                        ),
+                      ),
               ),
               // Badge Waktu (Mengambang di kanan atas gambar)
               Positioned(

@@ -120,11 +120,6 @@ class ScreeningResultModel {
   final int physicalMotorScore;
   final int cognitiveProblemSolvingScore;
   final int socialEmotionalScore;
-  // final int communicationSpeechPercentage;
-  // final int physicalMotorPercentage;
-  // final int cognitiveProblemSolvingPercentage;
-  // final int socialEmotionalPercentage;
-
   final DateTime? completedAt;
 
   ScreeningResultModel({
@@ -143,10 +138,6 @@ class ScreeningResultModel {
     required this.physicalMotorScore,
     required this.cognitiveProblemSolvingScore,
     required this.socialEmotionalScore,
-    // required this.communicationSpeechPercentage,
-    // required this.physicalMotorPercentage,
-    // required this.cognitiveProblemSolvingPercentage,
-    // required this.socialEmotionalPercentage,
     this.completedAt,
   });
 
@@ -209,13 +200,6 @@ class ScreeningResultModel {
       physicalMotorScore: physicalScore,
       cognitiveProblemSolvingScore: cognitiveScore,
       socialEmotionalScore: socialScore,
-      // communicationSpeechPercentage: communicationPercentage,
-      // physicalMotorPercentage: physicalPercentage,
-      // cognitiveProblemSolvingPercentage: cognitivePercentage,
-      // socialEmotionalPercentage: socialPercentage,
-      // completedAt: json['completedAt'] != null
-      //     ? DateTime.tryParse(json['completedAt'].toString())
-      //     : null,
     );
   }
 

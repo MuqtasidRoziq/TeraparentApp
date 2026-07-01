@@ -98,6 +98,8 @@ class ScreeningService extends GetxService {
             resultData = data['screeningSession'];
           } else if (data is Map && data['screening'] is Map) {
             resultData = data['screening'];
+          } else if (data is Map && data['recomendationActivity'] is List) {
+            resultData = data['recomendationActivity'];
           }
 
           final result = ScreeningResultModel.fromJson(
@@ -136,6 +138,9 @@ class ScreeningService extends GetxService {
 
           if (data is Map && data['result'] is Map) {
             resultData = data['result'];
+            if (data['dailyActivities'] is List) {
+              resultData['dailyActivities'] = data['dailyActivities'];
+            }
           } else if (data is Map && data['screeningResult'] is Map) {
             resultData = data['screeningResult'];
           } else if (data is Map && data['session'] is Map) {
@@ -146,6 +151,7 @@ class ScreeningService extends GetxService {
             resultData = data['screening'];
           }
 
+          
           final result = ScreeningResultModel.fromJson(
             Map<String, dynamic>.from(resultData),
           );

@@ -1,9 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../controllers/verify_otppass_controller.dart';
 
 class VerifyOtppassView extends GetView<VerifyOtpPassController> {
@@ -15,7 +13,7 @@ class VerifyOtppassView extends GetView<VerifyOtpPassController> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: background,

@@ -1,23 +1,19 @@
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/data/models/activity_model.dart';
 
 class ActivitySuccessController extends GetxController {
-  //TODO: Implement ActivitySuccessController
+  late final Rxn<DailyActivityModel> activity;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+
+    final args = Get.arguments;
+    activity = Rxn<DailyActivityModel>(
+      args is DailyActivityModel ? args : null,
+    );
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
+  String get title => activity.value?.title ?? 'Aktivitas';
+  String get domainLabel => activity.value?.domainLabel ?? '';
 }

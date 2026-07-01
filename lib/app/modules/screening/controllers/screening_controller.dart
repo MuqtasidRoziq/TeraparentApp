@@ -199,7 +199,7 @@ class ScreeningController extends GetxController {
     if (sessionId.value.isEmpty) {
       Get.snackbar(
         'Error',
-        'Session screening tidak ditemukan',
+        'sesi screening tidak valid. Silakan mulai ulang proses screening.',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -232,14 +232,12 @@ class ScreeningController extends GetxController {
         sessionId: sessionId.value,
         request: request,
       );
-
-      print('SCREENING SUBMIT SUCCESS: ${response.success}');
-      print('SCREENING SUBMIT MESSAGE: ${response.message}');
-      print('SCREENING SUBMIT DATA: ${response.data}');
       
       if (response.success && response.data != null) {
         final screeningResult = response.data!;
         final prefs = await SharedPreferences.getInstance();
+
+        debugPrint('response: ${screeningResult}');
 
         await prefs.setString('mainIndication', screeningResult.mainIndication);
         await prefs.setInt('finalScore', screeningResult.finalScore);

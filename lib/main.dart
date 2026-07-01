@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
+import 'package:teraparent_mobile/app/data/services/activity_services.dart';
 import 'package:teraparent_mobile/app/data/services/api_service.dart';
 import 'package:teraparent_mobile/app/data/services/auth/login_service.dart';
 import 'package:teraparent_mobile/app/data/services/auth/register_service.dart';
@@ -28,6 +29,7 @@ void main() async {
   Get.put(LoginService(), permanent: true);
   Get.put(OtpSessionService(), permanent: true);
   Get.put(ScreeningService(), permanent: true);
+  Get.put(ActivityService(), permanent: true);
 
   runApp(
     GetMaterialApp(

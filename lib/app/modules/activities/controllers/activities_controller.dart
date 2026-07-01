@@ -1,66 +1,115 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/activity_model.dart';
-import 'package:teraparent_mobile/app/modules/activity_success/views/activity_success_view.dart';
+import 'package:teraparent_mobile/app/data/services/activity_services.dart';
+import '../../../routes/app_pages.dart';
 
 class ActivitiesController extends GetxController {
-  // State reactive untuk memantau loading data dari API
-  var isLoading = true.obs;
-  var activity = Rxn<ActivityModel>();
+  final ActivityService _activityService = Get.find<ActivityService>();
+
+  final isLoading = true.obs;
+  final errorMessage = ''.obs;
+
+  final activities = <DailyActivityModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchActivityDetail();
+    fetchTodayActivities();
   }
 
-  void fetchActivityDetail() async {
+  Future<String?> _getChildId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final childIdString = prefs.getString('childId');
+
+    if (childIdString != null && childIdString.isNotEmpty) {
+      return childIdString;
+    }
+
+    final childIdInt = prefs.getInt('childId');
+    if (childIdInt != null) {
+      return childIdInt.toString();
+    }
+
+    return null;
+  }
+
+  /// Ambil aktivitas hari ini dari GET /api/activities/today/:childId
+  Future<void> fetchTodayActivities() async {
     try {
       isLoading(true);
-      // TODO: Panggil repositori / hit endpoint Flask kamu di sini
-      // Contoh: var result = await ActivityService.getDetail(id);
-      
-      // Simulasi data dummy dari backend sesuai mockup gambar kamu
-      await Future.delayed(const Duration(milliseconds: 500));
-      Map<String, dynamic> dummyJson = {
-        "id": "act_001",
-        "title": "Latihan Keseimbangan",
-        "category": "Motorik Kasar",
-        "duration": "15 Menit",
-        "description": "Aktivitas berjalan di atas garis lurus untuk melatih koordinasi tubuh dan keseimbangan statis anak.",
-        "objectives": ["Melatih keseimbangan tubuh", "Memperkuat otot kaki", "Meningkatkan fokus"],
-        "tools": ["Selotip kertas"],
-        "safety_tips": "Pastikan area sekitar bebas dari benda tajam dan lantai tidak licin. Gunakan selotip kertas untuk menghindari residu lem di lantai.",
-        "steps": [
-          "Buat garis lurus di lantai menggunakan selotip.",
-          "Contohkan cara berjalan di atas garis dengan merentangkan tangan untuk keseimbangan.",
-          "Ajak anak mencoba sambil memegang tangannya jika perlu, lalu lepaskan perlahan saat ia mulai stabil."
-        ]
-      };
+      errorMessage('');
 
-      activity.value = ActivityModel.fromJson(dummyJson);
+      final childId = await _getChildId();
+
+      if (childId == null || childId.isEmpty) {
+        errorMessage.value = 'Data anak belum ditemukan';
+        Get.offAllNamed(Routes.CHILD_DATE);
+        return;
+      }
+
+      final result = await _activityService.getTodayActivities(
+        childId: childId,
+      );
+
+      if (result.success) {
+        activities.assignAll(result.data ?? []);
+      } else {
+        errorMessage.value = result.message.isNotEmpty
+            ? result.message
+            : 'Gagal mengambil aktivitas hari ini';
+      }
+    } catch (e) {
+      errorMessage.value = e.toString();
     } finally {
       isLoading(false);
     }
   }
 
-  // Fungsi dinamis untuk menentukan warna tema berdasarkan tipe Motorik anak
-  Color getCategoryColor() {
-    switch (activity.value?.category) {
-      case "Motorik Kasar":
-        return const Color(0xFF235A44); // Hijau Tua khas Teraparent
-      case "Motorik Halus":
-        return const Color(0xFF40916C); // Hijau Sedang
-      case "Komunikasi":
-        return const Color(0xFF2A6F97); // Biru (seperti Flashcard Hewan)
+  /// Kelompokkan aktivitas berdasarkan domain, mempertahankan urutan
+  /// kemunculan pertama tiap domain sesuai data dari backend.
+  Map<String, List<DailyActivityModel>> get groupedByDomain {
+    final Map<String, List<DailyActivityModel>> grouped = {};
+
+    for (final activity in activities) {
+      grouped.putIfAbsent(activity.domain, () => []).add(activity);
+    }
+
+    return grouped;
+  }
+
+  IconData iconForDomain(String domain) {
+    switch (domain.toUpperCase()) {
+      case 'COMMUNICATION_SPEECH':
+        return Icons.chat_bubble_outline;
+      case 'SOCIAL_EMOTIONAL':
+        return Icons.people_outline;
+      case 'COGNITIVE_PROBLEM_SOLVING':
+        return Icons.psychology_outlined;
+      case 'PHYSICAL_MOTOR':
+        return Icons.accessibility_new;
       default:
-        return const Color(0xFF235A44);
+        return Icons.star_outline;
     }
   }
 
-  void submitCompletion() {
-    // Logika hit API Flask untuk menyimpan skor bonus anak (+50 Poin)
-    // Setelah sukses, arahkan ke Halaman Sukses menggunakan Get.to()
-    Get.to(() => ActivitySuccessView());
+  Color colorForDomain(String domain) {
+    switch (domain.toUpperCase()) {
+      case 'COMMUNICATION_SPEECH':
+        return const Color(0xFF2A6F97);
+      case 'SOCIAL_EMOTIONAL':
+        return const Color(0xFF8B5E1A);
+      case 'COGNITIVE_PROBLEM_SOLVING':
+        return const Color(0xFF6A4C93);
+      case 'PHYSICAL_MOTOR':
+        return const Color(0xFF235A44);
+      default:
+        return const Color(0xFF2F6F57);
+    }
+  }
+
+  void openDetail(DailyActivityModel activity) {
+    Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: activity);
   }
 }
