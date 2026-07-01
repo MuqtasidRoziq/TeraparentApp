@@ -14,7 +14,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -364,36 +364,36 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
     );
   }
 
-  Widget _item(RxBool value, String title) {
-    return Obx(
-      () => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          children: [
+//   Widget _item(RxBool value, String title) {
+//     return Obx(
+//       () => Padding(
+//         padding: const EdgeInsets.only(bottom: 12),
+//         child: Row(
+//           children: [
 
-            Icon(
-              value.value
-                  ? Icons.check_circle
-                  : Icons.radio_button_unchecked,
-              color: value.value
-                  ? Colors.green
-                  : Colors.grey,
-            ),
+//             Icon(
+//               value.value
+//                   ? Icons.check_circle
+//                   : Icons.radio_button_unchecked,
+//               color: value.value
+//                   ? Colors.green
+//                   : Colors.grey,
+//             ),
 
-            const SizedBox(width: 12),
+//             const SizedBox(width: 12),
 
-            Text(
-              title,
-              style: TextStyle(
-                color: value.value
-                    ? Colors.green
-                    : Colors.black54,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+//             Text(
+//               title,
+//               style: TextStyle(
+//                 color: value.value
+//                     ? Colors.green
+//                     : Colors.black54,
+//                 fontWeight: FontWeight.w500,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 }

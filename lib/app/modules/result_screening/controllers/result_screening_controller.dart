@@ -19,18 +19,13 @@ class ResultScreeningController extends GetxController {
   Future<void> loadResult() async {
     final args = Get.arguments;
 
-    print('RESULT SCREENING ARGUMENTS: $args');
-
     if (args != null && args is Map) {
       sessionId.value = args['sessionId']?.toString() ?? '';
 
       final rawResult = args['result'];
 
-      print('RAW RESULT FROM ARGUMENTS: $rawResult');
-
       if (rawResult is ScreeningResultModel) {
         result.value = rawResult;
-        print('RESULT SET FROM MODEL: ${result.value}');
         return;
       }
 
@@ -249,26 +244,4 @@ class ResultScreeningController extends GetxController {
     ];
   }
 
-  List<String> get therapyMethods {
-    final indication = result.value?.mainIndication;
-    final domain = result.value?.priorityDomain;
-
-    if (indication == 'SPEECH_DELAY' || domain == 'COMMUNICATION_SPEECH') {
-      return ['Terapi Wicara', 'Stimulasi Bahasa'];
-    }
-
-    if (indication == 'AUTISM' || domain == 'SOCIAL_EMOTIONAL') {
-      return ['Terapi Bermain', 'Terapi Perilaku'];
-    }
-
-    if (indication == 'ADHD' || domain == 'COGNITIVE_PROBLEM_SOLVING') {
-      return ['Latihan Fokus', 'Terapi Okupasi'];
-    }
-
-    if (domain == 'PHYSICAL_MOTOR') {
-      return ['Latihan Motorik', 'Terapi Okupasi'];
-    }
-
-    return ['Stimulasi Harian', 'Terapi Bermain'];
-  }
 }
