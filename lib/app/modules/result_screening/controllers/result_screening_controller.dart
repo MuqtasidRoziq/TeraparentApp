@@ -43,7 +43,6 @@ class ResultScreeningController extends GetxController {
       return;
     }
 
-    await loadResultFromStorage();
   }
 
   Future<void> fetchResultFromApi() async {
@@ -74,39 +73,6 @@ class ResultScreeningController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<void> loadResultFromStorage() async {
-    // final prefs = await SharedPreferences.getInstance();
-
-    // final riskCategory = prefs.getString('riskCategory');
-    // final finalScore = prefs.getInt('finalScore');
-    // final mainIndication = prefs.getString('mainIndication');
-    // final priorityDomain = prefs.getString('priorityDomain');
-    // final recommendation = prefs.getString('recommendation');
-
-    // if (riskCategory == null || finalScore == null) {
-    //   return;
-    // }
-
-    // result.value = ScreeningResultModel(
-    //   riskCategory: riskCategory,
-    //   finalScore: finalScore,
-    //   mainIndication: mainIndicationText,
-    //   priorityDomain: priorityDomainText,
-    //   recommendationText: recommendationText, 
-    //   id: '', 
-    //   childId: '', 
-    //   status: '', 
-    //   indicationSummary: '', 
-    //   resultDescription: '', 
-    //   disclaimerText: '', 
-    //   communicationSpeechScore: null, 
-    //   physicalMotorScore: null, 
-    //   cognitiveProblemSolvingScore: null, 
-    //   socialEmotionalScore: null,
-
-    // );
   }
 
   String get riskCategory {

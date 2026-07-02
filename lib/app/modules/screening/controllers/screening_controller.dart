@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/screening_model.dart';
@@ -7,6 +8,7 @@ import '../../../routes/app_pages.dart';
 
 class ScreeningController extends GetxController {
   final PageController pageController = PageController();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   final ScreeningService _screeningService = Get.find<ScreeningService>();
 
@@ -43,9 +45,9 @@ class ScreeningController extends GetxController {
   }
 
   Future<void> initScreening() async {
-    final childId = await _getChildId();
+    final childId = await storage.read(key: 'childId') ?? '';
 
-    if (childId == null || childId.isEmpty) {
+    if (childId.isEmpty) {
       Get.snackbar(
         'Error',
         'Data anak belum ditemukan. Silakan isi data anak terlebih dahulu.',
@@ -115,23 +117,6 @@ class ScreeningController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  Future<String?> _getChildId() async {
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final childIdString = _prefs.getString('childId');
-
-    if (childIdString != null && childIdString.isNotEmpty) {
-      return childIdString;
-    }
-
-    final childIdInt = _prefs.getInt('childId');
-
-    if (childIdInt != null) {
-      return childIdInt.toString();
-    }
-
-    return null;
   }
 
   void selectOption(String optionId) {

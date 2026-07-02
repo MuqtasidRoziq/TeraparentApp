@@ -73,6 +73,7 @@ class LoginController extends GetxController {
 
         await storage.write(key: 'token', value: token);
         await storage.write(key: 'user_id', value: user.id);
+        await storage.write(key: 'childId', value: child.id);
         
         await _prefs.setString('email', user.email);
         await _prefs.setString('full_name', user.fullName);
@@ -82,7 +83,6 @@ class LoginController extends GetxController {
         await _prefs.setBool('is_email_verified', user.isEmailVerified);
         await _prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
         await _prefs.setBool('has_child_data', user.hasChildData);
-        await _prefs.setString('childId', child.id);
         await _prefs.setString('childName', child.childName);
         await _prefs.setString('gender', child.gender);
         await _prefs.setString('birthDate', child.birthDate.toString());
@@ -123,6 +123,8 @@ class LoginController extends GetxController {
   void onClose() {
     emailController.dispose();
     passwordController.dispose();
+    emailController.clear();
+    passwordController.clear();
     super.onClose();
   }
 }

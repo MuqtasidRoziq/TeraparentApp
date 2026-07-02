@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/core/widgets/card_daily_activity.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
-
 import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/home_controller.dart';
+import '../../../core/theme/colors.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  static const Color primaryColor = Color(0xff2F6F57);
-  static const Color softGreen = Color(0xffD5F0E5);
-  static const Color softBlue = Color(0xffDDF2F8);
-  static const Color textDark = Color(0xff1A1A1A);
-  static const Color bgColor = Color(0xffF5F7F6); // sedikit lebih hangat dari putih
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: AppColors.background,
       bottomNavigationBar: BottomNavbar(),
       body: SafeArea(
         child: Stack(
@@ -28,12 +24,12 @@ class HomeView extends GetView<HomeController> {
             Obx(() {
               if (controller.isLoading.value) {
                 return const Center(
-                  child: CircularProgressIndicator(color: primaryColor),
+                  child: CircularProgressIndicator(color: AppColors.primary),
                 );
               }
 
               return RefreshIndicator(
-                color: primaryColor,
+                color: AppColors.primary,
                 onRefresh: () async => await controller.loadHomeData(),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -62,8 +58,23 @@ class HomeView extends GetView<HomeController> {
 
                       _sectionDivider(),
 
-                      // 5. AKTIVITAS HARI INI
-                      _todayActivityCard(),
+                      todayActivityCardStart(
+                        title: controller.todayActivity.isNotEmpty
+                            ? controller.todayActivity[0].title
+                            : 'Belum ada aktivitas hari ini',
+                        time: controller.todayActivity.isNotEmpty
+                            ? controller.todayActivity[0].timeLabel
+                            : '',
+                        description: controller.todayActivity.isNotEmpty
+                            ? controller.todayActivity[0].description
+                            : 'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
+                        onStartActivity: () {
+                          if (controller.todayActivity.isNotEmpty) {
+                            final activity = controller.todayActivity[0];
+                            Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: activity);
+                          }
+                        },
+                      ),
                       const SizedBox(height: 28),
 
                       _sectionDivider(),
@@ -102,7 +113,7 @@ class HomeView extends GetView<HomeController> {
                 'Halo, selamat datang',
                 style: TextStyle(
                   fontSize: 13,
-                  color: textDark.withOpacity(0.45),
+                  color: AppColors.textSecondary.withOpacity(0.45),
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -114,7 +125,7 @@ class HomeView extends GetView<HomeController> {
                 style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w900,
-                  color: textDark,
+                  color: AppColors.textPrimary,
                   letterSpacing: -0.8,
                   height: 1.1,
                 ),
@@ -123,14 +134,14 @@ class HomeView extends GetView<HomeController> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: softGreen.withOpacity(0.75),
+                  color: AppColors.softGreen.withOpacity(0.75),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.child_care_rounded,
-                        size: 16, color: primaryColor),
+                        size: 16, color: AppColors.primary),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
@@ -139,7 +150,7 @@ class HomeView extends GetView<HomeController> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12.5,
-                          color: primaryColor,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
@@ -160,113 +171,122 @@ class HomeView extends GetView<HomeController> {
             border: Border.all(color: Colors.white, width: 2),
           ),
           child: const Icon(Icons.family_restroom_rounded,
-              color: primaryColor, size: 28),
+              color: AppColors.primary, size: 28),
         ),
       ],
     );
   }
 
   Widget _weeklyProgressSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Progress Mingguan',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: textDark,
-            letterSpacing: -0.3,
-          ),
-        ),
-        const SizedBox(height: 3),
-        Text(
-          controller.weeklyProgressText,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Colors.black45,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 20),
-        SizedBox(
-          height: 150,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(controller.weeklyProgress.length, (i) {
-              final item = controller.weeklyProgress[i];
-              final isToday = i == DateTime.now().weekday - 1;
-              return Expanded(
-                child: _buildProgressBar(
-                  day: item.day,
-                  value: item.value,
-                  height: controller.barHeight(item.value),
-                  active: isToday,
-                ),
-              );
-            }),
-          ),
-        ),
-      ],
-    );
-  }
+    return Obx(() {
+      final percent = controller.progressPercent / 100;
 
-  Widget _buildProgressBar({
-    required String day,
-    required int value,
-    required double height,
-    bool active = false,
-  }) {
-    final hasProgress = value > 0;
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(.08),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // label "hari ini"
-        SizedBox(
-          height: 22,
-          child: active
-              ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+            /// Judul
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(6),
+                    color: AppColors.primary.withOpacity(.12),
+                    shape: BoxShape.circle,
                   ),
-                  child: const Text(
-                    'Hari ini',
+                  child: const Icon(
+                    Icons.eco_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    "Progress Minggu Ini",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w800),
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                )
-              : null,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 28),
+
+            CircularPercentIndicator(
+              radius: 85,
+              lineWidth: 14,
+              animation: true,
+              animationDuration: 1200,
+              percent: percent.clamp(0.0, 1.0),
+              circularStrokeCap: CircularStrokeCap.round,
+              backgroundColor: Colors.green.shade50,
+              progressColor: AppColors.primary,
+              center: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  Text(
+                    controller.progressPercentText,
+                    style: const TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  const Text(
+                    "Progress",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            Text(
+              controller.highlightText,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: LinearProgressIndicator(
+                minHeight: 10,
+                value: percent,
+                backgroundColor: Colors.green.shade50,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
-        // batang
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOut,
-          width: 28,
-          height: height.clamp(8.0, 96.0),
-          decoration: BoxDecoration(
-            color: hasProgress
-                ? (active ? primaryColor : primaryColor.withOpacity(0.6))
-                : softGreen.withOpacity(0.45),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          day,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: active ? FontWeight.w900 : FontWeight.w500,
-            color: active ? primaryColor : Colors.black38,
-          ),
-        ),
-      ],
-    );
+      );
+    });
   }
 
   // ─── 4. MENU CEPAT ───────────────────────────────────────────
@@ -279,7 +299,7 @@ class HomeView extends GetView<HomeController> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: textDark,
+            color: AppColors.textPrimary,
             letterSpacing: -0.3,
           ),
         ),
@@ -300,7 +320,7 @@ class HomeView extends GetView<HomeController> {
                 title: 'Screening',
                 subtitle: 'Cek perkembangan',
                 icon: Icons.fact_check_rounded,
-                color: softGreen,
+                color: AppColors.softGreen,
                 onTap: () => Get.toNamed(Routes.SCREENING),
               ),
             ),
@@ -310,7 +330,7 @@ class HomeView extends GetView<HomeController> {
                 title: 'Aktivitas',
                 subtitle: 'Latihan harian',
                 icon: Icons.playlist_add_check_rounded,
-                color: softBlue,
+                color: AppColors.softBlue,
                 onTap: () => Get.toNamed(Routes.ACTIVITIES),
               ),
             ),
@@ -347,7 +367,7 @@ class HomeView extends GetView<HomeController> {
                   color: Colors.white,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 19, color: primaryColor),
+                child: Icon(icon, size: 19, color: AppColors.primary),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -359,7 +379,7 @@ class HomeView extends GetView<HomeController> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        color: primaryColor,
+                        color: AppColors.primary,
                       ),
                     ),
                     Text(
@@ -368,7 +388,7 @@ class HomeView extends GetView<HomeController> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
-                        color: primaryColor.withOpacity(0.55),
+                        color: AppColors.primary.withOpacity(0.55),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -382,130 +402,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // ─── 5. AKTIVITAS HARI INI ───────────────────────────────────
-  Widget _todayActivityCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: softBlue, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: softBlue.withOpacity(0.35),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Aktivitas Hari Ini',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: textDark,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                  color: softBlue,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: const Icon(Icons.record_voice_over_rounded,
-                    color: primaryColor, size: 30),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      controller.activityTitle.value,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: textDark,
-                        height: 1.2,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.schedule_rounded,
-                            color: primaryColor, size: 15),
-                        const SizedBox(width: 5),
-                        Text(
-                          controller.activityDuration.value,
-                          style: const TextStyle(
-                            color: primaryColor,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            controller.activityDescription.value,
-            style: const TextStyle(
-              color: Color(0xff555555),
-              fontSize: 13.5,
-              height: 1.6,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Get.toNamed(Routes.DETAIL_ACTIVITY),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Mulai Aktivitas',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 15,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Icon(Icons.play_circle_fill_rounded, size: 20),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ─── 6. SCREENING TERAKHIR ───────────────────────────────────
   Widget _lastScreeningSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -518,7 +414,7 @@ class HomeView extends GetView<HomeController> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
-                color: textDark,
+                color: AppColors.textPrimary,
                 letterSpacing: -0.3,
               ),
             ),
@@ -532,7 +428,7 @@ class HomeView extends GetView<HomeController> {
                   border: Border.all(color: const Color(0xffE8EDEB)),
                 ),
                 child: const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 14, color: primaryColor),
+                    size: 14, color: AppColors.primary),
               ),
             ),
           ],
@@ -544,7 +440,7 @@ class HomeView extends GetView<HomeController> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: softGreen, width: 1.5),
+            border: Border.all(color: AppColors.softGreen, width: 1.5),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -554,13 +450,13 @@ class HomeView extends GetView<HomeController> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: softGreen,
+                  color: AppColors.softGreen,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   controller.riskCategory.value,
                   style: const TextStyle(
-                    color: primaryColor,
+                    color: AppColors.primary,
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                   ),
@@ -576,7 +472,7 @@ class HomeView extends GetView<HomeController> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(Icons.psychology_alt_rounded,
-                        color: primaryColor, size: 26),
+                        color: AppColors.primary, size: 26),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -598,7 +494,7 @@ class HomeView extends GetView<HomeController> {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 15,
-                            color: textDark,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w800,
                             height: 1.3,
                           ),
@@ -615,7 +511,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // ─── BACKGROUND ──────────────────────────────────────────────
   Widget _topBlur() {
     return Positioned(
       top: -80,
@@ -625,10 +520,10 @@ class HomeView extends GetView<HomeController> {
         width: 220,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xffB8F2DF).withOpacity(0.5),
+          color: AppColors.softGreen.withOpacity(0.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xffB8F2DF).withOpacity(0.45),
+              color: AppColors.softGreen.withOpacity(0.45),
               blurRadius: 90,
               spreadRadius: 40,
             ),
@@ -647,10 +542,10 @@ class HomeView extends GetView<HomeController> {
         width: 200,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xffD8F7FF).withOpacity(0.5),
+          color: AppColors.lightBlue.withOpacity(0.5),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xffD8F7FF).withOpacity(0.5),
+              color: AppColors.lightBlue.withOpacity(0.5),
               blurRadius: 90,
               spreadRadius: 40,
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:fl_chart/fl_chart.dart'; // Import fl_chart
+import 'package:fl_chart/fl_chart.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
 import 'package:teraparent_mobile/app/core/widgets/bottom_nav.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
@@ -13,34 +13,68 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              headerProfile(),
-              const SizedBox(height: 24),
-              _buildHighlightCard(),
-              const SizedBox(height: 16),
-              _buildRadarCard(),
-              const SizedBox(height: 16),
-              _buildMilestonesCard(),
-              const SizedBox(height: 16),
-              _buildGrowthChartCard(),
-              const SizedBox(height: 16),
-              _buildTipsCard(),
-              const SizedBox(height: 80), // Jarak aman untuk bottom navbar
-            ],
-          ),
+        child: RefreshIndicator(
+          onRefresh: controller.loadDashboardData,
+          child: Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headerProfile(),
+                  const SizedBox(height: 24),
+                  if (controller.errorMessage.value.isNotEmpty)
+                  _buildErrorBanner(),
+                  _buildHighlightCard(),
+                  const SizedBox(height: 16),
+                  _buildRadarCard(),
+                  const SizedBox(height: 16),
+                  _buildMilestonesCard(),
+                  const SizedBox(height: 16),
+                  _buildScreeningTrendCard(),
+                  const SizedBox(height: 16),
+                  _buildTipsCard(),
+                  const SizedBox(height: 80),
+                ],
+              ),
+            );
+          }),
         ),
       ),
       bottomNavigationBar: BottomNavbar(),
     );
   }
 
-  // 1. Banner Hebat
+  Widget _buildErrorBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFDECEA),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              controller.errorMessage.value,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 1. Banner ringkasan progres aktivitas mingguan (dari activities-stats)
   Widget _buildHighlightCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -58,7 +92,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Wah, Hebat!",
+                  "Progres Minggu Ini",
                   style: TextStyle(
                     color: Color(0xFF0F3A20),
                     fontWeight: FontWeight.bold,
@@ -67,11 +101,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${controller.childName} menunjukkan kemajuan luar biasa di aspek Motorik Halus minggu ini.",
-                  style: const TextStyle(
-                    color: Color(0xFF2E5A44),
-                    fontSize: 13,
-                  ),
+                  controller.highlightText,
+                  style: const TextStyle(color: Color(0xFF2E5A44), fontSize: 13),
                 ),
               ],
             ),
@@ -81,7 +112,6 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
     );
   }
 
-  // 2. Radar Perkembangan Placeholder
   Widget _buildRadarCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -106,47 +136,51 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
               Icon(Icons.info_outline, color: Colors.grey.shade400, size: 20),
             ],
           ),
+          const Text(
+            "Berdasarkan hasil screening terakhir",
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
           const SizedBox(height: 24),
-          SizedBox(
-            height: 220,
-            child: RadarChart(
-              RadarChartData(
-                dataSets: [
-                  RadarDataSet(
-                    fillColor: const Color(0xFF147A6A).withOpacity(0.4),
-                    borderColor: const Color(0xFF0F3A20),
-                    entryRadius: 3,
-                    borderWidth: 2,
-                    dataEntries: controller.radarValues
-                        .map((e) => RadarEntry(value: e))
-                        .toList(),
-                  ),
-                ],
-                radarShape: RadarShape.polygon,
-                // Menggunakan border dasar fl_chart modern
-                gridBorderData: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
+          if (!controller.hasRadarData)
+            _buildEmptyChartState(
+              "Anak belum memiliki hasil screening yang selesai.",
+            )
+          else
+            SizedBox(
+              height: 220,
+              child: RadarChart(
+                RadarChartData(
+                  dataSets: [
+                    RadarDataSet(
+                      fillColor: const Color(0xFF147A6A).withOpacity(0.4),
+                      borderColor: const Color(0xFF0F3A20),
+                      entryRadius: 3,
+                      borderWidth: 2,
+                      dataEntries: controller.radar.value!.values
+                          .map((e) => RadarEntry(value: e))
+                          .toList(),
+                    ),
+                  ],
+                  radarShape: RadarShape.polygon,
+                  gridBorderData: BorderSide(color: Colors.grey.shade300, width: 1),
+                  tickBorderData: BorderSide(color: Colors.grey.shade300, width: 1),
+                  tickCount: 3,
+                  titlePositionPercentageOffset: 0.15,
+                  getTitle: (index, angle) {
+                    final labels = controller.radar.value!.labels;
+                    return RadarChartTitle(
+                      text: index < labels.length ? labels[index] : '',
+                    );
+                  },
                 ),
-                tickBorderData: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
-                ),
-                tickCount: 3,
-                titlePositionPercentageOffset: 0.15,
-                // Solusi jitu: definisikan 2 parameter dan return objek RadarChartTitle dengan properti style
-                getTitle: (index, angle) {
-                  return RadarChartTitle(text: controller.radarFeatures[index]);
-                },
               ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  // 3. Milestones Terbaru
+  // 3. Milestones (masih statis - belum ada endpoint backend untuk ini)
   Widget _buildMilestonesCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -194,8 +228,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                         index == 0
                             ? Icons.widgets
                             : index == 1
-                            ? Icons.record_voice_over
-                            : Icons.people,
+                                ? Icons.record_voice_over
+                                : Icons.people,
                         color: const Color(0xFF0F3A20),
                         size: 20,
                       ),
@@ -207,17 +241,11 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                         children: [
                           Text(
                             item['title']!,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                           ),
                           Text(
                             item['date']!,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 11,
-                            ),
+                            style: const TextStyle(color: Colors.grey, fontSize: 11),
                           ),
                         ],
                       ),
@@ -227,26 +255,12 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
               );
             },
           ),
-          const SizedBox(height: 16),
-          Center(
-            child: TextButton(
-              onPressed: () {},
-              child: const Text(
-                "Lihat Semua Pencapaian",
-                style: TextStyle(
-                  color: Color(0xFF2A7A4C),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  // 4. Grafik Pertumbuhan & Info Fisik
-  Widget _buildGrowthChartCard() {
+  Widget _buildScreeningTrendCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -257,150 +271,84 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Grafik Pertumbuhan",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF0F3A20),
-            ),
+            "Tren Skor Screening",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F3A20)),
           ),
           const Text(
-            "Berat & Tinggi Badan (6 Bulan Terakhir)",
+            "5 hasil screening terakhir yang telah selesai",
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 24),
-
-          // Line Chart nya di sini
-          SizedBox(
-            height: 150,
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        List<String> months = [
-                          'Mei',
-                          'Jun',
-                          'Jul',
-                          'Agu',
-                          'Sep',
-                          'Okt',
-                        ];
-                        if (value.toInt() >= 0 &&
-                            value.toInt() < months.length) {
-                          return Text(
-                            months[value.toInt()],
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 11,
-                            ),
-                          );
-                        }
-                        return const Text('');
-                      },
+          if (controller.screeningTrend.length < 2)
+            _buildEmptyChartState(
+              "Data screening belum cukup untuk menampilkan tren.",
+            )
+          else
+            SizedBox(
+              height: 150,
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(show: false),
+                  titlesData: FlTitlesData(
+                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final trend = controller.screeningTrend;
+                          final index = value.toInt();
+                          if (index >= 0 && index < trend.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                trend[index].shortLabel,
+                                style: const TextStyle(color: Colors.grey, fontSize: 10),
+                              ),
+                            );
+                          }
+                          return const Text('');
+                        },
+                      ),
                     ),
                   ),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: controller.screeningTrend
+                          .asMap()
+                          .entries
+                          .map((e) => FlSpot(e.key.toDouble(), e.value.score))
+                          .toList(),
+                      isCurved: true,
+                      color: const Color(0xFF0F3A20),
+                      barWidth: 3,
+                      dotData: FlDotData(show: true),
+                    ),
+                  ],
                 ),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  // Garis Hijau (Tinggi Badan)
-                  LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 3),
-                      FlSpot(1, 3.2),
-                      FlSpot(2, 3.1),
-                      FlSpot(3, 3.5),
-                      FlSpot(4, 4.2),
-                      FlSpot(5, 4.0),
-                    ],
-                    isCurved: true,
-                    color: const Color(0xFF0F3A20),
-                    barWidth: 3,
-                    dotData: FlDotData(show: false),
-                  ),
-                  // Garis Cokelat (Berat Badan)
-                  LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 1),
-                      FlSpot(1, 1.2),
-                      FlSpot(2, 1.1),
-                      FlSpot(3, 1.3),
-                      FlSpot(4, 1.5),
-                      FlSpot(5, 2.0),
-                    ],
-                    isCurved: true,
-                    color: const Color(0xFF8D6E63),
-                    barWidth: 3,
-                    dotData: FlDotData(show: false),
-                  ),
-                ],
               ),
             ),
-          ),
-
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _buildPhysicalBox(
-                  "Tinggi Saat Ini",
-                  controller.currentHeight,
-                  const Color(0xFF0F3A20),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildPhysicalBox(
-                  "Berat Saat Ini",
-                  controller.currentWeight,
-                  const Color(0xFF8D6E63),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildPhysicalBox(String label, String value, Color valueColor) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 11)),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: valueColor,
-            ),
-          ),
-        ],
+  Widget _buildEmptyChartState(String message) {
+    return SizedBox(
+      height: 100,
+      child: Center(
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+        ),
       ),
     );
   }
-
-  // 5. Tips Perkembangan
+  
   Widget _buildTipsCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -418,22 +366,15 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
               SizedBox(width: 6),
               Text(
                 "Tips Perkembangan",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF147A6A),
-                  fontSize: 13,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF147A6A), fontSize: 13),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            "Lanjutkan aktivitas bermain peran (roleplay) untuk meningkatkan kemampuan bersosialisasi ${controller.childName} dengan teman sebaya.",
-            style: const TextStyle(
-              color: Color(0xFF2C5550),
-              fontSize: 13,
-              height: 1.4,
-            ),
+            "Lanjutkan aktivitas harian secara konsisten agar ${controller.childName.value} "
+            "dapat mencapai target minggu ini.",
+            style: const TextStyle(color: Color(0xFF2C5550), fontSize: 13, height: 1.4),
           ),
         ],
       ),

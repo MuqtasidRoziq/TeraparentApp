@@ -49,13 +49,13 @@ class ApiService extends GetxService {
     }
 
     if (e.type == DioExceptionType.connectionTimeout) {
-      return 'Koneksi ke server terlalu lama';
+      return 'Periksa koneksi internet anda';
     }
 
     if (e.type == DioExceptionType.receiveTimeout) {
       return 'Server terlalu lama merespons';
     }
-
+  
     if (e.type == DioExceptionType.connectionError) {
       return 'Tidak dapat terhubung ke server';
     }
