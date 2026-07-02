@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/widgets/card_daily_activity.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/home_controller.dart';
@@ -178,110 +179,114 @@ class HomeView extends GetView<HomeController> {
 
   Widget _weeklyProgressSection() {
     return Obx(() {
-      final items = controller.weeklyProgress;
+      final percent = controller.progressPercent / 100;
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Progress Mingguan',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: AppColors.textPrimary,
-              letterSpacing: -0.3,
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(.08),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
             ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            controller.highlightText,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black45,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 150,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(items.length, (i) {
-                final item = items[i];
-                final isToday = i == DateTime.now().weekday - 1;
-                
-                return Expanded(
-                  child: _buildProgressBar(
-                    day: item.day,
-                    value: item.value,
-                    height: controller.barHeight(item.value),
-                    active: isToday,
+          ],
+        ),
+        child: Column(
+          children: [
+
+            /// Judul
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(.12),
+                    shape: BoxShape.circle,
                   ),
-                );
-              }),
+                  child: const Icon(
+                    Icons.eco_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    "Progress Minggu Ini",
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+
+            const SizedBox(height: 28),
+
+            CircularPercentIndicator(
+              radius: 85,
+              lineWidth: 14,
+              animation: true,
+              animationDuration: 1200,
+              percent: percent.clamp(0.0, 1.0),
+              circularStrokeCap: CircularStrokeCap.round,
+              backgroundColor: Colors.green.shade50,
+              progressColor: AppColors.primary,
+              center: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  Text(
+                    controller.progressPercentText,
+                    style: const TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  const Text(
+                    "Progress",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            Text(
+              controller.highlightText,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: LinearProgressIndicator(
+                minHeight: 10,
+                value: percent,
+                backgroundColor: Colors.green.shade50,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
       );
     });
-  }
-
-  Widget _buildProgressBar({
-    required String day,
-    required int value,
-    required double height,
-    bool active = false,
-  }) {
-    final hasProgress = value > 0;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        // label "hari ini"
-        SizedBox(
-          height: 22,
-          child: active
-              ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'Hari ini',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w800),
-                  ),
-                )
-              : null,
-        ),
-        const SizedBox(height: 6),
-        // batang
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOut,
-          width: 28,
-          height: height.clamp(8.0, 96.0),
-          decoration: BoxDecoration(
-            color: hasProgress
-                ? (active ? AppColors.primary : AppColors.primary.withOpacity(0.6))
-                : AppColors.softGreen.withOpacity(0.45),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          day,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: active ? FontWeight.w900 : FontWeight.w500,
-            color: active ? AppColors.primary : AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
   }
 
   // ─── 4. MENU CEPAT ───────────────────────────────────────────

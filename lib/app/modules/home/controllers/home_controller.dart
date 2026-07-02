@@ -27,7 +27,6 @@ class HomeController extends GetxController {
   final todayActivity = <DailyActivityModel>[].obs;
   final weeklyStats = Rxn<WeeklyActivityStatsModel>();
   final lastScreening = Rxn<ScreeningResultModel>();
-  final weeklyProgress = <WeeklyProgressItem>[].obs;
 
   @override
   void onInit() {
@@ -50,42 +49,15 @@ class HomeController extends GetxController {
         final weeklyProgress = await _weeklyProggresStats.getActivityStats(childId: childId);
         if (weeklyProgress.success) {
           weeklyStats.value = weeklyProgress.data ?? WeeklyActivityStatsModel.empty();
-
-          buildWeeklyProgress();
         }
-
       }
+
       await fetchLastScreening(childId);
 
       await setActivityByScreening();
       
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  void buildWeeklyProgress() {
-    weeklyProgress.clear();
-
-    const days = [
-      'SEN',
-      'SEL',
-      'RAB',
-      'KAM',
-      'JUM',
-      'SAB',
-      'MIN',
-    ];
-
-    final completed = completedActivity;
-
-    for (int i = 0; i < 7; i++) {
-      weeklyProgress.add(
-        WeeklyProgressItem(
-          day: days[i],
-          value: i < completed ? 1 : 0,
-        ),
-      );
     }
   }
 
@@ -97,13 +69,15 @@ class HomeController extends GetxController {
 
       if (result.data!.isEmpty) return;
 
-      final latest = result.data!.first;
+      final latest = result.data!.last;
 
       mainIndication.value = formatMainIndication(latest.mainIndication);
 
       riskCategory.value = latest.riskCategory;
 
       priorityDomain.value = latest.priorityDomain;
+
+      
     } catch (e) {
       print(e);
     }
@@ -119,6 +93,12 @@ class HomeController extends GetxController {
 
   int get completedActivity => weeklyStats.value?.completedActivity ?? 0;
   int get totalActivity => weeklyStats.value?.totalActivity ?? 0;
+  double get progressPercent => weeklyStats.value?.progressPercent ?? 00.00;
+  int get remainingActivity => totalActivity - completedActivity;
+
+  String get progressPercentText{ 
+    return '${(progressPercent).toStringAsFixed(2)}%'; 
+  }
 
   String get highlightText {
     if (weeklyStats.value == null || totalActivity == 0) {
@@ -143,7 +123,7 @@ class HomeController extends GetxController {
     return '${childName.value}, ${childAgeText.value}';
   }
 
-  int get weeklyTarget => 7;
+  // int get weeklyTarget => 7;
 
   double barHeight(int value) {
     if (value <= 0) return 30;
@@ -164,14 +144,4 @@ class HomeController extends GetxController {
         return 'Belum ada indikasi utama harap melakukan screening terlebih dahulu';
     }
   }
-}
-
-class WeeklyProgressItem {
-  final String day;
-  final int value;
-
-  WeeklyProgressItem({
-    required this.day,
-    required this.value,
-  });
 }
