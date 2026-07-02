@@ -11,6 +11,7 @@ import 'package:teraparent_mobile/app/data/services/child_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:teraparent_mobile/app/data/services/auth/otp_session_service.dart';
+import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 
 import 'app/routes/app_pages.dart';
@@ -30,6 +31,7 @@ void main() async {
   Get.put(OtpSessionService(), permanent: true);
   Get.put(ScreeningService(), permanent: true);
   Get.put(ActivityService(), permanent: true);
+  Get.put(GrafikService(), permanent: true);
 
   runApp(
     GetMaterialApp(
@@ -51,6 +53,7 @@ Future<String> getInitialRoute() async {
   final pendingEmail = prefs.getString('pending_otp_email');
   final isEmailVerified = readBoolLike(prefs, 'is_email_verified');
   final hasChildData = readBoolLike(prefs, 'has_child_data');
+  final childId = await storage.read(key: 'childId');
 
   final validPendingOtp = hasPendingOtp && pendingEmail != null && pendingEmail.isNotEmpty;
 
@@ -65,7 +68,7 @@ Future<String> getInitialRoute() async {
   debugPrint('pending_otp_email : ${prefs.get('pending_otp_email')}');
   debugPrint('is_email_verified : ${prefs.get('is_email_verified')}');
   debugPrint('has_child_data : ${prefs.get('has_child_data')}');
-  debugPrint('childId  : ${prefs.get('childId')}');
+  debugPrint('childId  : ${storage.read(key: 'childId')}');
   debugPrint('chiild_name : ${prefs.get('childName')}');
 
   if (validLogin) {
@@ -73,7 +76,7 @@ Future<String> getInitialRoute() async {
     await prefs.remove('pending_otp_email');
     await prefs.remove('pending_otp_expired_at');
 
-    if (hasChildData) {
+    if (hasChildData && childId != null && childId.isNotEmpty) {
       return Routes.HOME;
     } else {
       return Routes.CHILD_DATE;

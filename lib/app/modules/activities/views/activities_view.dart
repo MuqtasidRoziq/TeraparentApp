@@ -127,15 +127,16 @@ class ActivitiesView extends GetView<ActivitiesController> {
           ...domainActivities.map((activity) => Padding(
                 padding: const EdgeInsets.only(bottom: 18),
                 child: activity.isCompleted
-                    ? DailyActivityCardSuccess(
+                    ? todayActivityCardSuccess(
                         title: activity.title,
                         time: activity.timeLabel,
+                        description: activity.description,
                       )
-                    : DailyActivityCardNone(
+                    : todayActivityCardStart(
                         title: activity.title,
                         description: activity.description,
                         time: activity.timeLabel,
-                        onStart: () => controller.openDetail(activity),
+                        onStartActivity: () => controller.openDetail(activity),
                       ),
               )),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/models/child_model.dart';
@@ -6,6 +7,8 @@ import '../../../data/services/child_service.dart';
 import '../../../routes/app_pages.dart';
 
 class ChildDataController extends GetxController {
+
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
   final namaAnakC = TextEditingController();
   final usiaC = TextEditingController();
   final tinggiC = TextEditingController();
@@ -113,7 +116,7 @@ class ChildDataController extends GetxController {
         final child = result.data!.child;
         final SharedPreferences _prefs = await SharedPreferences.getInstance();
         
-        await _prefs.setString("childId", child.id);
+        await storage.write(key: 'childId', value: child.id);
         await _prefs.setString("childName", child.childName);
         await _prefs.setString("birthDate", child.birthDate.toString());
         await _prefs.setString("gender", child.gender);
@@ -121,7 +124,7 @@ class ChildDataController extends GetxController {
         await _prefs.setDouble("weightCm", child.weightKg);
         await _prefs.setBool('has_child_data', true);
         debugPrint("has_child_data : ${_prefs.get('has_child_data')}");
-        debugPrint('chiildId ${_prefs.get('childId')}');
+        debugPrint('chiildId ${storage.read(key: 'childId')}');
         debugPrint('name ${_prefs.get('name')}');
         
         Get.snackbar(

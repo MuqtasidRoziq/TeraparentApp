@@ -40,18 +40,6 @@ class DetailActivityView extends GetView<DetailActivityController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Ilustrasi (backend belum menyediakan gambar per aktivitas)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: 200,
-                  width: double.infinity,
-                  color: primaryColor.withOpacity(0.1),
-                  child: Icon(Icons.image, size: 80, color: primaryColor),
-                ),
-              ),
-              const SizedBox(height: 16),
-
               // Badge Domain, Durasi, & Tingkat Kesulitan
               Wrap(
                 spacing: 8,

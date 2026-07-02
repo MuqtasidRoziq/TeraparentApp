@@ -20,7 +20,7 @@ class DailyActivityModel {
 
   final DateTime scheduledDate;
   final DateTime? reminderAt;
-  final String status; // NOT_STARTED | IN_PROGRESS | COMPLETED | MISSED
+  final String status; 
 
   final DateTime? startedAt;
   final DateTime? completedAt;

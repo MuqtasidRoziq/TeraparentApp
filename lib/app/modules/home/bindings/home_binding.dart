@@ -1,9 +1,15 @@
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/modules/activities/controllers/activities_controller.dart';
 import '../controllers/home_controller.dart';
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
-    // Menggunakan lazyPut agar controller hanya dibuat saat benar-benar dibutuhkan
-    Get.lazyPut<HomeController>(() => HomeController());
+    Get.lazyPut<HomeController>(
+      () => HomeController()
+    );
+    Get.lazyPut<ActivitiesController>(
+      () => ActivitiesController(),
+      fenix: true,
+    );
   }
 }

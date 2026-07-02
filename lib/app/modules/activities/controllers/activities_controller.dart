@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/activity_model.dart';
 import 'package:teraparent_mobile/app/data/services/activity_services.dart';
 import '../../../routes/app_pages.dart';
 
 class ActivitiesController extends GetxController {
   final ActivityService _activityService = Get.find<ActivityService>();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   final isLoading = true.obs;
   final errorMessage = ''.obs;
@@ -19,31 +20,15 @@ class ActivitiesController extends GetxController {
     fetchTodayActivities();
   }
 
-  Future<String?> _getChildId() async {
-    final prefs = await SharedPreferences.getInstance();
-    final childIdString = prefs.getString('childId');
 
-    if (childIdString != null && childIdString.isNotEmpty) {
-      return childIdString;
-    }
-
-    final childIdInt = prefs.getInt('childId');
-    if (childIdInt != null) {
-      return childIdInt.toString();
-    }
-
-    return null;
-  }
-
-  /// Ambil aktivitas hari ini dari GET /api/activities/today/:childId
   Future<void> fetchTodayActivities() async {
     try {
       isLoading(true);
       errorMessage('');
 
-      final childId = await _getChildId();
+      final childId = await storage.read(key: 'childId') ?? '';
 
-      if (childId == null || childId.isEmpty) {
+      if (childId.isEmpty) {
         errorMessage.value = 'Data anak belum ditemukan';
         Get.offAllNamed(Routes.CHILD_DATE);
         return;
@@ -67,8 +52,6 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  /// Kelompokkan aktivitas berdasarkan domain, mempertahankan urutan
-  /// kemunculan pertama tiap domain sesuai data dari backend.
   Map<String, List<DailyActivityModel>> get groupedByDomain {
     final Map<String, List<DailyActivityModel>> grouped = {};
 
