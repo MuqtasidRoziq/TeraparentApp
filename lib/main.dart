@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:teraparent_mobile/app/data/services/auth/otp_session_service.dart';
 import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
+import 'package:teraparent_mobile/app/data/services/reset_password_service.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 
 import 'app/routes/app_pages.dart';
@@ -32,6 +33,7 @@ void main() async {
   Get.put(ScreeningService(), permanent: true);
   Get.put(ActivityService(), permanent: true);
   Get.put(GrafikService(), permanent: true);
+  Get.put(ResetPasswordService(), permanent: true);
 
   runApp(
     GetMaterialApp(

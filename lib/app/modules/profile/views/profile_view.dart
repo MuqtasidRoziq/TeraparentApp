@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
+import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
@@ -25,6 +26,7 @@ class ProfileView extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                headerProfile(),
                 // PROFILE CARD
                 Container(
                   width: double.infinity,
@@ -81,19 +83,6 @@ class ProfileView extends GetView<ProfileController> {
                         color: Color(0xFF2F6F5F),
                       ),
                     ),
-
-                    // GestureDetector(
-                    //   onTap: () {
-                    //     Get.toNamed(Routes.CHILD_DATE);
-                    //   },
-                    //   child: Text(
-                    //     '+ Tambah Anak',
-                    //     style: TextStyle(
-                    //       color: Color(0xFF2F6F5F),
-                    //       fontSize: 18,
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
 

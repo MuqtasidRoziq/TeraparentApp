@@ -256,8 +256,7 @@ class VerifyOtpView extends GetView<VerifyOtpController> {
 
                                 Obx(
                                   () {
-                                    final canResend =
-                                        controller.secondsLeft.value == 0;
+                                    final canResend = controller.secondsLeft.value == 0;
 
                                     return Wrap(
                                       alignment: WrapAlignment.center,

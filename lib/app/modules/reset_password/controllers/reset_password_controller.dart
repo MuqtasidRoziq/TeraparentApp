@@ -1,39 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/data/models/reset_password_model.dart';
+import 'package:teraparent_mobile/app/data/services/reset_password_service.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 class ResetPasswordController extends GetxController {
-  /// ===========================
-  /// TextEditingController
-  /// ===========================
+  final ResetPasswordService _resetPasswordService = Get.find<ResetPasswordService>();
+
   final passwordC = TextEditingController();
   final confirmPasswordC = TextEditingController();
-
-  /// ===========================
-  /// Observable
-  /// ===========================
   final hidePassword = true.obs;
   final hideConfirmPassword = true.obs;
-
   final isLoading = false.obs;
-
   final passwordStrength = 0.0.obs;
-
   final hasMinLength = false.obs;
   final hasUppercase = false.obs;
   final hasNumber = false.obs;
   final hasSpecialCharacter = false.obs;
 
+  String _email = '';
+  String _otp = '';
+
   @override
   void onInit() {
     super.onInit();
 
+    final args = Get.arguments;
+
+    debugPrint('ResetPasswordController arguments: $args');
+
+    if (args != null && args is Map) {
+      _email = args['email']?.toString() ?? '';
+      _otp = args['otp']?.toString() ?? '';
+    }
+
     passwordC.addListener(checkPasswordStrength);
   }
 
-  /// ===========================
-  /// Show Hide Password
-  /// ===========================
 
   void togglePassword() {
     hidePassword.toggle();
@@ -43,9 +46,6 @@ class ResetPasswordController extends GetxController {
     hideConfirmPassword.toggle();
   }
 
-  /// ===========================
-  /// Password Validation
-  /// ===========================
 
   void checkPasswordStrength() {
     String password = passwordC.text;
@@ -68,13 +68,19 @@ class ResetPasswordController extends GetxController {
     passwordStrength.value = strength;
   }
 
-  /// ===========================
-  /// Reset Password
-  /// ===========================
 
   Future<void> resetPassword() async {
     String password = passwordC.text.trim();
     String confirmPassword = confirmPasswordC.text.trim();
+
+    if (_email.isEmpty || _otp.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Sesi reset password tidak valid. Silakan ulangi dari awal.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
 
     if (password.isEmpty || confirmPassword.isEmpty) {
       Get.snackbar(
@@ -105,22 +111,47 @@ class ResetPasswordController extends GetxController {
 
     isLoading.value = true;
 
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final result = await _resetPasswordService.resetPassword(
+        resetPasswordModel: ResetPasswordModel(
+          email: _email,
+          otp: _otp,
+          newPassword: password,
+          confirmPassword: confirmPassword,
+        ),
+      );
 
-    isLoading.value = false;
+      if (result.success) {
+        Get.snackbar(
+          "Berhasil",
+          result.message.isNotEmpty
+              ? result.message
+              : "Password berhasil diperbarui.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
 
-    Get.snackbar(
-      "Berhasil",
-      "Password berhasil diperbarui.",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-
-    /// TODO:
-    /// Ganti dengan route login milikmu
-    ///
-    Get.offAllNamed(Routes.LOGIN);
+        // Password berubah -> paksa login ulang dengan password baru.
+        Get.offAllNamed(Routes.LOGIN);
+      } else {
+        Get.snackbar(
+          "Gagal",
+          result.message.isNotEmpty
+              ? result.message
+              : "Kode OTP tidak valid atau sudah kedaluwarsa.",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
