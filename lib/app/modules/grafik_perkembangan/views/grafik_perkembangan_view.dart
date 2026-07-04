@@ -31,7 +31,6 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                   const SizedBox(height: 24),
                   if (controller.errorMessage.value.isNotEmpty)
                   _buildErrorBanner(),
-                  _buildHighlightCard(),
                   const SizedBox(height: 16),
                   _buildRadarCard(),
                   const SizedBox(height: 16),
@@ -67,44 +66,6 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             child: Text(
               controller.errorMessage.value,
               style: const TextStyle(color: Colors.redAccent, fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 1. Banner ringkasan progres aktivitas mingguan (dari activities-stats)
-  Widget _buildHighlightCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6F5EE),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.auto_awesome, color: Color(0xFF2E7D32), size: 28),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Progres Minggu Ini",
-                  style: TextStyle(
-                    color: Color(0xFF0F3A20),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  controller.highlightText,
-                  style: const TextStyle(color: Color(0xFF2E5A44), fontSize: 13),
-                ),
-              ],
             ),
           ),
         ],

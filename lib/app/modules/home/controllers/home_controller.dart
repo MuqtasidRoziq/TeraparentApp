@@ -70,14 +70,10 @@ class HomeController extends GetxController {
       if (result.data!.isEmpty) return;
 
       final latest = result.data!.last;
-
       mainIndication.value = formatMainIndication(latest.mainIndication);
-
       riskCategory.value = latest.riskCategory;
-
       priorityDomain.value = latest.priorityDomain;
 
-      
     } catch (e) {
       print(e);
     }
@@ -89,6 +85,7 @@ class HomeController extends GetxController {
     todayActivity.assignAll(
       activitiesController.activities.where((e) => !e.isCompleted),
     );
+
   }
 
   int get completedActivity => weeklyStats.value?.completedActivity ?? 0;

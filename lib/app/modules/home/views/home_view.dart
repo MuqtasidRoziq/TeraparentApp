@@ -57,7 +57,7 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 28),
 
                       _sectionDivider(),
-
+                      
                       todayActivityCardStart(
                         title: controller.todayActivity.isNotEmpty
                             ? controller.todayActivity[0].title
@@ -68,11 +68,10 @@ class HomeView extends GetView<HomeController> {
                         description: controller.todayActivity.isNotEmpty
                             ? controller.todayActivity[0].description
                             : 'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
-                        onStartActivity: () {
-                          if (controller.todayActivity.isNotEmpty) {
-                            final activity = controller.todayActivity[0];
-                            Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: activity);
-                          }
+                        onStartActivity: () { 
+                          controller.todayActivity.isNotEmpty 
+                          ? Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: controller.todayActivity[0])
+                          : null;
                         },
                       ),
                       const SizedBox(height: 28),

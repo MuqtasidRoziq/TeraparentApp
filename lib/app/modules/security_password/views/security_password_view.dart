@@ -91,82 +91,20 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
               const SizedBox(height: 18),
 
               // =========================
-              // PASSWORD CARD
+              // UBAH KATA SANDI
+              // (tap -> verifikasi OTP -> atur ulang kata sandi)
               // =========================
-              _buildSectionCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: const [
-                        Icon(
-                          Icons.lock_outline_rounded,
-                          color: AppColors.primary,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Ubah Kata Sandi",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    _buildPasswordField(
-                      label: "Kata Sandi Lama",
-                      hint: "Masukkan kata sandi",
-                      controller: controller.currentPasswordController,
-                      isObscure: controller.isCurrentObscure,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    _buildPasswordField(
-                      label: "Kata Sandi Baru",
-                      hint: "Masukkan kata sandi",
-                      controller: controller.currentPasswordController,
-                      isObscure: controller.isCurrentObscure,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    _buildPasswordField(
-                      label: "Konfirmasi Kata Sandi Baru",
-                      hint: "Masukkan kata sandi",
-                      controller: controller.currentPasswordController,
-                      isObscure: controller.isCurrentObscure,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          controller.updatePassword();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text(
-                          "Perbarui Kata Sandi",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              Obx(
+                () => _buildNavigationTile(
+                  title: "Ubah Kata Sandi",
+                  subtitle: "Verifikasi OTP diperlukan sebelum mengubah",
+                  icon: Icons.lock_outline_rounded,
+                  iconBgColor: const Color(0xFFE8F5E9),
+                  iconColor: AppColors.primary,
+                  isLoading: controller.isRequestingOtp.value,
+                  onTap: controller.isRequestingOtp.value
+                      ? null
+                      : () => controller.goToChangePassword(),
                 ),
               ),
 
@@ -175,42 +113,47 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
               // =========================
               // LOGIN BIOMETRIK
               // =========================
-              Obx(
-                () => _buildToggleCard(
-                  title: "Login Biometrik",
-                  subtitle: "Fingerprint / Face Unlock",
-                  icon: Icons.fingerprint,
-                  iconBgColor: const Color(0xFFE0F7FA),
-                  iconColor: Colors.teal,
-                  value: controller.isBiometricEnabled.value,
-                  onChanged: (val) => controller.isBiometricEnabled.value = val,
-                  activeColor: AppColors.primary,
-                ),
-              ),
+              Obx(() {
+                if (controller.isCheckingFaceStatus.value) {
+                  return _buildSectionCard(
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
 
-              const SizedBox(height: 12),
+                if (!controller.isFaceRegistered.value) {
+                  // Wajah belum terdaftar -> tampilkan ajakan aktivasi
+                  return _buildActivateFaceCard();
+                }
 
-              // =========================
-              // 2FA
-              // =========================
-              Obx(
-                () => _buildToggleCard(
-                  title: "Autentikasi 2FA",
-                  subtitle: "Verifikasi tambahan saat login",
-                  icon: Icons.phonelink_lock,
-                  iconBgColor: const Color(0xFFFFF3E0),
-                  iconColor: Colors.orange,
-                  value: controller.is2FAEnabled.value,
-                  onChanged: (val) => controller.is2FAEnabled.value = val,
-                  activeColor: AppColors.primary,
-                ),
-              ),
-
+                // Wajah sudah terdaftar -> tampilkan toggle biometrik
+                return Obx(
+                  () => _buildToggleCard(
+                    title: "Login Biometrik",
+                    subtitle: "Fingerprint / Face Unlock",
+                    icon: Icons.fingerprint,
+                    iconBgColor: const Color(0xFFE0F7FA),
+                    iconColor: Colors.teal,
+                    value: controller.isBiometricEnabled.value,
+                    onChanged: controller.onBiometricToggle,
+                    activeColor: AppColors.primary,
+                  ),
+                );
+              }),
+              
               const SizedBox(height: 18),
 
-              // =========================
-              // INFO CARD
-              // =========================
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -248,7 +191,7 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
   }
 
   // =====================================================
-  // SECTION CARD
+  // SECTION CARD (generic container)
   // =====================================================
 
   Widget _buildSectionCard({required Widget child}) {
@@ -264,107 +207,143 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
   }
 
   // =====================================================
-  // PASSWORD FIELD
+  // NAVIGATION TILE (Ubah Kata Sandi)
   // =====================================================
 
-  Widget _buildPasswordField({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    required RxBool isObscure,
+  Widget _buildNavigationTile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required VoidCallback? onTap,
+    bool isLoading = false,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label),
-        const SizedBox(height: 8),
-
-        Obx(
-          () => TextField(
-            controller: controller,
-            obscureText: isObscure.value,
-            decoration: InputDecoration(
-              hintText: hint,
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: iconBgColor,
+                child: Icon(icon, color: iconColor),
               ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  isObscure.value ? Icons.visibility_off : Icons.visibility,
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: () => isObscure.toggle(),
               ),
-            ),
+              if (isLoading)
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primary,
+                  ),
+                )
+              else
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: Colors.grey,
+                ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
-  // Widget _buildSecurityTile({
-  //   required String title,
-  //   required String subtitle,
-  //   required IconData icon,
-  //   required Color iconBg,
-  //   required Color iconColor,
-  //   required bool value,
-  //   required Function(bool) onChanged,
-  // }) {
-  //   return Container(
-  //     padding: const EdgeInsets.all(16),
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(22),
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         Container(
-  //           padding: const EdgeInsets.all(12),
-  //           decoration: BoxDecoration(
-  //             color: iconBg,
-  //             borderRadius: BorderRadius.circular(14),
-  //           ),
-  //           child: Icon(icon, color: iconColor),
-  //         ),
+  // =====================================================
+  // ACTIVATE FACE CARD (wajah belum terdaftar)
+  // =====================================================
 
-  //         const SizedBox(width: 16),
+  Widget _buildActivateFaceCard() {
+    return _buildSectionCard(
+      child: Row(
+        children: [
+          const CircleAvatar(
+            backgroundColor: Color(0xFFE0F7FA),
+            child: Icon(Icons.fingerprint, color: Colors.teal),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Login Biometrik",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  "Wajah belum terdaftar",
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () => controller.goToFaceRegister(),
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: AppColors.primary,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              "Aktifkan",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  //         Expanded(
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               Text(
-  //                 title,
-  //                 style: const TextStyle(
-  //                   fontWeight: FontWeight.bold,
-  //                   fontSize: 14,
-  //                 ),
-  //               ),
-
-  //               const SizedBox(height: 4),
-
-  //               Text(
-  //                 subtitle,
-  //                 style: TextStyle(
-  //                   fontSize: 12,
-  //                   height: 1.4,
-  //                   color: Colors.grey.shade600,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-
-  //         Switch.adaptive(
-  //           value: value,
-  //           onChanged: onChanged,
-  //           activeColor: AppColors.primary,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  // =====================================================
+  // TOGGLE CARD (2FA, biometrik saat wajah sudah terdaftar)
+  // =====================================================
 
   Widget _buildToggleCard({
     required String title,

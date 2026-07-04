@@ -5,9 +5,13 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/auth/resend_otp_model.dart';
 import 'package:teraparent_mobile/app/data/models/auth/verify_otp_model.dart';
+import 'package:teraparent_mobile/app/data/models/reset_password_model.dart';
 import 'package:teraparent_mobile/app/data/services/auth/resend_otp_service.dart';
 import 'package:teraparent_mobile/app/data/services/auth/verify-otp_service.dart';
+import 'package:teraparent_mobile/app/data/services/reset_password_service.dart';
 import '../../../routes/app_pages.dart';
+
+enum OtpPurpose { verifyEmail, resetPassword }
 
 class VerifyOtpController extends GetxController {
   final otpControllers = List.generate(6, (_) => TextEditingController());
@@ -15,13 +19,17 @@ class VerifyOtpController extends GetxController {
 
   final VerifyOtpService _verifyOtpService = Get.find<VerifyOtpService>();
   final ResendOtpService _resendOtpService = Get.find<ResendOtpService>();
+  final ResetPasswordService _requestResetPasswordService = Get.find<ResetPasswordService>();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  
 
   final isLoading = false.obs;
   final secondsLeft = 120.obs;
   final email = ''.obs;
+
+  final purpose = OtpPurpose.verifyEmail.obs;
+
+  String? _nextRoute;
 
   Timer? _timer;
 
@@ -34,9 +42,22 @@ class VerifyOtpController extends GetxController {
   Future<void> loadOtpSession() async {
     final args = Get.arguments;
 
-    if (args != null && args is Map && args['email'] != null) {
-      email.value = args['email'].toString();
-    } else {
+    if (args != null && args is Map) {
+      if (args['email'] != null) {
+        email.value = args['email'].toString();
+      }
+
+      if (args['purpose'] == 'RESET_PASSWORD' ||
+          args['purpose'] == 'change_password') {
+        purpose.value = OtpPurpose.resetPassword;
+      }
+
+      if (args['nextRoute'] != null) {
+        _nextRoute = args['nextRoute'].toString();
+      }
+    }
+
+    if (email.value.isEmpty) {
       final savedEmail = await _storage.read(key: 'pending_otp_email');
 
       if (savedEmail != null && savedEmail.isNotEmpty) {
@@ -97,7 +118,7 @@ class VerifyOtpController extends GetxController {
     if (email.value.isEmpty) {
       Get.snackbar(
         'Error',
-        'Email tidak ditemukan. Silakan register ulang.',
+        'Email tidak ditemukan. Silakan ulangi proses dari awal.',
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -108,6 +129,19 @@ class VerifyOtpController extends GetxController {
         'Error',
         'Masukkan 6 digit kode OTP',
         snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    if (purpose.value == OtpPurpose.resetPassword) {
+      isLoading.value = true;
+
+      Get.toNamed(
+        _nextRoute ?? Routes.RESET_PASSWORD,
+        arguments: {
+          'otp': otp,
+          'email': email.value,
+        },
       );
       return;
     }
@@ -152,8 +186,6 @@ class VerifyOtpController extends GetxController {
         await _prefs.remove('pending_otp_expired_at');
 
         Get.offAllNamed(Routes.VERIFY_SUCCESS);
-
-
       } else {
         Get.snackbar(
           'Gagal',
@@ -177,44 +209,21 @@ class VerifyOtpController extends GetxController {
   }
 
   void resendOtp() async {
-
     try {
-      final resend = ResendOtpRequestModel(
-        email: email.value
-      );
-
-      final result = await _resendOtpService.resendOtp(
-        request: resend
-      );
-
-      if (result.success) {
-        final prefs = await SharedPreferences.getInstance();
-
-        final expiredAt = DateTime.now()
-            .add(const Duration(seconds: 120))
-            .millisecondsSinceEpoch;
-
-        await prefs.setBool('pending_otp', true);
-        await prefs.setString('pending_otp_email', email.value);
-        await prefs.setInt('pending_otp_expired_at', expiredAt);
-
-        secondsLeft.value = 120;
-        startTimer();
-
-        Get.snackbar(
-          'Berhasil',
-          'Kode OTP baru telah dikirim ke email Anda',
-          snackPosition: SnackPosition.BOTTOM,
+      if (purpose.value == OtpPurpose.resetPassword) {
+        final result = await _requestResetPasswordService.requestReset(
+          request: RequestResetPasswordModel(email: email.value),
         );
-      } else {
-        Get.snackbar(
-          'Gagal',
-          result.message.isNotEmpty
-              ? result.message
-              : 'Gagal mengirim ulang kode OTP',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+
+        _applyResendCooldown(result.success, result.message);
+        return;
       }
+      
+      final resend = ResendOtpRequestModel(email: email.value);
+
+      final result = await _resendOtpService.resendOtp(request: resend);
+
+      _applyResendCooldown(result.success, result.message);
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -223,7 +232,35 @@ class VerifyOtpController extends GetxController {
       );
       print('Error saat resend OTP: $e');
     }
+  }
 
+  Future<void> _applyResendCooldown(bool success, String message) async {
+    if (success) {
+      final prefs = await SharedPreferences.getInstance();
+
+      final expiredAt = DateTime.now()
+          .add(const Duration(seconds: 120))
+          .millisecondsSinceEpoch;
+
+      await prefs.setBool('pending_otp', true);
+      await prefs.setString('pending_otp_email', email.value);
+      await prefs.setInt('pending_otp_expired_at', expiredAt);
+
+      secondsLeft.value = 120;
+      startTimer();
+
+      Get.snackbar(
+        'Berhasil',
+        message.isNotEmpty ? message : 'Kode OTP baru telah dikirim ke email Anda',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      Get.snackbar(
+        'Gagal',
+        message.isNotEmpty ? message : 'Gagal mengirim ulang kode OTP',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
