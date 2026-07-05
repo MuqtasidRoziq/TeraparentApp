@@ -14,7 +14,7 @@ import 'package:teraparent_mobile/app/data/services/auth/otp_session_service.dar
 import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
 import 'package:teraparent_mobile/app/data/services/reset_password_service.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
-
+import 'package:teraparent_mobile/app/data/services/user_services.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
@@ -34,6 +34,7 @@ void main() async {
   Get.put(ActivityService(), permanent: true);
   Get.put(GrafikService(), permanent: true);
   Get.put(ResetPasswordService(), permanent: true);
+  Get.put(UserService(), permanent: true);
 
   runApp(
     GetMaterialApp(

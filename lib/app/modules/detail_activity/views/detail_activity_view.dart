@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/detail_activity_controller.dart';
 
 class DetailActivityView extends GetView<DetailActivityController> {
-  const DetailActivityView({Key? key}) : super(key: key);
+  const DetailActivityView({super.key});
 
   @override
   Widget build(BuildContext context) {

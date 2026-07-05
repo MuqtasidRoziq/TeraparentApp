@@ -40,7 +40,7 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 20),
 
                       // 1. HEADER PROFILE — tidak diubah
-                      headerProfile(photoUrl: controller.userPhotoUrl.value),
+                      headerProfile(),
                       const SizedBox(height: 28),
 
                       // 2. SAPAAN USER
@@ -58,29 +58,38 @@ class HomeView extends GetView<HomeController> {
 
                       _sectionDivider(),
                       
-                      todayActivityCardStart(
-                        title: controller.todayActivity.isNotEmpty
-                            ? controller.todayActivity[0].title
-                            : 'Belum ada aktivitas hari ini',
-                        time: controller.todayActivity.isNotEmpty
-                            ? controller.todayActivity[0].timeLabel
-                            : '',
-                        description: controller.todayActivity.isNotEmpty
-                            ? controller.todayActivity[0].description
-                            : 'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
-                        onStartActivity: () { 
-                          controller.todayActivity.isNotEmpty 
-                          ? Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: controller.todayActivity[0])
-                          : null;
-                        },
-                      ),
-                      const SizedBox(height: 28),
+                      Builder(builder: (context) {
+                        if (controller.todayActivity.isEmpty) {
+                          return todayActivityCardStart(
+                            title: 'Belum ada aktivitas hari ini',
+                            time: '-',
+                            description: 'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
+                            onStartActivity: () {
+                              Get.toNamed(Routes.ACTIVITIES);
+                            },
+                          );
+                        }
 
-                      _sectionDivider(),
+                        final uncompletedActivity = controller.todayActivity
+                            .firstWhereOrNull((a) => !a.isCompleted);
 
-                      // 6. SCREENING TERAKHIR
-                      _lastScreeningSection(),
-                      const SizedBox(height: 120),
+                        if (uncompletedActivity != null) {
+                          return todayActivityCardStart(
+                            title: uncompletedActivity.title,
+                            time: uncompletedActivity.timeLabel,
+                            description: uncompletedActivity.description,
+                            onStartActivity: () {
+                              Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: uncompletedActivity);
+                            },
+                          );
+                        } else {
+                          return todayActivityCardSuccess(
+                            title: 'Semua aktivitas selesai!',
+                            time: 'Hebat!',
+                            description: 'Bunda telah menyelesaikan semua aktivitas harian untuk Ananda hari ini. Teruskan konsistensinya!',
+                          );
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -398,115 +407,6 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _lastScreeningSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Screening Terakhir',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-                letterSpacing: -0.3,
-              ),
-            ),
-            GestureDetector(
-              onTap: () => Get.toNamed(Routes.GRAFIK_PERKEMBANGAN),
-              child: Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xffE8EDEB)),
-                ),
-                child: const Icon(Icons.arrow_forward_ios_rounded,
-                    size: 14, color: AppColors.primary),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: AppColors.softGreen, width: 1.5),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // status chip
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                decoration: BoxDecoration(
-                  color: AppColors.softGreen,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  controller.riskCategory.value,
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffF5FAF8),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(Icons.psychology_alt_rounded,
-                        color: AppColors.primary, size: 26),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Indikasi utama',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.black45,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          controller.mainIndication.value,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w800,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

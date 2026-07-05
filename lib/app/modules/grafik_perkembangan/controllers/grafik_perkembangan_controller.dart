@@ -3,10 +3,16 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/grafik_model.dart';
 import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
+import 'package:teraparent_mobile/app/data/models/activity_model.dart';
+import 'package:teraparent_mobile/app/data/services/activity_services.dart';
+import 'package:teraparent_mobile/app/data/models/screening_model.dart';
+import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 import '../../../routes/app_pages.dart';
 
 class GrafikPerkembanganController extends GetxController {
   final GrafikService _grafikService = Get.find<GrafikService>();
+  final ActivityService _activityService = Get.find<ActivityService>();
+  final ScreeningService _screeningService = Get.find<ScreeningService>();
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   final isLoading = true.obs;
@@ -19,12 +25,9 @@ class GrafikPerkembanganController extends GetxController {
   final weeklyStats = Rxn<WeeklyActivityStatsModel>();
   final radar = Rxn<ScreeningRadarModel>();
   final screeningTrend = <ScreeningTrendPointModel>[].obs;
-
-  final List<Map<String, String>> milestones = const [
-    {"title": "Bisa menumpuk 3 balok", "date": "Tercapai: 12 Okt 2023"},
-    {"title": "Mengucapkan 2 kata sekaligus", "date": "Tercapai: 05 Okt 2023"},
-    {"title": "Mulai meniru teman sebaya", "date": "Tercapai: 28 Sep 2023"},
-  ];
+  final screeningHistory = <ScreeningResultModel>[].obs;
+  
+  final recentActivities = <DailyActivityModel>[].obs;
 
   @override
   void onInit() {
@@ -51,9 +54,13 @@ class GrafikPerkembanganController extends GetxController {
       final weeklyStatsResult = await _grafikService.getActivityStats(childId: childId);
       final radarFuture = _grafikService.getLastScreeningStats(childId: childId);
       final trendFuture = _grafikService.getScreeningHistoryStats(childId: childId);
+      final activityFuture = _activityService.getActivityHistory(childId: childId, status: 'COMPLETED');
+      final historyFuture = _screeningService.getHistory(childId: childId);
 
       final radarResult = await radarFuture;
       final trendResult = await trendFuture;
+      final activityResult = await activityFuture;
+      final historyResult = await historyFuture;
 
       if (weeklyStatsResult.success) {
         weeklyStats.value = weeklyStatsResult.data ?? WeeklyActivityStatsModel.empty();
@@ -66,6 +73,21 @@ class GrafikPerkembanganController extends GetxController {
 
       if (trendResult.success) {
         screeningTrend.assignAll(trendResult.data ?? []);
+      }
+
+      if (activityResult.success) {
+        recentActivities.assignAll(activityResult.data ?? []);
+      }
+
+      if (historyResult.success) {
+        final completed = historyResult.data?.where((e) => e.status == 'COMPLETED').toList() ?? [];
+        completed.sort((a, b) {
+          if (a.completedAt == null && b.completedAt == null) return 0;
+          if (a.completedAt == null) return 1;
+          if (b.completedAt == null) return -1;
+          return b.completedAt!.compareTo(a.completedAt!);
+        });
+        screeningHistory.assignAll(completed.take(5).toList());
       }
     } catch (e) {
       errorMessage.value = e.toString();

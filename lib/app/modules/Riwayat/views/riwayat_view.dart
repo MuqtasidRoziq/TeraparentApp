@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/modules/Riwayat/controllers/riwayat_controller.dart';
 
 class RiwayatView extends GetView<RiwayatController> {
-  const RiwayatView({Key? key}) : super(key: key);
+  const RiwayatView({super.key});
 
   @override
   Widget build(BuildContext context) {

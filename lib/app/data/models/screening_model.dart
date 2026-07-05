@@ -200,6 +200,11 @@ class ScreeningResultModel {
       physicalMotorScore: physicalScore,
       cognitiveProblemSolvingScore: cognitiveScore,
       socialEmotionalScore: socialScore,
+      completedAt: json['completedAt'] != null
+          ? DateTime.tryParse(json['completedAt'].toString())
+          : (json['createdAt'] != null
+              ? DateTime.tryParse(json['createdAt'].toString())
+              : null),
     );
   }
 

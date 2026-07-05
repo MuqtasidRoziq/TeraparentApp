@@ -5,7 +5,7 @@ import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
 
 class LoginView extends GetView<LoginController> {
-  LoginView({super.key});
+  const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {

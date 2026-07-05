@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:teraparent_mobile/app/data/models/auth/api_response_model.dart';
 import 'package:teraparent_mobile/app/data/models/auth/resend_otp_model.dart';
 import 'package:teraparent_mobile/app/data/services/api_service.dart';

@@ -92,8 +92,4 @@ class SecurityPasswordController extends GetxController {
     Get.toNamed(Routes.FACE_REGISTER);
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }

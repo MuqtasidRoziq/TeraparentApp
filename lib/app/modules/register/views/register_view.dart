@@ -5,7 +5,7 @@ import 'package:teraparent_mobile/app/modules/register/controllers/register_cont
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 class RegisterView extends GetView<RegisterController> {
-  RegisterView({super.key});
+  const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {

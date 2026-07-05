@@ -56,7 +56,7 @@ class LoginController extends GetxController {
       );
 
       if (result.success) {
-        final SharedPreferences _prefs= await SharedPreferences.getInstance();
+        final SharedPreferences prefs= await SharedPreferences.getInstance();
         final token = result.data!.token;
         final user = result.data!.user;
         final child = user.children.first;
@@ -75,36 +75,36 @@ class LoginController extends GetxController {
         await storage.write(key: 'user_id', value: user.id);
         await storage.write(key: 'childId', value: child.id);
         
-        await _prefs.setString('email', user.email);
-        await _prefs.setString('full_name', user.fullName);
-        await _prefs.setString('phone', user.phone ?? '');
-        await _prefs.setString("photo_url", user.profileImage ?? '');
-        await _prefs.setBool('is_logged_in', true);
-        await _prefs.setBool('is_email_verified', user.isEmailVerified);
-        await _prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
-        await _prefs.setBool('has_child_data', user.hasChildData);
-        await _prefs.setString('childName', child.childName);
-        await _prefs.setString('gender', child.gender);
-        await _prefs.setString('birthDate', child.birthDate.toString());
-        await _prefs.setDouble('weightKg', child.weightKg);
-        await _prefs.setDouble('heightCm', child.heightCm);
+        await prefs.setString('email', user.email);
+        await prefs.setString('full_name', user.fullName);
+        await prefs.setString('phone', user.phone ?? '');
+        await prefs.setString("photo_url", user.profileImage ?? '');
+        await prefs.setBool('is_logged_in', true);
+        await prefs.setBool('is_email_verified', user.isEmailVerified);
+        await prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
+        await prefs.setBool('has_child_data', user.hasChildData);
+        await prefs.setString('childName', child.childName);
+        await prefs.setString('gender', child.gender);
+        await prefs.setString('birthDate', child.birthDate.toString());
+        await prefs.setDouble('weightKg', child.weightKg);
+        await prefs.setDouble('heightCm', child.heightCm);
         if (latestResult != null) {
-          await _prefs.setString(
+          await prefs.setString(
             'mainIndication',
             latestResult.mainIndication,
           );
-          await _prefs.setString(
+          await prefs.setString(
             'priorityDomain',
             latestResult.priorityDomain,
           );
-          await _prefs.setString(
+          await prefs.setString(
             'riskCategory',
             latestResult.riskCategory,
           );
         } else {
-          await _prefs.remove('mainIndication');
-          await _prefs.remove('priorityDomain');
-          await _prefs.remove('riskCategory');
+          await prefs.remove('mainIndication');
+          await prefs.remove('priorityDomain');
+          await prefs.remove('riskCategory');
         }
         Get.offAllNamed(Routes.HOME);
       }

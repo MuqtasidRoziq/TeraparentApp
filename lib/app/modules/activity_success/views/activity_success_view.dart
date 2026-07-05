@@ -4,7 +4,7 @@ import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../controllers/activity_success_controller.dart';
 
 class ActivitySuccessView extends GetView<ActivitySuccessController> {
-  const ActivitySuccessView({Key? key}) : super(key: key);
+  const ActivitySuccessView({super.key});
 
   @override
   Widget build(BuildContext context) {

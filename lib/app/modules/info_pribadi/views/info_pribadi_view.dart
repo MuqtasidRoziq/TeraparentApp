@@ -1,138 +1,168 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
 import '../controllers/info_pribadi_controller.dart';
 
 class InfoPribadiView extends GetView<InfoPribadiController> {
   const InfoPribadiView({super.key});
-@override
+
+  @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF2B5B4B); // Warna hijau tombol & teks utama
-    const Color inputBgColor = Color(0xFFF4F6F6);  // Warna abu-abu background input
+    const Color primaryColor = Color(0xFF2B5B4B);
+    const Color inputBgColor = Color(0xFFF4F6F6);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F9F8),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: primaryColor),
+          icon: const Icon(Icons.arrow_back_ios_new, color: primaryColor, size: 20),
           onPressed: () => Get.back(),
         ),
         title: const Text(
-          "Profile",
+          'Informasi Pribadi',
           style: TextStyle(
             color: primaryColor,
             fontWeight: FontWeight.bold,
-            fontSize: 20,
+            fontSize: 18,
           ),
         ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 16),
-            
-            // --- FOTO PROFIL DENGAN CIRClE & TOMBOL EDIT ---
+            const SizedBox(height: 28),
+
+            // --- FOTO PROFIL ---
             Center(
               child: Stack(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4), // Border lingkaran luar hijau tipis
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFB2DFDB), width: 2),
-                    ),
-                    child: const CircleAvatar(
-                      radius: 55,
-                      backgroundColor: Color(0xFFE0E0E0),
-                      child: Icon(Icons.person, size: 50, color: Colors.grey), 
-                      // Ganti dengan NetworkImage/AssetImage nanti:
-                      // backgroundImage: AssetImage('assets/images/profile.png'),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: primaryColor,
+                  // Lingkaran foto
+                  Obx(() {
+                    final file = controller.selectedPhotoFile.value;
+                    final url = controller.profilePhotoUrl.value;
+                    return Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF2B5B4B), Color(0xFF4CAF9A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF2B5B4B).withOpacity(0.3),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 18,
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.white,
+                        backgroundImage: file != null
+                            ? FileImage(file) as ImageProvider
+                            : (url.isNotEmpty ? NetworkImage(url) : null),
+                        child: (file == null && url.isEmpty)
+                            ? const Icon(Icons.person, size: 50, color: Color(0xFFBDBDBD))
+                            : null,
                       ),
-                    ),
+                    );
+                  }),
+                  // Tombol edit foto
+                  Positioned(
+                    bottom: 2,
+                    right: 2,
+                    child: Obx(() => GestureDetector(
+                      onTap: controller.isUploadingPhoto.value ? null : controller.pickProfilePhoto,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: controller.isUploadingPhoto.value
+                              ? Colors.grey
+                              : primaryColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: controller.isUploadingPhoto.value
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                      ),
+                    )),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
 
-            // --- TEKS HEADER PROFILE ---
+            const SizedBox(height: 12),
             const Center(
               child: Text(
-                "Informasi Pribadi",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1C2D27),
-                ),
-              ),
-            ),
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.only(top: 4.0),
-                child: Text(
-                  "Perbarui detail kontak Anda di sini",
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
+                'Ketuk ikon kamera untuk ganti foto',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
               ),
             ),
             const SizedBox(height: 32),
 
+            // --- SECTION TITLE ---
+            const Text(
+              'Data Diri',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 12),
+
             // --- FORM INPUT FIELDS ---
             _buildInputField(
-              label: "Nama Lengkap",
+              label: 'Nama Lengkap',
               icon: Icons.person_outline,
               controller: controller.nameController,
               backgroundColor: inputBgColor,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             _buildInputField(
-              label: "Email",
+              label: 'Email',
               icon: Icons.mail_outline,
               controller: controller.emailController,
               backgroundColor: inputBgColor,
               keyboardType: TextInputType.emailAddress,
+              enabled: false,
+              hint: 'Email tidak dapat diubah',
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
 
             _buildInputField(
-              label: "Nomor Telepon",
+              label: 'Nomor Telepon',
               icon: Icons.phone_outlined,
               controller: controller.phoneController,
               backgroundColor: inputBgColor,
               keyboardType: TextInputType.phone,
             ),
-            const SizedBox(height: 18),
-
-            _buildInputField(
-              label: "Lokasi",
-              icon: Icons.location_on_outlined,
-              controller: controller.locationController,
-              backgroundColor: inputBgColor,
-            ),
             const SizedBox(height: 40),
 
-            // --- TOMBOL SIMPAN PERUBAHAN ---
+            // --- TOMBOL SIMPAN ---
             Obx(
               () => ElevatedButton(
                 onPressed: controller.isLoading.value ? null : controller.saveChanges,
@@ -140,21 +170,21 @@ class InfoPribadiView extends GetView<InfoPribadiController> {
                   backgroundColor: primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Rounded pill style
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),
                 child: controller.isLoading.value
                     ? const SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 22,
+                        height: 22,
                         child: CircularProgressIndicator(
                           color: Colors.white,
-                          strokeWidth: 2,
+                          strokeWidth: 2.5,
                         ),
                       )
                     : const Text(
-                        "Simpan Perubahan",
+                        'Simpan Perubahan',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -163,49 +193,61 @@ class InfoPribadiView extends GetView<InfoPribadiController> {
                       ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
           ],
         ),
       ),
     );
   }
 
-  // Helper Widget untuk membuat TextInput yang rapi sesuai mockup
   Widget _buildInputField({
     required String label,
     required IconData icon,
     required TextEditingController controller,
     required Color backgroundColor,
     TextInputType keyboardType = TextInputType.text,
+    bool enabled = true,
+    String? hint,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
+          style: TextStyle(
+            fontSize: 13,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF2C3E35),
+            color: enabled ? const Color(0xFF2C3E35) : Colors.grey,
           ),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
-          style: const TextStyle(
+          enabled: enabled,
+          style: TextStyle(
             fontSize: 15,
-            color: Color(0xFF1C2D27),
+            color: enabled ? const Color(0xFF1C2D27) : Colors.grey.shade500,
             fontWeight: FontWeight.w500,
           ),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: Colors.grey.shade600, size: 22),
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+            prefixIcon: Icon(icon, color: enabled ? const Color(0xFF2B5B4B) : Colors.grey.shade400, size: 22),
             filled: true,
-            fillColor: backgroundColor,
+            fillColor: enabled ? backgroundColor : const Color(0xFFECECEC),
             contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none, // Menghilangkan border garis luar
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: Colors.grey.shade200),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFF2B5B4B), width: 1.5),
             ),
           ),
         ),

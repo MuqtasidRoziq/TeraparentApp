@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/activity_model.dart';
 import 'package:teraparent_mobile/app/data/models/grafik_model.dart';
-import 'package:teraparent_mobile/app/data/models/screening_model.dart';
 import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
-import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 import 'package:teraparent_mobile/app/modules/activities/controllers/activities_controller.dart';
 
 class HomeController extends GetxController {
@@ -13,20 +11,15 @@ class HomeController extends GetxController {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   late final ActivitiesController activitiesController;
   final GrafikService _weeklyProggresStats = Get.find<GrafikService>();
-  final ScreeningService _screeningService = Get.find<ScreeningService>();
   
   final isLoading = false.obs;
   final userName = ''.obs;
   final userPhotoUrl = ''.obs;
   final childName = ''.obs;
   final childAgeText = ''.obs;
-  final mainIndication = ''.obs;
-  final riskCategory = ''.obs;
-  final priorityDomain = ''.obs;
   
   final todayActivity = <DailyActivityModel>[].obs;
   final weeklyStats = Rxn<WeeklyActivityStatsModel>();
-  final lastScreening = Rxn<ScreeningResultModel>();
 
   @override
   void onInit() {
@@ -52,33 +45,12 @@ class HomeController extends GetxController {
         }
       }
 
-      await fetchLastScreening(childId);
-
       await setActivityByScreening();
       
     } finally {
       isLoading.value = false;
     }
   }
-
-  Future<void> fetchLastScreening(String childId) async {
-    try {
-      final result =  await _screeningService.getHistory(childId: childId);
-
-      if (!result.success || result.data == null) return;
-
-      if (result.data!.isEmpty) return;
-
-      final latest = result.data!.last;
-      mainIndication.value = formatMainIndication(latest.mainIndication);
-      riskCategory.value = latest.riskCategory;
-      priorityDomain.value = latest.priorityDomain;
-
-    } catch (e) {
-      print(e);
-    }
-  }
-  
 
   Future<void> setActivityByScreening() async {
     await activitiesController.fetchTodayActivities();

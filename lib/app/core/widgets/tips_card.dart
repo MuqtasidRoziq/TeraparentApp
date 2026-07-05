@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class TipsCard extends StatelessWidget {
   final String text;
 
-  const TipsCard({Key? key, required this.text}) : super(key: key);
+  const TipsCard({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {

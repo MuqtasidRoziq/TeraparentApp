@@ -159,7 +159,7 @@ class VerifyOtpController extends GetxController {
       );
 
       if (result.success) {
-        final _prefs = await SharedPreferences.getInstance();
+        final prefs = await SharedPreferences.getInstance();
         final token = result.data!.token;
         final user = result.data!.user;
 
@@ -173,17 +173,17 @@ class VerifyOtpController extends GetxController {
 
         await _storage.write(key: 'token', value: token);
         await _storage.write(key: 'user_id', value: user.id);
-        await _prefs.setString('email', user.email);
-        await _prefs.setString('full_name', user.fullName);
-        await _prefs.setString('phone', user.phone ?? '');
-        await _prefs.setString("photo_url", user.profileImage ?? '');
-        await _prefs.setBool('is_logged_in', true);
-        await _prefs.setBool('is_email_verified', user.isEmailVerified);
-        await _prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
-        await _prefs.setBool('has_child_data', user.hasChildData);
-        await _prefs.remove('pending_otp');
-        await _prefs.remove('pending_otp_email');
-        await _prefs.remove('pending_otp_expired_at');
+        await prefs.setString('email', user.email);
+        await prefs.setString('full_name', user.fullName);
+        await prefs.setString('phone', user.phone ?? '');
+        await prefs.setString("photo_url", user.profileImage ?? '');
+        await prefs.setBool('is_logged_in', true);
+        await prefs.setBool('is_email_verified', user.isEmailVerified);
+        await prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
+        await prefs.setBool('has_child_data', user.hasChildData);
+        await prefs.remove('pending_otp');
+        await prefs.remove('pending_otp_email');
+        await prefs.remove('pending_otp_expired_at');
 
         Get.offAllNamed(Routes.VERIFY_SUCCESS);
       } else {

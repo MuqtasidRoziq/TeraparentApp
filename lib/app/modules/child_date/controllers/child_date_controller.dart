@@ -114,18 +114,18 @@ class ChildDataController extends GetxController {
 
       if (result.success) {
         final child = result.data!.child;
-        final SharedPreferences _prefs = await SharedPreferences.getInstance();
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
         
         await storage.write(key: 'childId', value: child.id);
-        await _prefs.setString("childName", child.childName);
-        await _prefs.setString("birthDate", child.birthDate.toString());
-        await _prefs.setString("gender", child.gender);
-        await _prefs.setDouble("heightCm", child.heightCm);
-        await _prefs.setDouble("weightCm", child.weightKg);
-        await _prefs.setBool('has_child_data', true);
-        debugPrint("has_child_data : ${_prefs.get('has_child_data')}");
+        await prefs.setString("childName", child.childName);
+        await prefs.setString("birthDate", child.birthDate.toString());
+        await prefs.setString("gender", child.gender);
+        await prefs.setDouble("heightCm", child.heightCm);
+        await prefs.setDouble("weightCm", child.weightKg);
+        await prefs.setBool('has_child_data', true);
+        debugPrint("has_child_data : ${prefs.get('has_child_data')}");
         debugPrint('chiildId ${storage.read(key: 'childId')}');
-        debugPrint('name ${_prefs.get('name')}');
+        debugPrint('name ${prefs.get('name')}');
         
         Get.snackbar(
           "Berhasil",

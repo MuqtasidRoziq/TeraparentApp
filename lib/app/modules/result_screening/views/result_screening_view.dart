@@ -7,7 +7,7 @@ import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../core/widgets/header_profile.dart';
 
 class ResultScreeningView extends GetView<ResultScreeningController> {
-  const ResultScreeningView({Key? key}) : super(key: key);
+  const ResultScreeningView({super.key});
 
   static const Color primaryColor = Color(0xFF2B7A8A);
   static const Color darkColor = Color(0xFF1E3A3A);

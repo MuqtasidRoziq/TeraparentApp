@@ -222,7 +222,7 @@ class ScreeningController extends GetxController {
         final screeningResult = response.data!;
         final prefs = await SharedPreferences.getInstance();
 
-        debugPrint('response: ${screeningResult}');
+        debugPrint('response: $screeningResult');
 
         await prefs.setString('mainIndication', screeningResult.mainIndication);
         await prefs.setInt('finalScore', screeningResult.finalScore);
