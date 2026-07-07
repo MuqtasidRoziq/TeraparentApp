@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/widgets/card_daily_activity.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
+import 'package:teraparent_mobile/app/core/widgets/shimmer_loading.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
 import 'package:teraparent_mobile/app/data/models/activity_model.dart';
 import '../controllers/activities_controller.dart';
@@ -27,7 +28,7 @@ class ActivitiesView extends GetView<ActivitiesController> {
           onRefresh: controller.fetchTodayActivities,
           child: Obx(() {
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return _buildActivitiesShimmer();
             }
 
             if (controller.errorMessage.value.isNotEmpty) {
@@ -158,6 +159,39 @@ class ActivitiesView extends GetView<ActivitiesController> {
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActivitiesShimmer() {
+    return ShimmerLoading(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ShimmerBox(height: 32, width: 180),
+            const SizedBox(height: 20),
+            const ShimmerBox(height: 24, width: 140),
+            const SizedBox(height: 16),
+            Row(
+              children: const [
+                Expanded(child: ShimmerBox(height: 120, borderRadius: BorderRadius.all(Radius.circular(20)))),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const ShimmerBox(height: 24, width: 160),
+            const SizedBox(height: 16),
+            ...List.generate(3, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: ShimmerBox(height: 92, borderRadius: BorderRadius.all(Radius.circular(20))),
+              );
+            }),
+            const SizedBox(height: 120),
+          ],
+        ),
       ),
     );
   }

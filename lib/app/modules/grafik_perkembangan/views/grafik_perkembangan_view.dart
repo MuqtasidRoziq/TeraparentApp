@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
 import 'package:teraparent_mobile/app/core/widgets/bottom_nav.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
+import 'package:teraparent_mobile/app/core/widgets/shimmer_loading.dart';
 import '../controllers/grafik_perkembangan_controller.dart';
 
 class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
@@ -18,7 +19,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
           onRefresh: controller.loadDashboardData,
           child: Obx(() {
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return _buildGrafikShimmer();
             }
 
             return SingleChildScrollView(
@@ -49,6 +50,32 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
         ),
       ),
       bottomNavigationBar: BottomNavbar(),
+    );
+  }
+
+  Widget _buildGrafikShimmer() {
+    return ShimmerLoading(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ShimmerBox(height: 32, width: 210),
+            const SizedBox(height: 20),
+            const ShimmerBox(height: 200, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 160, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 120, borderRadius: BorderRadius.all(Radius.circular(20))),
+            const SizedBox(height: 80),
+          ],
+        ),
+      ),
     );
   }
 

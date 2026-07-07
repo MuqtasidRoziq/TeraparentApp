@@ -61,8 +61,15 @@ class ScreeningView extends GetView<ScreeningController> {
               () {
                 if (controller.isLoading.value) {
                   return const Center(
-                    child: CircularProgressIndicator(
-                      color: primaryColor,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: primaryColor,
+                        ),
+                        const SizedBox(height: 12),
+                        Text("Memuat pertanyaan..."),
+                      ],
                     ),
                   );
                 }

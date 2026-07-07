@@ -12,16 +12,25 @@ class NavigationController extends GetxController {
   ];
 
   void changeIndex(int index) {
+    if (selectedIndex.value == index) return;
+
     selectedIndex.value = index;
-    
-    Future.microtask(() {
-      Get.toNamed(routes[index]);
-    });
+    final route = routes[index];
+
+    if (Get.currentRoute != route) {
+      Future.microtask(() {
+        Get.offNamed(route);
+      });
+    }
+  }
+
+  void reset() {
+    selectedIndex.value = 0;
   }
 
   void syncWithRoute(String route) {
     final index = routes.indexOf(route);
-    if (index != -1) {
+    if (index != -1 && selectedIndex.value != index) {
       selectedIndex.value = index;
     }
   }

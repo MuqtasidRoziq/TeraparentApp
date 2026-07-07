@@ -10,6 +10,8 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    nav.syncWithRoute(Get.currentRoute);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
       child: ClipRRect(
@@ -52,34 +54,39 @@ class BottomNavbar extends StatelessWidget {
       final active = nav.selectedIndex.value == index;
       const activeColor = Color(0xff2F6F57);
 
-      return GestureDetector(
-        onTap: () => nav.changeIndex(index),
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: active ? activeColor.withOpacity(0.12) : Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: active ? 26 : 24,
-                color: active ? activeColor : Colors.black38,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  color: active ? activeColor : Colors.black38,
-                  fontSize: 12,
-                  fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+      return Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => nav.changeIndex(index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: active ? activeColor.withOpacity(0.14) : Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: active ? 26 : 24,
+                  color: active ? activeColor : Colors.black45,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: active ? activeColor : Colors.black45,
+                    fontSize: 12,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );

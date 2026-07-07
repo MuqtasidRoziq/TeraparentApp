@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/auth/login_model.dart';
+import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
 import 'package:teraparent_mobile/app/data/services/auth/login_service.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
@@ -106,6 +107,8 @@ class LoginController extends GetxController {
           await prefs.remove('priorityDomain');
           await prefs.remove('riskCategory');
         }
+
+        Get.find<NavigationController>().reset();
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {

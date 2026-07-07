@@ -5,6 +5,7 @@ import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import '../../../core/widgets/bottom_nav.dart';
+import '../../../core/widgets/shimmer_loading.dart';
 import '../controllers/home_controller.dart';
 import '../../../core/theme/colors.dart';
 
@@ -23,9 +24,7 @@ class HomeView extends GetView<HomeController> {
             _bottomBlur(),
             Obx(() {
               if (controller.isLoading.value) {
-                return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                );
+                return _buildHomeShimmer();
               }
 
               return RefreshIndicator(
@@ -39,7 +38,6 @@ class HomeView extends GetView<HomeController> {
                     children: [
                       const SizedBox(height: 20),
 
-                      // 1. HEADER PROFILE — tidak diubah
                       headerProfile(),
                       const SizedBox(height: 28),
 
@@ -106,6 +104,35 @@ class HomeView extends GetView<HomeController> {
       height: 1,
       margin: const EdgeInsets.only(bottom: 24),
       color: const Color(0xffE8EDEB),
+    );
+  }
+
+  Widget _buildHomeShimmer() {
+    return ShimmerLoading(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            const ShimmerBox(height: 110, borderRadius: BorderRadius.all(Radius.circular(28))),
+            const SizedBox(height: 28),
+            const ShimmerBox(height: 28, width: 220),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 220, borderRadius: BorderRadius.all(Radius.circular(28))),
+            const SizedBox(height: 28),
+            const ShimmerBox(height: 28, width: 180),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(24))),
+            const SizedBox(height: 28),
+            const ShimmerBox(height: 28, width: 160),
+            const SizedBox(height: 16),
+            const ShimmerBox(height: 160, borderRadius: BorderRadius.all(Radius.circular(24))),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
     );
   }
 

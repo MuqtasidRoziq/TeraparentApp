@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
+import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
 import 'package:teraparent_mobile/app/data/services/user_services.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
@@ -33,13 +34,10 @@ class ProfileController extends GetxController {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       userName.value = prefs.getString('full_name') ?? 'user';
-      // Use 'photo_url' — same key that LoginController saves after login
       profileUrl.value = prefs.getString('photo_url') ?? '';
-      // Keep UserService in sync
       _userService.userPhotoUrl.value = profileUrl.value;
       _userService.userFullName.value = userName.value;
       childName.value = prefs.getString('childName') ?? 'Ananda';
-      // Also try birthDate (key used by login) as fallback for childDob
       childPhotoUrl.value = prefs.getString('child_photo_url') ?? '';
 
       // Login saves 'birthDate'; fallback to 'childDob' for older sessions
@@ -131,6 +129,7 @@ class ProfileController extends GetxController {
 
     debugPrint('Anda telah keluar.');
 
+    Get.find<NavigationController>().reset();
     Get.offAllNamed(Routes.LOGIN);
   }
 }
