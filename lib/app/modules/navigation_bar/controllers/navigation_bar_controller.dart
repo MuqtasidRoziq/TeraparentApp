@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
-class NavigationController extends GetxController {
+class NavigationBarController extends GetxController {
   final selectedIndex = 0.obs;
 
   final List<String> routes = [
@@ -13,14 +13,10 @@ class NavigationController extends GetxController {
 
   void changeIndex(int index) {
     if (selectedIndex.value == index) return;
-
     selectedIndex.value = index;
     final route = routes[index];
-
     if (Get.currentRoute != route) {
-      Future.microtask(() {
-        Get.offNamed(route);
-      });
+      Future.microtask(() => Get.offNamed(route));
     }
   }
 
@@ -33,5 +29,10 @@ class NavigationController extends GetxController {
     if (index != -1 && selectedIndex.value != index) {
       selectedIndex.value = index;
     }
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
   }
 }

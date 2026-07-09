@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/core/widgets/shimmer_loading.dart';
 import 'package:teraparent_mobile/app/data/services/user_services.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/views/navigation_bar_view.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
-import '../../../core/widgets/bottom_nav.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -17,7 +17,7 @@ class ProfileView extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bgLight,
-      bottomNavigationBar: BottomNavbar(),
+      bottomNavigationBar: NavigationBarView(),
       body: SafeArea(
         child: RefreshIndicator(
           color: _primaryColor,
@@ -26,132 +26,75 @@ class ProfileView extends GetView<ProfileController> {
             await controller.loadProfile();
             await userService.loadUserData();
           },
-          child: Obx(() {
-            if (controller.isLoading.value) {
-              return _buildProfileShimmer();
-            }
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                    child: headerProfile(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: headerProfile(),
+                ),
+
+                // Hero card — card langsung tampil, data nama/foto di-shimmer
+                _buildProfileHeroCard(),
+
+                const SizedBox(height: 24),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ─── PROFIL ANAK ───
+                      _sectionLabel('Profil Anak'),
+                      const SizedBox(height: 12),
+                      // Child card — card langsung tampil, data di-shimmer
+                      _buildChildCard(),
+
+                      const SizedBox(height: 24),
+
+                      // ─── RIWAYAT SHORTCUT ─── (static, selalu tampil)
+                      _buildRiwayatButton(),
+
+                      const SizedBox(height: 28),
+
+                      // ─── PENGATURAN AKUN ─── (static)
+                      _sectionLabel('Pengaturan Akun'),
+                      const SizedBox(height: 12),
+                      _buildSettingItem(
+                        icon: Icons.person_outline_rounded,
+                        title: 'Informasi Pribadi',
+                        subtitle: 'Nama, telepon, foto profil',
+                        onTap: () => Get.toNamed(Routes.INFO_PRIBADI),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildSettingItem(
+                        icon: Icons.lock_outline_rounded,
+                        title: 'Keamanan & Password',
+                        subtitle: 'Ganti password, biometrik',
+                        onTap: () => Get.toNamed(Routes.SECURITY_PASSWORD),
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      // ─── LOGOUT ─── (static)
+                      _buildLogoutButton(),
+                      const SizedBox(height: 32),
+                    ],
                   ),
-
-                  _buildProfileHeroCard(),
-
-                  const SizedBox(height: 24),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ─── PROFIL ANAK ───
-                        _sectionLabel('Profil Anak'),
-                        const SizedBox(height: 12),
-                        _buildChildCard(),
-
-                        const SizedBox(height: 24),
-
-                        // ─── RIWAYAT SHORTCUT ───
-                        _buildRiwayatButton(),
-
-                        const SizedBox(height: 28),
-
-                        // ─── PENGATURAN AKUN ───
-                        _sectionLabel('Pengaturan Akun'),
-                        const SizedBox(height: 12),
-                        _buildSettingItem(
-                          icon: Icons.person_outline_rounded,
-                          title: 'Informasi Pribadi',
-                          subtitle: 'Nama, telepon, foto profil',
-                          onTap: () => Get.toNamed(Routes.INFO_PRIBADI),
-                        ),
-                        const SizedBox(height: 10),
-                        _buildSettingItem(
-                          icon: Icons.lock_outline_rounded,
-                          title: 'Keamanan & Password',
-                          subtitle: 'Ganti password, biometrik',
-                          onTap: () => Get.toNamed(Routes.SECURITY_PASSWORD),
-                        ),
-
-                        const SizedBox(height: 28),
-
-                        // ─── LOGOUT ───
-                        _buildLogoutButton(),
-                        const SizedBox(height: 32),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileShimmer() {
-    return ShimmerLoading(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const ShimmerBox(
-              height: 140,
-              borderRadius: BorderRadius.all(Radius.circular(24)),
-            ),
-            const SizedBox(height: 24),
-            const ShimmerBox(height: 28, width: 180),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 120,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            const SizedBox(height: 24),
-            const ShimmerBox(height: 28, width: 160),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 100,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            const SizedBox(height: 24),
-            const ShimmerBox(height: 28, width: 160),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 100,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            const SizedBox(height: 24),
-            const ShimmerBox(height: 28, width: 150),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 52,
-              borderRadius: BorderRadius.all(Radius.circular(18)),
-            ),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 52,
-              borderRadius: BorderRadius.all(Radius.circular(18)),
-            ),
-            const SizedBox(height: 16),
-            const ShimmerBox(
-              height: 52,
-              borderRadius: BorderRadius.all(Radius.circular(18)),
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
-    );
-  }
-  
+  // ─────────────────────────────────────────────────────────────────
+  // PROFILE HERO CARD — card selalu tampil, nama & foto di-shimmer
+  // ─────────────────────────────────────────────────────────────────
   Widget _buildProfileHeroCard() {
     return Container(
       width: double.infinity,
@@ -173,7 +116,7 @@ class ProfileView extends GetView<ProfileController> {
       ),
       child: Stack(
         children: [
-          // Decorative circles
+          // Decorative circles — static
           Positioned(
             top: -20,
             right: -20,
@@ -203,8 +146,17 @@ class ProfileView extends GetView<ProfileController> {
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                // Avatar
+                // Avatar — shimmer saat loading
                 Obx(() {
+                  if (controller.isLoading.value) {
+                    return ShimmerLoading(
+                      child: const ShimmerBox(
+                        width: 82,
+                        height: 82,
+                        borderRadius: BorderRadius.all(Radius.circular(100)),
+                      ),
+                    );
+                  }
                   final photoUrl = Get.find<UserService>().userPhotoUrl.value;
                   return Container(
                     padding: const EdgeInsets.all(3),
@@ -236,22 +188,44 @@ class ProfileView extends GetView<ProfileController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Obx(
-                        () => Text(
-                          controller.userNameText,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Orang Tua',
-                        style: TextStyle(fontSize: 13, color: Colors.white70),
-                      ),
+                      // Nama user — shimmer saat loading
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return ShimmerLoading(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                ShimmerBox(height: 22, width: 140),
+                                SizedBox(height: 6),
+                                ShimmerBox(height: 14, width: 80),
+                              ],
+                            ),
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              controller.userNameText,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Orang Tua',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                       const SizedBox(height: 12),
+                      // Tombol edit — static
                       GestureDetector(
                         onTap: () => Get.toNamed(Routes.INFO_PRIBADI),
                         child: Container(
@@ -299,7 +273,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // CHILD CARD
+  // CHILD CARD — card selalu tampil, data nama/foto/indikasi di-shimmer
   // ─────────────────────────────────────────────────────────────────
   Widget _buildChildCard() {
     return Container(
@@ -318,9 +292,18 @@ class ProfileView extends GetView<ProfileController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Child Avatar
-          Obx(
-            () => Container(
+          // Child Avatar — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: const ShimmerBox(
+                  width: 68,
+                  height: 68,
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                ),
+              );
+            }
+            return Container(
               width: 68,
               height: 68,
               decoration: BoxDecoration(
@@ -343,17 +326,45 @@ class ProfileView extends GetView<ProfileController> {
                       color: Color(0xFF2B5B4B),
                       size: 36,
                     ),
-            ),
-          ),
+            );
+          }),
           const SizedBox(width: 14),
 
-          // Info
+          // Info anak — shimmer saat loading
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Obx(
-                  () => Text(
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return ShimmerLoading(
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShimmerBox(height: 20, width: 140),
+                      SizedBox(height: 6),
+                      ShimmerBox(height: 14, width: 80),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          ShimmerBox(
+                            width: 90,
+                            height: 26,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                          SizedBox(width: 6),
+                          ShimmerBox(
+                            width: 80,
+                            height: 26,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     controller.childName.value.isNotEmpty
                         ? controller.childName.value
                         : 'Belum ada profil anak',
@@ -363,54 +374,56 @@ class ProfileView extends GetView<ProfileController> {
                       color: Color(0xFF1F2937),
                     ),
                   ),
-                ),
-                Obx(
-                  () => controller.childAge.value.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            controller.childAge.value,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
+                  if (controller.childAge.value.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        controller.childAge.value,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  // Tags indikasi
+                  Builder(
+                    builder: (context) {
+                      final hasIndication =
+                          controller.indication.value.isNotEmpty;
+                      final hasRisk = controller.riskCategory.value.isNotEmpty;
+                      if (!hasIndication && !hasRisk) {
+                        return const Text(
+                          'Belum ada data screening',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        );
+                      }
+                      return Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          if (hasIndication)
+                            _indicationTag(
+                              text: controller.indication.value,
+                              bgColor: const Color(0xFFFFF3CD),
+                              textColor: const Color(0xFF856404),
                             ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-                const SizedBox(height: 10),
-                // Tags indikasi dari screening terbaru
-                Obx(() {
-                  final hasIndication = controller.indication.value.isNotEmpty;
-                  final hasRisk = controller.riskCategory.value.isNotEmpty;
-                  if (!hasIndication && !hasRisk) {
-                    return const Text(
-                      'Belum ada data screening',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    );
-                  }
-                  return Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      if (hasIndication)
-                        _indicationTag(
-                          text: controller.indication.value,
-                          bgColor: const Color(0xFFFFF3CD),
-                          textColor: const Color(0xFF856404),
-                        ),
-                      if (hasRisk)
-                        _indicationTag(
-                          text: controller.riskCategory.value,
-                          bgColor: const Color(0xFFD1F2E8),
-                          textColor: const Color(0xFF0F6B4F),
-                        ),
-                    ],
-                  );
-                }),
-              ],
-            ),
+                          if (hasRisk)
+                            _indicationTag(
+                              text: controller.riskCategory.value,
+                              bgColor: const Color(0xFFD1F2E8),
+                              textColor: const Color(0xFF0F6B4F),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              );
+            }),
           ),
+
+          // Tombol edit — static
           IconButton(
             onPressed: () => Get.toNamed(Routes.CHILD_DATE),
             icon: Icon(
@@ -425,7 +438,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // RIWAYAT BUTTON
+  // RIWAYAT BUTTON — static, tidak perlu shimmer
   // ─────────────────────────────────────────────────────────────────
   Widget _buildRiwayatButton() {
     return GestureDetector(
@@ -483,7 +496,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // SETTING ITEM
+  // SETTING ITEM — static
   // ─────────────────────────────────────────────────────────────────
   Widget _buildSettingItem({
     required IconData icon,
@@ -548,7 +561,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // ─────────────────────────────────────────────────────────────────
-  // LOGOUT BUTTON
+  // LOGOUT BUTTON — static
   // ─────────────────────────────────────────────────────────────────
   Widget _buildLogoutButton() {
     return GestureDetector(

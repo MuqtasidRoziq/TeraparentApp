@@ -26,55 +26,105 @@ class ActivitiesView extends GetView<ActivitiesController> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: controller.fetchTodayActivities,
-          child: Obx(() {
-            if (controller.isLoading.value) {
-              return _buildActivitiesShimmer();
-            }
-
-            if (controller.errorMessage.value.isNotEmpty) {
-              return _buildErrorState();
-            }
-
-            final grouped = controller.groupedByDomain;
-
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  headerProfile(),
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Aktivitas Hari Ini',
-                    style: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff202020),
-                    ),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header — static, selalu tampil
+                headerProfile(),
+                const SizedBox(height: 30),
+                const Text(
+                  'Aktivitas Hari Ini',
+                  style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff202020),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _todayLabel(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _todayLabel(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 30),
-                  if (grouped.isEmpty)
-                    _buildEmptyState()
-                  else
-                    ...grouped.entries.map(
-                      (entry) => _buildDomainSection(entry.key, entry.value),
-                    ),
-                  const SizedBox(height: 120),
-                ],
-              ),
-            );
-          }),
+                ),
+                const SizedBox(height: 30),
+
+                // Daftar aktivitas — data dari backend, di-shimmer saat loading
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return _buildActivityListShimmer();
+                  }
+
+                  if (controller.errorMessage.value.isNotEmpty) {
+                    return _buildErrorState();
+                  }
+
+                  final grouped = controller.groupedByDomain;
+                  if (grouped.isEmpty) return _buildEmptyState();
+
+                  return Column(
+                    children: grouped.entries
+                        .map((entry) =>
+                            _buildDomainSection(entry.key, entry.value))
+                        .toList(),
+                  );
+                }),
+
+                const SizedBox(height: 120),
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  /// Shimmer hanya untuk list aktivitas (bukan seluruh halaman)
+  Widget _buildActivityListShimmer() {
+    return ShimmerLoading(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Domain label shimmer
+          Row(
+            children: const [
+              ShimmerBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(4))),
+              SizedBox(width: 8),
+              ShimmerBox(width: 160, height: 24),
+            ],
+          ),
+          const SizedBox(height: 18),
+          // 3 activity card shimmers
+          ...List.generate(3, (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 18),
+            child: ShimmerBox(
+              height: 92,
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
+          )),
+          const SizedBox(height: 16),
+          // Domain label shimmer 2
+          Row(
+            children: const [
+              ShimmerBox(width: 24, height: 24, borderRadius: BorderRadius.all(Radius.circular(4))),
+              SizedBox(width: 8),
+              ShimmerBox(width: 140, height: 24),
+            ],
+          ),
+          const SizedBox(height: 18),
+          ...List.generate(2, (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 18),
+            child: ShimmerBox(
+              height: 92,
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
+          )),
+        ],
       ),
     );
   }
@@ -159,39 +209,6 @@ class ActivitiesView extends GetView<ActivitiesController> {
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActivitiesShimmer() {
-    return ShimmerLoading(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const ShimmerBox(height: 32, width: 180),
-            const SizedBox(height: 20),
-            const ShimmerBox(height: 24, width: 140),
-            const SizedBox(height: 16),
-            Row(
-              children: const [
-                Expanded(child: ShimmerBox(height: 120, borderRadius: BorderRadius.all(Radius.circular(20)))),
-              ],
-            ),
-            const SizedBox(height: 24),
-            const ShimmerBox(height: 24, width: 160),
-            const SizedBox(height: 16),
-            ...List.generate(3, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 18),
-                child: ShimmerBox(height: 92, borderRadius: BorderRadius.all(Radius.circular(20))),
-              );
-            }),
-            const SizedBox(height: 120),
-          ],
-        ),
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/controllers/navigation_bar_controller.dart';
 import 'package:teraparent_mobile/app/data/services/activity_services.dart';
 import 'package:teraparent_mobile/app/data/services/api_service.dart';
 import 'package:teraparent_mobile/app/data/services/auth/login_service.dart';
@@ -22,7 +22,7 @@ void main() async {
 
   final initialRoute = await getInitialRoute();
 
-  Get.put(NavigationController(), permanent: true);
+  Get.put(NavigationBarController(), permanent: true);
   Get.put(ApiService(), permanent: true);
   Get.put(RegisterService(), permanent: true);
   Get.put(VerifyOtpService(), permanent: true);

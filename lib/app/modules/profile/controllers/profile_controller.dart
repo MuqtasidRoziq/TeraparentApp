@@ -3,7 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
-import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
 import 'package:teraparent_mobile/app/data/services/user_services.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
@@ -41,13 +40,15 @@ class ProfileController extends GetxController {
       childPhotoUrl.value = prefs.getString('child_photo_url') ?? '';
 
       // Login saves 'birthDate'; fallback to 'childDob' for older sessions
-      final dobStr = prefs.getString('birthDate') ?? prefs.getString('childDob');
+      final dobStr =
+          prefs.getString('birthDate') ?? prefs.getString('childDob');
       if (dobStr != null && dobStr.isNotEmpty) {
         try {
           final dob = DateTime.parse(dobStr);
           final now = DateTime.now();
           int age = now.year - dob.year;
-          if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+          if (now.month < dob.month ||
+              (now.month == dob.month && now.day < dob.day)) {
             age--;
           }
           childAge.value = '$age tahun';
@@ -74,12 +75,16 @@ class ProfileController extends GetxController {
   Future<void> _loadLatestScreeningIndication(String childId) async {
     try {
       final response = await _screeningService.getHistory(childId: childId);
-      if (response.success && response.data != null && response.data!.isNotEmpty) {
+      if (response.success &&
+          response.data != null &&
+          response.data!.isNotEmpty) {
         // Sort by completedAt descending and take the latest completed one
-        final history = response.data!
-            .where((s) => s.status == 'COMPLETED')
-            .toList()
-          ..sort((a, b) => (b.completedAt ?? DateTime(0)).compareTo(a.completedAt ?? DateTime(0)));
+        final history =
+            response.data!.where((s) => s.status == 'COMPLETED').toList()..sort(
+              (a, b) => (b.completedAt ?? DateTime(0)).compareTo(
+                a.completedAt ?? DateTime(0),
+              ),
+            );
 
         if (history.isNotEmpty) {
           indication.value = history.first.mainIndication;
@@ -128,8 +133,6 @@ class ProfileController extends GetxController {
     await prefs.remove('riskCategory');
 
     debugPrint('Anda telah keluar.');
-
-    Get.find<NavigationController>().reset();
     Get.offAllNamed(Routes.LOGIN);
   }
 }

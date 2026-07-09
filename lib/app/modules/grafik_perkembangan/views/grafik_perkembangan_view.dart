@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:teraparent_mobile/app/core/theme/colors.dart';
-import 'package:teraparent_mobile/app/core/widgets/bottom_nav.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/views/navigation_bar_view.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/core/widgets/shimmer_loading.dart';
 import '../controllers/grafik_perkembangan_controller.dart';
@@ -17,91 +17,55 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: controller.loadDashboardData,
-          child: Obx(() {
-            if (controller.isLoading.value) {
-              return _buildGrafikShimmer();
-            }
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header — static
+                headerProfile(),
+                const SizedBox(height: 24),
 
-            return SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  headerProfile(),
-                  const SizedBox(height: 24),
-                  if (controller.errorMessage.value.isNotEmpty)
-                  _buildErrorBanner(),
-                  const SizedBox(height: 16),
-                  _buildRadarCard(),
-                  const SizedBox(height: 16),
-                  _buildMilestonesCard(),
-                  const SizedBox(height: 16),
-                  _buildScreeningTrendCard(),
-                  const SizedBox(height: 16),
-                  _buildScreeningHistoryCard(),
-                  const SizedBox(height: 16),
-                  _buildTipsCard(),
-                  const SizedBox(height: 80),
-                ],
-              ),
-            );
-          }),
-        ),
-      ),
-      bottomNavigationBar: BottomNavbar(),
-    );
-  }
+                // Error banner jika ada
+                Obx(() {
+                  if (controller.errorMessage.value.isNotEmpty) {
+                    return _buildErrorBanner();
+                  }
+                  return const SizedBox.shrink();
+                }),
 
-  Widget _buildGrafikShimmer() {
-    return ShimmerLoading(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const ShimmerBox(height: 32, width: 210),
-            const SizedBox(height: 20),
-            const ShimmerBox(height: 200, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 160, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 120, borderRadius: BorderRadius.all(Radius.circular(20))),
-            const SizedBox(height: 80),
-          ],
-        ),
-      ),
-    );
-  }
+                // Grafik Perkembangan Card — card langsung tampil, konten di-shimmer
+                _buildRadarCard(),
+                const SizedBox(height: 16),
 
-  Widget _buildErrorBanner() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFDECEA),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              controller.errorMessage.value,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                // Milestones Card
+                _buildMilestonesCard(),
+                const SizedBox(height: 16),
+
+                // Tren Skor Card
+                _buildScreeningTrendCard(),
+                const SizedBox(height: 16),
+
+                // Riwayat Card
+                _buildScreeningHistoryCard(),
+                const SizedBox(height: 16),
+
+                // Tips Card
+                _buildTipsCard(),
+                const SizedBox(height: 80),
+              ],
             ),
           ),
-        ],
+        ),
       ),
+      bottomNavigationBar: const NavigationBarView(),
     );
   }
 
+  // ──────────────────────────────────────────────────────────────────
+  // GRAFIK PERKEMBANGAN — card static, konten bar chart di-shimmer
+  // ──────────────────────────────────────────────────────────────────
   Widget _buildRadarCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -119,6 +83,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Judul — selalu tampil
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -139,17 +104,53 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 24),
-          if (!controller.hasRadarData)
-            _buildEmptyChartState(
-              "Anak belum memiliki hasil screening yang selesai.",
-            )
-          else
-            SizedBox(
+
+          // Data chart — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: Column(
+                  children: [
+                    // Bar chart skeleton
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(4, (i) {
+                        final heights = [140.0, 100.0, 160.0, 120.0];
+                        return ShimmerBox(
+                          width: 40,
+                          height: heights[i],
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: List.generate(4, (_) =>
+                        const ShimmerBox(width: 46, height: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (!controller.hasRadarData) {
+              return _buildEmptyChartState(
+                "Anak belum memiliki hasil screening yang selesai.",
+              );
+            }
+
+            return SizedBox(
               height: 220,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
-                  maxY: 10, // Adjust this based on your max score
+                  maxY: 10,
                   barTouchData: BarTouchData(
                     enabled: true,
                     touchTooltipData: BarTouchTooltipData(
@@ -223,7 +224,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                   barGroups: _buildBarGroups(),
                 ),
               ),
-            ),
+            );
+          }),
         ],
       ),
     );
@@ -253,7 +255,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             ),
             backDrawRodData: BackgroundBarChartRodData(
               show: true,
-              toY: 10, // Assuming max score is 10
+              toY: 10,
               color: const Color(0xFFE8F3F1),
             ),
           ),
@@ -262,6 +264,9 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
     });
   }
 
+  // ──────────────────────────────────────────────────────────────────
+  // MILESTONES — card static, list data di-shimmer
+  // ──────────────────────────────────────────────────────────────────
   Widget _buildMilestonesCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -279,6 +284,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Judul — selalu tampil
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -294,20 +300,56 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             ],
           ),
           const SizedBox(height: 16),
-          if (controller.recentActivities.isEmpty)
-            _buildEmptyChartState("Belum ada aktivitas yang diselesaikan.")
-          else
-            ListView.separated(
+
+          // Data — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: Column(
+                  children: List.generate(3, (i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: const [
+                        ShimmerBox(
+                          width: 44,
+                          height: 44,
+                          borderRadius: BorderRadius.all(Radius.circular(100)),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ShimmerBox(height: 15, width: double.infinity),
+                              SizedBox(height: 6),
+                              ShimmerBox(height: 12, width: 180),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                ),
+              );
+            }
+
+            if (controller.recentActivities.isEmpty) {
+              return _buildEmptyChartState("Belum ada aktivitas yang diselesaikan.");
+            }
+
+            return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.recentActivities.length > 5 ? 5 : controller.recentActivities.length,
+              itemCount: controller.recentActivities.length > 5
+                  ? 5
+                  : controller.recentActivities.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final activity = controller.recentActivities[index];
-                final dateStr = activity.completedAt != null 
+                final dateStr = activity.completedAt != null
                     ? "${activity.completedAt!.day}/${activity.completedAt!.month}/${activity.completedAt!.year}"
                     : "Baru saja";
-                
+
                 return Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -319,8 +361,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F3F1),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFE8F3F1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -336,14 +378,18 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                           children: [
                             Text(
                               activity.title,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1F2937)),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Color(0xFF1F2937)),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
                             Text(
                               "Tercapai: $dateStr • ${activity.domainLabel}",
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 12),
                             ),
                           ],
                         ),
@@ -352,12 +398,16 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                   ),
                 );
               },
-            ),
+            );
+          }),
         ],
       ),
     );
   }
 
+  // ──────────────────────────────────────────────────────────────────
+  // TREN SKOR — card static, line chart di-shimmer
+  // ──────────────────────────────────────────────────────────────────
   Widget _buildScreeningTrendCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -375,12 +425,16 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Judul — selalu tampil
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 "Tren Skor Screening",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F3A20)),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F3A20)),
               ),
               Icon(Icons.auto_graph_rounded, color: Colors.blue.shade400, size: 24),
             ],
@@ -391,12 +445,25 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 24),
-          if (controller.screeningTrend.length < 2)
-            _buildEmptyChartState(
-              "Data screening belum cukup untuk menampilkan tren.",
-            )
-          else
-            SizedBox(
+
+          // Chart data — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: const ShimmerBox(
+                  height: 180,
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
+              );
+            }
+
+            if (controller.screeningTrend.length < 2) {
+              return _buildEmptyChartState(
+                "Data screening belum cukup untuk menampilkan tren.",
+              );
+            }
+
+            return SizedBox(
               height: 180,
               child: LineChart(
                 LineChartData(
@@ -483,7 +550,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                   ],
                 ),
               ),
-            ),
+            );
+          }),
           const SizedBox(height: 10),
         ],
       ),
@@ -503,6 +571,9 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
     );
   }
 
+  // ──────────────────────────────────────────────────────────────────
+  // RIWAYAT — card static, list data di-shimmer
+  // ──────────────────────────────────────────────────────────────────
   Widget _buildScreeningHistoryCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -520,6 +591,7 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Judul — selalu tampil
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -535,20 +607,54 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
             ],
           ),
           const SizedBox(height: 16),
-          if (controller.screeningHistory.isEmpty)
-            _buildEmptyChartState("Belum ada riwayat screening yang diselesaikan.")
-          else
-            ListView.separated(
+
+          // Data — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: Column(
+                  children: List.generate(3, (i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: const [
+                        ShimmerBox(
+                          width: 44,
+                          height: 44,
+                          borderRadius: BorderRadius.all(Radius.circular(100)),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ShimmerBox(height: 15, width: double.infinity),
+                              SizedBox(height: 6),
+                              ShimmerBox(height: 12, width: 200),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                ),
+              );
+            }
+
+            if (controller.screeningHistory.isEmpty) {
+              return _buildEmptyChartState("Belum ada riwayat screening yang diselesaikan.");
+            }
+
+            return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.screeningHistory.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final history = controller.screeningHistory[index];
-                final dateStr = history.completedAt != null 
+                final dateStr = history.completedAt != null
                     ? "${history.completedAt!.day}/${history.completedAt!.month}/${history.completedAt!.year}"
                     : "Baru saja";
-                
+
                 return Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -560,8 +666,8 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF3E8FF),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF3E8FF),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -576,15 +682,21 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              history.mainIndication.isNotEmpty ? history.mainIndication : "Tidak Ada Indikasi Khusus",
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1F2937)),
+                              history.mainIndication.isNotEmpty
+                                  ? history.mainIndication
+                                  : "Tidak Ada Indikasi Khusus",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Color(0xFF1F2937)),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
                             Text(
                               "$dateStr • Skor: ${history.finalScore} • ${history.riskCategory}",
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 12),
                             ),
                           ],
                         ),
@@ -593,12 +705,16 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
                   ),
                 );
               },
-            ),
+            );
+          }),
         ],
       ),
     );
   }
-  
+
+  // ──────────────────────────────────────────────────────────────────
+  // TIPS — card static, teks nama anak di-shimmer
+  // ──────────────────────────────────────────────────────────────────
   Widget _buildTipsCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -617,21 +733,64 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.lightbulb_rounded, color: Color(0xFF16A34A), size: 22),
               SizedBox(width: 8),
               Text(
                 "Tips Perkembangan",
-                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF16A34A), fontSize: 15),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF16A34A),
+                    fontSize: 15),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          Text(
-            "Lanjutkan aktivitas harian secara konsisten agar ${controller.childName.value} "
-            "dapat mencapai target minggu ini. Setiap langkah kecil sangat berharga!",
-            style: const TextStyle(color: Color(0xFF14532D), fontSize: 14, height: 1.5),
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    ShimmerBox(height: 14, width: double.infinity),
+                    SizedBox(height: 6),
+                    ShimmerBox(height: 14, width: double.infinity),
+                    SizedBox(height: 6),
+                    ShimmerBox(height: 14, width: 200),
+                  ],
+                ),
+              );
+            }
+            return Text(
+              "Lanjutkan aktivitas harian secara konsisten agar ${controller.childName.value} "
+              "dapat mencapai target minggu ini. Setiap langkah kecil sangat berharga!",
+              style: const TextStyle(
+                  color: Color(0xFF14532D), fontSize: 14, height: 1.5),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFDECEA),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Obx(() => Text(
+                  controller.errorMessage.value,
+                  style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+                )),
           ),
         ],
       ),

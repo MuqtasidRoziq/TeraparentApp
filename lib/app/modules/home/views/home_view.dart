@@ -4,7 +4,7 @@ import 'package:teraparent_mobile/app/core/widgets/card_daily_activity.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
-import '../../../core/widgets/bottom_nav.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/views/navigation_bar_view.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../controllers/home_controller.dart';
 import '../../../core/theme/colors.dart';
@@ -16,83 +16,47 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: BottomNavbar(),
+      bottomNavigationBar: const NavigationBarView(),
       body: SafeArea(
         child: Stack(
           children: [
             _topBlur(),
             _bottomBlur(),
-            Obx(() {
-              if (controller.isLoading.value) {
-                return _buildHomeShimmer();
-              }
+            RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: () async => await controller.loadHomeData(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
 
-              return RefreshIndicator(
-                color: AppColors.primary,
-                onRefresh: () async => await controller.loadHomeData(),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
+                    headerProfile(),
+                    const SizedBox(height: 28),
 
-                      headerProfile(),
-                      const SizedBox(height: 28),
+                    // Sapaan + nama user (data dari backend)
+                    _welcomeSection(),
+                    const SizedBox(height: 28),
 
-                      // 2. SAPAAN USER
-                      _welcomeSection(),
-                      const SizedBox(height: 28),
+                    _sectionDivider(),
+                    _weeklyProgressSection(),
 
-                      _sectionDivider(),
-                      _weeklyProgressSection(),
+                    const SizedBox(height: 28),
 
-                      const SizedBox(height: 28),
+                    _sectionDivider(),
+                    _quickMenu(),
+                    const SizedBox(height: 28),
 
-                      _sectionDivider(),
-                      _quickMenu(),
-                      const SizedBox(height: 28),
+                    _sectionDivider(),
 
-                      _sectionDivider(),
-                      
-                      Builder(builder: (context) {
-                        if (controller.todayActivity.isEmpty) {
-                          return todayActivityCardStart(
-                            title: 'Belum ada aktivitas hari ini',
-                            time: '-',
-                            description: 'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
-                            onStartActivity: () {
-                              Get.toNamed(Routes.ACTIVITIES);
-                            },
-                          );
-                        }
-
-                        final uncompletedActivity = controller.todayActivity
-                            .firstWhereOrNull((a) => !a.isCompleted);
-
-                        if (uncompletedActivity != null) {
-                          return todayActivityCardStart(
-                            title: uncompletedActivity.title,
-                            time: uncompletedActivity.timeLabel,
-                            description: uncompletedActivity.description,
-                            onStartActivity: () {
-                              Get.toNamed(Routes.DETAIL_ACTIVITY, arguments: uncompletedActivity);
-                            },
-                          );
-                        } else {
-                          return todayActivityCardSuccess(
-                            title: 'Semua aktivitas selesai!',
-                            time: 'Hebat!',
-                            description: 'Bunda telah menyelesaikan semua aktivitas harian untuk Ananda hari ini. Teruskan konsistensinya!',
-                          );
-                        }
-                      }),
-                    ],
-                  ),
+                    // Today activity (data dari backend)
+                    _todayActivitySection(),
+                  ],
                 ),
-              );
-            }),
+              ),
+            ),
           ],
         ),
       ),
@@ -107,35 +71,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildHomeShimmer() {
-    return ShimmerLoading(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 22),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            const ShimmerBox(height: 110, borderRadius: BorderRadius.all(Radius.circular(28))),
-            const SizedBox(height: 28),
-            const ShimmerBox(height: 28, width: 220),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 220, borderRadius: BorderRadius.all(Radius.circular(28))),
-            const SizedBox(height: 28),
-            const ShimmerBox(height: 28, width: 180),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 130, borderRadius: BorderRadius.all(Radius.circular(24))),
-            const SizedBox(height: 28),
-            const ShimmerBox(height: 28, width: 160),
-            const SizedBox(height: 16),
-            const ShimmerBox(height: 160, borderRadius: BorderRadius.all(Radius.circular(24))),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
-    );
-  }
-
+  // ─── WELCOME SECTION — hanya teks data yang di-shimmer ───────────
   Widget _welcomeSection() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,46 +89,69 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                controller.firstName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                  letterSpacing: -0.8,
-                  height: 1.1,
-                ),
-              ),
+
+              // Nama user — shimmer saat loading
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return ShimmerLoading(
+                    child: const ShimmerBox(height: 30, width: 160),
+                  );
+                }
+                return Text(
+                  controller.firstName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.8,
+                    height: 1.1,
+                  ),
+                );
+              }),
+
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                decoration: BoxDecoration(
-                  color: AppColors.softGreen.withOpacity(0.75),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.child_care_rounded,
-                        size: 16, color: AppColors.primary),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        'Ananda: ${controller.childInfoText}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w800,
+
+              // Badge nama anak — shimmer saat loading
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return ShimmerLoading(
+                    child: const ShimmerBox(
+                      height: 32,
+                      width: 170,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                  );
+                }
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: AppColors.softGreen.withOpacity(0.75),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.child_care_rounded,
+                          size: 16, color: AppColors.primary),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          'Ananda: ${controller.childInfoText}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -212,119 +171,137 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  // ─── WEEKLY PROGRESS — data (angka & teks) di-shimmer, card tetap tampil ─
   Widget _weeklyProgressSection() {
-    return Obx(() {
-      final percent = controller.progressPercent / 100;
-
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(.08),
-              blurRadius: 25,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-
-            /// Judul
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(.12),
-                    shape: BoxShape.circle,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(.08),
+            blurRadius: 25,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Judul — selalu tampil
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.eco_rounded,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  "Progress Minggu Ini",
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
                   ),
-                  child: const Icon(
-                    Icons.eco_rounded,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 28),
+
+          // Circular progress — shimmer saat loading
+          Obx(() {
+            if (controller.isLoading.value) {
+              return ShimmerLoading(
+                child: Column(
+                  children: const [
+                    ShimmerBox(
+                      height: 170,
+                      width: 170,
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                    ),
+                    SizedBox(height: 24),
+                    ShimmerBox(height: 20, width: 220),
+                    SizedBox(height: 15),
+                    ShimmerBox(
+                      height: 10,
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final percent = controller.progressPercent / 100;
+            return Column(
+              children: [
+                CircularPercentIndicator(
+                  radius: 85,
+                  lineWidth: 14,
+                  animation: true,
+                  animationDuration: 1200,
+                  percent: percent.clamp(0.0, 1.0),
+                  circularStrokeCap: CircularStrokeCap.round,
+                  backgroundColor: Colors.green.shade50,
+                  progressColor: AppColors.primary,
+                  center: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        controller.progressPercentText,
+                        style: const TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        "Progress",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  controller.highlightText,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: LinearProgressIndicator(
+                    minHeight: 10,
+                    value: percent,
+                    backgroundColor: Colors.green.shade50,
                     color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    "Progress Minggu Ini",
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
               ],
-            ),
-
-            const SizedBox(height: 28),
-
-            CircularPercentIndicator(
-              radius: 85,
-              lineWidth: 14,
-              animation: true,
-              animationDuration: 1200,
-              percent: percent.clamp(0.0, 1.0),
-              circularStrokeCap: CircularStrokeCap.round,
-              backgroundColor: Colors.green.shade50,
-              progressColor: AppColors.primary,
-              center: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-
-                  Text(
-                    controller.progressPercentText,
-                    style: const TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  const Text(
-                    "Progress",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            Text(
-              controller.highlightText,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: LinearProgressIndicator(
-                minHeight: 10,
-                value: percent,
-                backgroundColor: Colors.green.shade50,
-                color: AppColors.primary,
-              ),
-            ),
-          ],
-        ),
-      );
-    });
+            );
+          }),
+        ],
+      ),
+    );
   }
 
-  // ─── 4. MENU CEPAT ───────────────────────────────────────────
+  // ─── QUICK MENU — selalu tampil, tidak ada data backend ──────────
   Widget _quickMenu() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,6 +412,82 @@ class HomeView extends GetView<HomeController> {
         ),
       ),
     );
+  }
+
+  // ─── TODAY ACTIVITY — data dari backend, card structure tetap ────
+  Widget _todayActivitySection() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        // Shimmer hanya pada konten dalam card (judul, deskripsi, waktu)
+        return ShimmerLoading(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              ShimmerBox(height: 22, width: 180),
+              SizedBox(height: 12),
+              ShimmerBox(height: 14, width: 280),
+              SizedBox(height: 8),
+              ShimmerBox(height: 14, width: 220),
+              SizedBox(height: 20),
+              ShimmerBox(
+                height: 48,
+                borderRadius: BorderRadius.all(Radius.circular(14)),
+              ),
+              SizedBox(height: 40),
+            ],
+          ),
+        );
+      }
+
+      if (controller.todayActivity.isEmpty) {
+        return Column(
+          children: [
+            todayActivityCardStart(
+              title: 'Belum ada aktivitas hari ini',
+              time: '-',
+              description:
+                  'Silakan cek menu Aktivitas untuk melihat daftar aktivitas yang tersedia.',
+              onStartActivity: () {
+                Get.toNamed(Routes.ACTIVITIES);
+              },
+            ),
+            const SizedBox(height: 40),
+          ],
+        );
+      }
+
+      final uncompletedActivity =
+          controller.todayActivity.firstWhereOrNull((a) => !a.isCompleted);
+
+      if (uncompletedActivity != null) {
+        return Column(
+          children: [
+            todayActivityCardStart(
+              title: uncompletedActivity.title,
+              time: uncompletedActivity.timeLabel,
+              description: uncompletedActivity.description,
+              onStartActivity: () {
+                Get.toNamed(Routes.DETAIL_ACTIVITY,
+                    arguments: uncompletedActivity);
+              },
+            ),
+            const SizedBox(height: 40),
+          ],
+        );
+      } else {
+        return Column(
+          children: [
+            todayActivityCardSuccess(
+              title: 'Semua aktivitas selesai!',
+              time: 'Hebat!',
+              description:
+                  'Bunda telah menyelesaikan semua aktivitas harian untuk Ananda hari ini. Teruskan konsistensinya!',
+            ),
+            const SizedBox(height: 40),
+          ],
+        );
+      }
+    });
   }
 
   Widget _topBlur() {
