@@ -1,11 +1,7 @@
 class FaceAuthRequestModel {
   final List<double> embedding;
 
-  FaceAuthRequestModel({
-    required this.embedding,
-  });
+  FaceAuthRequestModel({required this.embedding});
 
-  Map<String, dynamic> toJson() => {
-        "embedding": embedding,
-      };
+  Map<String, dynamic> toJson() => {"embedding": embedding};
 }
