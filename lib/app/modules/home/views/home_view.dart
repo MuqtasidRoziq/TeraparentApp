@@ -33,7 +33,9 @@ class HomeView extends GetView<HomeController> {
                   children: [
                     const SizedBox(height: 20),
 
-                    headerProfile(),
+                    Obx(() => headerProfile(
+                      todayActivities: controller.todayActivity,
+                    )),
                     const SizedBox(height: 28),
 
                     // Sapaan + nama user (data dari backend)

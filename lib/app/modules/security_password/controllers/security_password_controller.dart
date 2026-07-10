@@ -5,8 +5,10 @@ import 'package:teraparent_mobile/app/data/services/reset_password_service.dart'
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 
 class SecurityPasswordController extends GetxController {
-  final ResetPasswordService _requestResetPasswordService = Get.find<ResetPasswordService>();
+  final ResetPasswordService _requestResetPasswordService =
+      Get.find<ResetPasswordService>();
 
+  // Status apakah wajah sudah terdaftar (dibaca dari SharedPrefs)
   var isFaceRegistered = false.obs;
 
   var isBiometricEnabled = false.obs;
@@ -24,9 +26,15 @@ class SecurityPasswordController extends GetxController {
   Future<void> checkFaceStatus() async {
     isCheckingFaceStatus.value = true;
 
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    isCheckingFaceStatus.value = false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isFaceActive = prefs.getBool('is_face_recognition_active') ?? false;
+      isFaceRegistered.value = isFaceActive;
+    } catch (_) {
+      isFaceRegistered.value = false;
+    } finally {
+      isCheckingFaceStatus.value = false;
+    }
   }
 
   Future<void> goToChangePassword() async {
@@ -92,4 +100,29 @@ class SecurityPasswordController extends GetxController {
     Get.toNamed(Routes.FACE_REGISTER);
   }
 
+  /// Dipanggil setelah kembali dari face_register agar status diperbarui
+  Future<void> refreshFaceStatus() async {
+    await checkFaceStatus();
+  }
+
+  /// Nonaktifkan face recognition
+  Future<void> deactivateFaceRecognition() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_face_recognition_active', false);
+      isFaceRegistered.value = false;
+      isBiometricEnabled.value = false;
+      Get.snackbar(
+        'Berhasil',
+        'Login wajah telah dinonaktifkan.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menonaktifkan login wajah.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 }

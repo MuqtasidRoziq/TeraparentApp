@@ -33,7 +33,9 @@ class ActivitiesView extends GetView<ActivitiesController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header — static, selalu tampil
-                headerProfile(),
+                Obx(() => headerProfile(
+                  todayActivities: controller.activities,
+                )),
                 const SizedBox(height: 30),
                 const Text(
                   'Aktivitas Hari Ini',

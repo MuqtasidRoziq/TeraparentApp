@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teraparent_mobile/app/data/services/activity_log_service.dart';
 import 'package:teraparent_mobile/app/modules/navigation_bar/controllers/navigation_bar_controller.dart';
 import 'package:teraparent_mobile/app/data/services/activity_services.dart';
 import 'package:teraparent_mobile/app/data/services/api_service.dart';
@@ -15,6 +16,7 @@ import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
 import 'package:teraparent_mobile/app/data/services/reset_password_service.dart';
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 import 'package:teraparent_mobile/app/data/services/user_services.dart';
+import 'package:teraparent_mobile/app/data/services/auth/face_login_service.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
@@ -35,6 +37,8 @@ void main() async {
   Get.put(GrafikService(), permanent: true);
   Get.put(ResetPasswordService(), permanent: true);
   Get.put(UserService(), permanent: true);
+  Get.put(FaceAuthService(), permanent: true);
+  Get.put(ActivityLogService(), permanent: true);
 
   runApp(
     GetMaterialApp(
@@ -50,17 +54,21 @@ Future<String> getInitialRoute() async {
   final prefs = await SharedPreferences.getInstance();
   const storage = FlutterSecureStorage();
 
-  final token = await storage.read(key: 'token');
+  var token = await storage.read(key: 'token');
+  if (token == null || token.isEmpty) {
+    token = prefs.getString('token');
+  }
   final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
   final hasPendingOtp = prefs.getBool('pending_otp') ?? false;
   final pendingEmail = prefs.getString('pending_otp_email');
   final isEmailVerified = readBoolLike(prefs, 'is_email_verified');
   final hasChildData = readBoolLike(prefs, 'has_child_data');
-  final childId = await storage.read(key: 'childId');
 
-  final validPendingOtp = hasPendingOtp && pendingEmail != null && pendingEmail.isNotEmpty;
+  final validPendingOtp =
+      hasPendingOtp && pendingEmail != null && pendingEmail.isNotEmpty;
 
-  final validLogin = token != null && token.isNotEmpty && isLoggedIn && isEmailVerified;
+  final validLogin =
+      token != null && token.isNotEmpty && isLoggedIn && isEmailVerified;
 
   if (!validLogin && validPendingOtp) {
     return Routes.VERIFY_OTP;
@@ -79,7 +87,7 @@ Future<String> getInitialRoute() async {
     await prefs.remove('pending_otp_email');
     await prefs.remove('pending_otp_expired_at');
 
-    if (hasChildData && childId != null && childId.isNotEmpty) {
+    if (hasChildData) {
       return Routes.HOME;
     } else {
       return Routes.CHILD_DATE;
@@ -106,6 +114,7 @@ Future<void> clearBrokenSession() async {
 
   await storage.delete(key: 'token');
   await storage.delete(key: 'user_id');
+  await prefs.remove('token');
 
   await prefs.setBool('is_logged_in', false);
 
