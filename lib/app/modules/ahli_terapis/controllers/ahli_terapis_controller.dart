@@ -2,13 +2,13 @@ import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/data/models/terapist.dart';
 
 class AhliTerapisController extends GetxController {
-  // State untuk Bottom Navigation Bar (Default index 1: Activities)
+  // State untuk Bottom Navigation Bar
   var currentNavIndex = 1.obs;
-  
+
   // State untuk filter kategori yang sedang aktif
   var selectedCategory = "Semua".obs;
 
-  // List data terapis reactive (bisa diupdate nanti lewat API Flask-mu)
+  // List data terapis reactive
   var therapists = <Therapist>[].obs;
 
   @override

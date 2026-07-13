@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:teraparent_mobile/app/core/widgets/bottom_nav.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/views/navigation_bar_view.dart';
 import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:teraparent_mobile/app/core/widgets/therapist_card.dart';
 
@@ -15,22 +15,22 @@ class AhliTerapisView extends GetView<AhliTerapisController> {
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           children: [
             headerProfile(),
             const SizedBox(height: 16),
             _buildSearchBar(),
             const SizedBox(height: 20),
-        
-            // 1. Bungkus kategori filter dengan Obx agar mendeteksi perubahan tab kategori
+
+            // Filter kategori
             Obx(() => _buildCategoryFilter()),
-        
+
             const SizedBox(height: 24),
             _buildSectionHeader(),
             const SizedBox(height: 16),
-        
-            // 2. Bungkus list terapis dengan Obx
+
+            // List terapis
             Obx(() {
               return Column(
                 children: controller.therapists.map((data) {
@@ -38,15 +38,14 @@ class AhliTerapisView extends GetView<AhliTerapisController> {
                 }).toList(),
               );
             }),
-        
+
             const SizedBox(height: 8),
             _buildHelpFilterBanner(),
             const SizedBox(height: 32),
           ],
         ),
       ),
-      // 3. Bungkus bottom nav bar dengan Obx
-      bottomNavigationBar: BottomNavbar()
+      bottomNavigationBar: const NavigationBarView(),
     );
   }
 

@@ -92,7 +92,6 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
 
               // =========================
               // UBAH KATA SANDI
-              // (tap -> verifikasi OTP -> atur ulang kata sandi)
               // =========================
               Obx(
                 () => _buildNavigationTile(
@@ -111,7 +110,7 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
               const SizedBox(height: 18),
 
               // =========================
-              // LOGIN BIOMETRIK
+              // LOGIN BIOMETRIK (FACE)
               // =========================
               Obx(() {
                 if (controller.isCheckingFaceStatus.value) {
@@ -133,25 +132,14 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
                 }
 
                 if (!controller.isFaceRegistered.value) {
-                  // Wajah belum terdaftar -> tampilkan ajakan aktivasi
-                  return _buildActivateFaceCard();
+                  // Wajah belum terdaftar → tampilkan ajakan aktivasi
+                  return _buildFaceCard(isRegistered: false);
                 }
 
-                // Wajah sudah terdaftar -> tampilkan toggle biometrik
-                return Obx(
-                  () => _buildToggleCard(
-                    title: "Login Biometrik",
-                    subtitle: "Fingerprint / Face Unlock",
-                    icon: Icons.fingerprint,
-                    iconBgColor: const Color(0xFFE0F7FA),
-                    iconColor: Colors.teal,
-                    value: controller.isBiometricEnabled.value,
-                    onChanged: controller.onBiometricToggle,
-                    activeColor: AppColors.primary,
-                  ),
-                );
+                // Wajah sudah terdaftar → tampilkan "Nonaktifkan"
+                return _buildFaceCard(isRegistered: true);
               }),
-              
+
               const SizedBox(height: 18),
 
               Container(
@@ -282,117 +270,104 @@ class SecurityPasswordView extends GetView<SecurityPasswordController> {
   }
 
   // =====================================================
-  // ACTIVATE FACE CARD (wajah belum terdaftar)
+  // FACE CARD (Aktifkan / Nonaktifkan)
   // =====================================================
 
-  Widget _buildActivateFaceCard() {
+  Widget _buildFaceCard({required bool isRegistered}) {
     return _buildSectionCard(
       child: Row(
         children: [
-          const CircleAvatar(
-            backgroundColor: Color(0xFFE0F7FA),
-            child: Icon(Icons.fingerprint, color: Colors.teal),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Login Biometrik",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  "Wajah belum terdaftar",
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () => controller.goToFaceRegister(),
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              "Aktifkan",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // =====================================================
-  // TOGGLE CARD (2FA, biometrik saat wajah sudah terdaftar)
-  // =====================================================
-
-  Widget _buildToggleCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color iconBgColor,
-    required Color iconColor,
-    required bool value,
-    required Function(bool) onChanged,
-    required Color activeColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
           CircleAvatar(
-            backgroundColor: iconBgColor,
-            child: Icon(icon, color: iconColor),
+            backgroundColor: isRegistered
+                ? const Color(0xFFE8F5E9)
+                : const Color(0xFFE0F7FA),
+            child: Icon(
+              isRegistered ? Icons.face_retouching_natural : Icons.fingerprint,
+              color: isRegistered ? AppColors.primary : Colors.teal,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
+                const Text(
+                  "Login Wajah",
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  subtitle,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  isRegistered ? "Wajah sudah terdaftar ✓" : "Wajah belum terdaftar",
+                  style: TextStyle(
+                    color: isRegistered ? AppColors.primary : Colors.grey,
+                    fontSize: 12,
+                    fontWeight: isRegistered ? FontWeight.w600 : FontWeight.normal,
+                  ),
                 ),
               ],
             ),
           ),
-          Switch.adaptive(
-            value: value,
-            onChanged: onChanged,
-            activeColor: activeColor,
+          const SizedBox(width: 8),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: isRegistered
+                ? OutlinedButton(
+                    key: const ValueKey('deactivate'),
+                    onPressed: () => controller.deactivateFaceRecognition(),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Nonaktifkan",
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    key: const ValueKey('activate'),
+                    onPressed: () async {
+                      // Navigasi ke face register dan tunggu kembali
+                      await Get.toNamed('/face-register');
+                      // Refresh status wajah setelah kembali
+                      await controller.refreshFaceStatus();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Aktifkan",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
     );
   }
+
 }

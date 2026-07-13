@@ -3,9 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/auth/login_model.dart';
-import 'package:teraparent_mobile/app/core/widgets/navigation_controller.dart';
 import 'package:teraparent_mobile/app/data/services/auth/login_service.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
+import 'package:teraparent_mobile/app/modules/navigation_bar/controllers/navigation_bar_controller.dart';
 
 class LoginController extends GetxController {
 
@@ -108,7 +108,7 @@ class LoginController extends GetxController {
           await prefs.remove('riskCategory');
         }
 
-        Get.find<NavigationController>().reset();
+        Get.find<NavigationBarController>().reset();
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {

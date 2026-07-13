@@ -4,24 +4,26 @@ import 'package:get/get.dart';
 
 class ApiService extends GetxService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  final Dio dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://teraservices.vercel.app/',
-      connectTimeout: const Duration(seconds: 20),
-      receiveTimeout: const Duration(seconds: 20),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    ),
-  )..interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestBody: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
+  final Dio dio =
+      Dio(
+          BaseOptions(
+            baseUrl: 'https://teraservices.vercel.app/',
+            connectTimeout: const Duration(seconds: 20),
+            receiveTimeout: const Duration(seconds: 20),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ),
+        )
+        ..interceptors.add(
+          LogInterceptor(
+            request: true,
+            requestBody: true,
+            responseBody: true,
+            error: true,
+          ),
+        );
 
   Future<Options> authOptions() async {
     final token = await _storage.read(key: 'token');
@@ -30,12 +32,8 @@ class ApiService extends GetxService {
       throw 'Token tidak ditemukan. Silakan login ulang.';
     }
 
-    return Options(
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-  }  
+    return Options(headers: {'Authorization': 'Bearer $token'});
+  }
 
   String handleDioError(DioException e) {
     if (e.response != null) {
@@ -55,7 +53,7 @@ class ApiService extends GetxService {
     if (e.type == DioExceptionType.receiveTimeout) {
       return 'Server terlalu lama merespons';
     }
-  
+
     if (e.type == DioExceptionType.connectionError) {
       return 'Tidak dapat terhubung ke server';
     }

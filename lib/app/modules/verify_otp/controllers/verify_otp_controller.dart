@@ -19,7 +19,8 @@ class VerifyOtpController extends GetxController {
 
   final VerifyOtpService _verifyOtpService = Get.find<VerifyOtpService>();
   final ResendOtpService _resendOtpService = Get.find<ResendOtpService>();
-  final ResetPasswordService _requestResetPasswordService = Get.find<ResetPasswordService>();
+  final ResetPasswordService _requestResetPasswordService =
+      Get.find<ResetPasswordService>();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -68,7 +69,9 @@ class VerifyOtpController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     final pendingEmail = prefs.getString('pending_otp_email');
 
-    if (email.value.isEmpty && pendingEmail != null && pendingEmail.isNotEmpty) {
+    if (email.value.isEmpty &&
+        pendingEmail != null &&
+        pendingEmail.isNotEmpty) {
       email.value = pendingEmail;
     }
 
@@ -138,10 +141,7 @@ class VerifyOtpController extends GetxController {
 
       Get.toNamed(
         _nextRoute ?? Routes.RESET_PASSWORD,
-        arguments: {
-          'otp': otp,
-          'email': email.value,
-        },
+        arguments: {'otp': otp, 'email': email.value},
       );
       return;
     }
@@ -149,14 +149,9 @@ class VerifyOtpController extends GetxController {
     try {
       isLoading.value = true;
 
-      final request = VerifyOtpRequestModel(
-        email: email.value,
-        otp: otp,
-      );
+      final request = VerifyOtpRequestModel(email: email.value, otp: otp);
 
-      final result = await _verifyOtpService.verifyOtp(
-        request: request,
-      );
+      final result = await _verifyOtpService.verifyOtp(request: request);
 
       if (result.success) {
         final prefs = await SharedPreferences.getInstance();
@@ -179,7 +174,10 @@ class VerifyOtpController extends GetxController {
         await prefs.setString("photo_url", user.profileImage ?? '');
         await prefs.setBool('is_logged_in', true);
         await prefs.setBool('is_email_verified', user.isEmailVerified);
-        await prefs.setBool('is_face_recognition_active', user.isFaceRecognitionActive);
+        await prefs.setBool(
+          'is_face_recognition_active',
+          user.isFaceRecognitionActive,
+        );
         await prefs.setBool('has_child_data', user.hasChildData);
         await prefs.remove('pending_otp');
         await prefs.remove('pending_otp_email');
@@ -196,11 +194,7 @@ class VerifyOtpController extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
     } finally {
       if (!isClosed) {
         isLoading.value = false;
@@ -218,18 +212,14 @@ class VerifyOtpController extends GetxController {
         _applyResendCooldown(result.success, result.message);
         return;
       }
-      
+
       final resend = ResendOtpRequestModel(email: email.value);
 
       final result = await _resendOtpService.resendOtp(request: resend);
 
       _applyResendCooldown(result.success, result.message);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
       print('Error saat resend OTP: $e');
     }
   }
@@ -251,7 +241,9 @@ class VerifyOtpController extends GetxController {
 
       Get.snackbar(
         'Berhasil',
-        message.isNotEmpty ? message : 'Kode OTP baru telah dikirim ke email Anda',
+        message.isNotEmpty
+            ? message
+            : 'Kode OTP baru telah dikirim ke email Anda',
         snackPosition: SnackPosition.BOTTOM,
       );
     } else {
