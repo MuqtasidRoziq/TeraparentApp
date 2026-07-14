@@ -20,7 +20,6 @@ abstract class Routes {
   static const DETAIL_ACTIVITY = _Paths.DETAIL_ACTIVITY;
   static const ACTIVITY_SUCCESS = _Paths.ACTIVITY_SUCCESS;
   static const RESULT_SCREENING = _Paths.RESULT_SCREENING;
-  static const SPLASH = _Paths.SPLASH;
   static const VERIFY_OTP = _Paths.VERIFY_OTP;
   static const VERIFY_SUCCESS = _Paths.VERIFY_SUCCESS;
   static const SIGNIN_FACE = _Paths.SIGNIN_FACE;
@@ -29,11 +28,12 @@ abstract class Routes {
   static const VERIFY_OTPPASS = _Paths.VERIFY_OTPPASS;
   static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
   static const NAVIGATION_BAR = _Paths.NAVIGATION_BAR;
+  static const ARTICLES = _Paths.ARTICLES;
+  static const DETAIL_ARTICLE = _Paths.DETAIL_ARTICLE;
 }
 
 abstract class _Paths {
   _Paths._();
-  static const SPLASH = '/';
   static const HOME = '/home';
   static const LOGIN = '/login';
   static const REGISTER = '/register';
@@ -59,4 +59,6 @@ abstract class _Paths {
   static const VERIFY_OTPPASS = '/verify-otppass';
   static const RESET_PASSWORD = '/reset-password';
   static const NAVIGATION_BAR = '/navigation-bar';
+  static const ARTICLES = '/articles';
+  static const DETAIL_ARTICLE = '/detail-article';
 }

@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teraparent_mobile/app/data/models/activity_model.dart';
 import 'package:teraparent_mobile/app/data/models/grafik_model.dart';
+import 'package:teraparent_mobile/app/data/models/article_model.dart';
+import 'package:teraparent_mobile/app/data/services/article_service.dart';
 import 'package:teraparent_mobile/app/data/services/grafik_services.dart';
 import 'package:teraparent_mobile/app/modules/activities/controllers/activities_controller.dart';
 
@@ -11,8 +13,10 @@ class HomeController extends GetxController {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   late final ActivitiesController activitiesController;
   final GrafikService _weeklyProggresStats = Get.find<GrafikService>();
+  final ArticleService _articleService = Get.find<ArticleService>();
   
   final isLoading = false.obs;
+  final isLoadingArticles = false.obs;
   final userName = ''.obs;
   final userPhotoUrl = ''.obs;
   final childName = ''.obs;
@@ -20,6 +24,7 @@ class HomeController extends GetxController {
   
   final todayActivity = <DailyActivityModel>[].obs;
   final weeklyStats = Rxn<WeeklyActivityStatsModel>();
+  final articles = <ArticleModel>[].obs;
 
   @override
   void onInit() {
@@ -46,9 +51,24 @@ class HomeController extends GetxController {
       }
 
       await setActivityByScreening();
+      await fetchHomeArticles();
       
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchHomeArticles() async {
+    try {
+      isLoadingArticles.value = true;
+      final response = await _articleService.getAllArticles(page: 1, limit: 3);
+      if (response.success && response.data != null) {
+        articles.assignAll(response.data!);
+      }
+    } catch (e) {
+      print('Error fetching articles for home: $e');
+    } finally {
+      isLoadingArticles.value = false;
     }
   }
 

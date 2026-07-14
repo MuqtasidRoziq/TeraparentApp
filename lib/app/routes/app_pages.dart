@@ -46,7 +46,10 @@ import '../modules/verify_otppass/bindings/verify_otppass_binding.dart';
 import '../modules/verify_otppass/views/verify_otppass_view.dart';
 import '../modules/verify_success/bindings/verify_success_binding.dart';
 import '../modules/verify_success/views/verify_success_view.dart';
-
+import '../modules/articles/bindings/articles_binding.dart';
+import '../modules/articles/views/articles_view.dart';
+import '../modules/detail_article/bindings/detail_article_binding.dart';
+import '../modules/detail_article/views/detail_article_view.dart';
 part 'app_routes.dart';
 
 class AppPages {
@@ -169,6 +172,16 @@ class AppPages {
       name: _Paths.NAVIGATION_BAR,
       page: () => const NavigationBarView(),
       binding: NavigationBarBinding(),
+    ),
+    GetPage(
+      name: _Paths.ARTICLES,
+      page: () => const ArticlesView(),
+      binding: ArticlesBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL_ARTICLE,
+      page: () => const DetailArticleView(),
+      binding: DetailArticleBinding(),
     ),
   ];
 }

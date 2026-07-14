@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teraparent_mobile/app/data/services/activity_log_service.dart';
+import 'package:teraparent_mobile/app/data/services/article_service.dart';
 import 'package:teraparent_mobile/app/modules/navigation_bar/controllers/navigation_bar_controller.dart';
 import 'package:teraparent_mobile/app/data/services/activity_services.dart';
 import 'package:teraparent_mobile/app/data/services/api_service.dart';
@@ -22,9 +23,7 @@ import 'app/routes/app_pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final initialRoute = await getInitialRoute();
-
   Get.put(NavigationBarController(), permanent: true);
   Get.put(ApiService(), permanent: true);
   Get.put(RegisterService(), permanent: true);
@@ -41,6 +40,7 @@ void main() async {
   Get.put(FaceAuthService(), permanent: true);
   Get.put(ActivityLogService(), permanent: true);
   Get.put(PsikologService(), permanent: true);
+  Get.put(ArticleService(), permanent: true);
 
   runApp(
     GetMaterialApp(

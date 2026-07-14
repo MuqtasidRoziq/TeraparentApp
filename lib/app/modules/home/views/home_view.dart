@@ -5,6 +5,8 @@ import 'package:teraparent_mobile/app/core/widgets/header_profile.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:teraparent_mobile/app/routes/app_pages.dart';
 import 'package:teraparent_mobile/app/modules/navigation_bar/views/navigation_bar_view.dart';
+import 'package:intl/intl.dart';
+import 'package:teraparent_mobile/app/data/models/article_model.dart';
 import '../../../core/widgets/shimmer_loading.dart';
 import '../controllers/home_controller.dart';
 import '../../../core/theme/colors.dart';
@@ -51,10 +53,12 @@ class HomeView extends GetView<HomeController> {
                     _quickMenu(),
                     const SizedBox(height: 28),
 
-                    _sectionDivider(),
-
                     // Today activity (data dari backend)
                     _todayActivitySection(),
+
+                    _sectionDivider(),
+                    _articlesSection(),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -532,6 +536,260 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ─── ARTICLES SECTION ─────────────────────────────────────────────
+  Widget _articlesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Artikel Edukasi',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Tips & info parenting terpercaya',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black45,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            InkWell(
+              onTap: () => Get.toNamed(Routes.ARTICLES),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  children: const [
+                    Text(
+                      "Lihat Semua",
+                      style: TextStyle(
+                        color: Color(0xFF2E5A5A),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Color(0xFF2E5A5A),
+                      size: 14,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        Obx(() {
+          if (controller.isLoadingArticles.value) {
+            return _buildArticlesShimmer();
+          }
+
+          if (controller.articles.isEmpty) {
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: const Center(
+                child: Text(
+                  "Belum ada artikel tersedia",
+                  style: TextStyle(color: Colors.grey, fontSize: 13),
+                ),
+              ),
+            );
+          }
+
+          return Column(
+            children: controller.articles.map((article) => _buildArticleItem(article)).toList(),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildArticleItem(ArticleModel article) {
+    final dateFormatted = DateFormat('dd MMM yyyy').format(article.tanggalPublikasi);
+
+    return GestureDetector(
+      onTap: () => Get.toNamed(Routes.DETAIL_ARTICLE, arguments: article.id),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFE8EDEB)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.01),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE6F4F1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    article.kategori,
+                    style: const TextStyle(
+                      color: Color(0xFF2E5A5A),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  dateFormatted,
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              article.judul,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+                height: 1.3,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              article.isi,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticlesShimmer() {
+    return ShimmerLoading(
+      child: Column(
+        children: [
+          _buildSingleArticleShimmer(),
+          _buildSingleArticleShimmer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleArticleShimmer() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 18,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              Container(
+                height: 14,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 16,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            height: 16,
+            width: 200,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 12,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Container(
+            height: 12,
+            width: 150,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
       ),
     );
   }
