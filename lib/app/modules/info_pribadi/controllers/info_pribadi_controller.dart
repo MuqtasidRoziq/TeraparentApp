@@ -33,7 +33,6 @@ class InfoPribadiController extends GetxController {
     nameController.text = prefs.getString('full_name') ?? '';
     emailController.text = prefs.getString('email') ?? '';
     phoneController.text = prefs.getString('phone') ?? '';
-    // Read same key that LoginController writes after login
     profilePhotoUrl.value = _userService.userPhotoUrl.value.isNotEmpty
         ? _userService.userPhotoUrl.value
         : (prefs.getString('photo_url') ?? '');

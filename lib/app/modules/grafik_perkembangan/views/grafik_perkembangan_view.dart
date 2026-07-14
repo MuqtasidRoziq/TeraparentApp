@@ -19,10 +19,11 @@ class GrafikPerkembanganView extends GetView<GrafikPerkembanganController> {
           onRefresh: controller.loadDashboardData,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 22),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 20),
                 // Header — static
                 headerProfile(),
                 const SizedBox(height: 24),

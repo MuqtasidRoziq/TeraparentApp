@@ -33,8 +33,9 @@ class ResultScreeningView extends GetView<ResultScreeningController> {
             }
 
             return ListView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 22),
               children: [
+                const SizedBox(height: 20),
                 headerProfile(),
 
                 const SizedBox(height: 20),

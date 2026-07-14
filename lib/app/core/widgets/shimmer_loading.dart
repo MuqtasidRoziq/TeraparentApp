@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// Widget wrapper yang memberikan efek shimmer pada seluruh child-nya.
+/// Gunakan [ShimmerBox] di dalam [ShimmerLoading] untuk placeholder.
 class ShimmerLoading extends StatefulWidget {
   final Widget child;
 
@@ -36,15 +38,16 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
       builder: (context, child) {
         return ShaderMask(
           shaderCallback: (bounds) {
+            final double slide = _controller.value * 2.0;
             final gradient = LinearGradient(
-              begin: Alignment(-1.0 - 0.4 + _controller.value * 2.0, 0),
-              end: Alignment(1.0 + 0.4 + _controller.value * 2.0, 0),
-              colors: [
-                Colors.grey.shade300,
-                Colors.grey.shade100,
-                Colors.grey.shade300,
+              begin: Alignment(-1.0 + slide, -0.3),
+              end: Alignment(0.0 + slide, 0.3),
+              colors: const [
+                Color(0xFFE0E0E0),
+                Color(0xFFF5F5F5),
+                Color(0xFFE0E0E0),
               ],
-              stops: const [0.1, 0.5, 0.9],
+              stops: const [0.0, 0.5, 1.0],
             );
             return gradient.createShader(bounds);
           },
@@ -56,6 +59,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
   }
 }
 
+/// Placeholder box untuk shimmer. Harus dipakai di dalam [ShimmerLoading].
 class ShimmerBox extends StatelessWidget {
   final double height;
   final double width;

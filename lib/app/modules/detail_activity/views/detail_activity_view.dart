@@ -47,19 +47,19 @@ class DetailActivityView extends GetView<DetailActivityController> {
                 children: [
                   _buildBadge(
                     act.domainLabel,
-                    primaryColor.withOpacity(0.15),
+                    primaryColor.withValues(alpha: 0.15),
                     primaryColor,
                     Icons.directions_run,
                   ),
                   _buildBadge(
                     act.durationLabel,
-                    Colors.blueGrey.withOpacity(0.1),
+                    Colors.blueGrey.withValues(alpha: 0.1),
                     Colors.blueGrey,
                     Icons.access_time,
                   ),
                   _buildBadge(
                     act.difficulty,
-                    Colors.orange.withOpacity(0.1),
+                    Colors.orange.withValues(alpha: 0.1),
                     Colors.orange.shade800,
                     Icons.bar_chart,
                   ),
@@ -215,16 +215,10 @@ class DetailActivityView extends GetView<DetailActivityController> {
                     backgroundColor: act.isCompleted ? Colors.grey : primaryColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  onPressed: (act.isCompleted || controller.isSubmitting.value)
+                  onPressed: act.isCompleted
                       ? null
-                      : () => controller.submitCompletion(),
-                  icon: controller.isSubmitting.value
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Icon(Icons.check_circle, color: Colors.white),
+                      : () => controller.showCompletionForm(context),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
                   label: Text(
                     act.isCompleted ? "Aktivitas Selesai" : "Selesaikan Aktivitas",
                     style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),

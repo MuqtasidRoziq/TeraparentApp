@@ -17,6 +17,7 @@ import 'package:teraparent_mobile/app/data/services/reset_password_service.dart'
 import 'package:teraparent_mobile/app/data/services/screening_services.dart';
 import 'package:teraparent_mobile/app/data/services/user_services.dart';
 import 'package:teraparent_mobile/app/data/services/auth/face_login_service.dart';
+import 'package:teraparent_mobile/app/data/services/psikolog_service.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
@@ -39,6 +40,7 @@ void main() async {
   Get.put(UserService(), permanent: true);
   Get.put(FaceAuthService(), permanent: true);
   Get.put(ActivityLogService(), permanent: true);
+  Get.put(PsikologService(), permanent: true);
 
   runApp(
     GetMaterialApp(
